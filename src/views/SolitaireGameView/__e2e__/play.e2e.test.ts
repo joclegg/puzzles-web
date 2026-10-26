@@ -63,3 +63,16 @@ test('finishes the game once every card is face up', async ({
 
   await expect(solitairePage.dialog).toContainText('You won!')
 })
+
+test('drags a card onto its foundation', async ({ solitairePage }) => {
+  await solitairePage.seedNearlyWonGame()
+
+  await solitairePage.dragCard({
+    name: 'King of clubs',
+    to: 'Foundation clubs, Queen of clubs',
+  })
+
+  await expect(
+    solitairePage.card('Foundation clubs, King of clubs'),
+  ).toBeVisible()
+})

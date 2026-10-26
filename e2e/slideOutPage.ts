@@ -62,6 +62,14 @@ export class SlideOutPage {
     await this.page.mouse.up()
   }
 
+  async goHomeFromDialog() {
+    await this.dialog.getByRole('button', { name: 'Home' }).click()
+  }
+
+  async browserBack() {
+    await this.page.goBack()
+  }
+
   async undo() {
     await this.page.getByRole('button', { name: 'Undo the last move' }).click()
   }

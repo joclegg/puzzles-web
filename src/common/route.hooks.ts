@@ -6,6 +6,10 @@ export function navigate(segments: readonly (string | number)[]): void {
   window.location.hash = routeHash(segments)
 }
 
+export function replaceRoute(segments: readonly (string | number)[]): void {
+  window.location.replace(routeHash(segments))
+}
+
 export function useRoute(): string[] {
   const hash = useSyncExternalStore(subscribe, readHash)
   return parseHash(hash)

@@ -8,4 +8,5 @@ export interface KakuroSettings {
   highlightRuns: boolean
   showTimer: boolean
   showCombinations: boolean
+  greyUsedDigits: boolean
 }

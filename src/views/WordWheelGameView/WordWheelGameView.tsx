@@ -153,7 +153,7 @@ export function WordWheelGameView({ id }: { id: number }) {
   const shown = shownCells(game)
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-4 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-4 pb-6 lg:max-w-4xl">
       <div className="w-full">
         <ScreenHeader
           title={wordWheelTitle(saved)}
@@ -205,64 +205,70 @@ export function WordWheelGameView({ id }: { id: number }) {
           />
         </ScreenHeader>
       </div>
-      <WordWheelGrid
-        puzzle={game.puzzle}
-        shown={shown}
-        revealed={new Set(game.revealed)}
-      />
-      <p className="h-6 text-sm font-semibold" role="status">
-        {game.last ? GUESS_MESSAGE[game.last] : ''}
-      </p>
-      <div className="flex h-10 items-center gap-2">
-        <span
-          className="min-w-24 text-center text-2xl font-bold tracking-widest"
-          aria-label="Word"
-        >
-          {word}
-        </span>
-      </div>
-      <WordWheelLetters
-        wheel={game.wheel}
-        chosen={chosen}
-        onChoose={(index) => setChosen((current) => [...current, index])}
-        onSwipeEnd={enter}
-      />
-      <div className="flex gap-3">
-        <Button
-          variant={BUTTON_VARIANT.OUTLINE}
-          size={BUTTON_SIZE.ICON}
-          aria-label="Shuffle the letters"
-          onClick={() => {
-            setChosen([])
-            setGame(
-              shuffleWheel({
-                game,
-                order: shuffled({
-                  items: [...game.wheel].map((_, i) => i),
-                  random,
-                }),
-              }),
-            )
-          }}
-        >
-          <Shuffle className="size-5" />
-        </Button>
-        <Button
-          variant={BUTTON_VARIANT.OUTLINE}
-          size={BUTTON_SIZE.ICON}
-          aria-label="Enter the word"
-          onClick={enter}
-        >
-          <Check className="size-5" />
-        </Button>
-        <Button
-          variant={BUTTON_VARIANT.OUTLINE}
-          size={BUTTON_SIZE.ICON}
-          aria-label="Clear the word"
-          onClick={() => setChosen([])}
-        >
-          <X className="size-5" />
-        </Button>
+      <div className="flex w-full flex-col items-center gap-3 lg:flex-row lg:items-center lg:justify-center lg:gap-10">
+        <div className="flex w-full justify-center lg:flex-1">
+          <WordWheelGrid
+            puzzle={game.puzzle}
+            shown={shown}
+            revealed={new Set(game.revealed)}
+          />
+        </div>
+        <div className="flex w-full flex-col items-center gap-3 lg:w-80 lg:shrink-0">
+          <p className="h-6 text-sm font-semibold" role="status">
+            {game.last ? GUESS_MESSAGE[game.last] : ''}
+          </p>
+          <div className="flex h-10 items-center gap-2">
+            <span
+              className="min-w-24 text-center text-2xl font-bold tracking-widest"
+              aria-label="Word"
+            >
+              {word}
+            </span>
+          </div>
+          <WordWheelLetters
+            wheel={game.wheel}
+            chosen={chosen}
+            onChoose={(index) => setChosen((current) => [...current, index])}
+            onSwipeEnd={enter}
+          />
+          <div className="flex gap-3">
+            <Button
+              variant={BUTTON_VARIANT.OUTLINE}
+              size={BUTTON_SIZE.ICON}
+              aria-label="Shuffle the letters"
+              onClick={() => {
+                setChosen([])
+                setGame(
+                  shuffleWheel({
+                    game,
+                    order: shuffled({
+                      items: [...game.wheel].map((_, i) => i),
+                      random,
+                    }),
+                  }),
+                )
+              }}
+            >
+              <Shuffle className="size-5" />
+            </Button>
+            <Button
+              variant={BUTTON_VARIANT.OUTLINE}
+              size={BUTTON_SIZE.ICON}
+              aria-label="Enter the word"
+              onClick={enter}
+            >
+              <Check className="size-5" />
+            </Button>
+            <Button
+              variant={BUTTON_VARIANT.OUTLINE}
+              size={BUTTON_SIZE.ICON}
+              aria-label="Clear the word"
+              onClick={() => setChosen([])}
+            >
+              <X className="size-5" />
+            </Button>
+          </div>
+        </div>
       </div>
       <AppDialog
         open={rulesOpen}

@@ -17,8 +17,8 @@ export function AppDialog({
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/50" />
-        <Dialog.Popup className="fixed top-1/2 left-1/2 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl bg-popover p-5 text-popover-foreground shadow-xl">
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
+        <Dialog.Popup className="fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl bg-popover p-5 text-popover-foreground shadow-xl">
           <Dialog.Title className="text-lg font-semibold">{title}</Dialog.Title>
           <div className="mt-2 space-y-2 text-sm text-muted-foreground">
             {children}

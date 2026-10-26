@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS: KakuroSettings = {
   highlightRuns: true,
   showTimer: true,
   showCombinations: false,
+  greyUsedDigits: true,
 }
 
 export const TITLE = 'Kakuro'

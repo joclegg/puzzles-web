@@ -11,6 +11,7 @@ export function TwoToneBoard({
   size,
   tiles,
   givens,
+  showGivens,
   broken,
   hintLine,
   hintTargets,
@@ -19,6 +20,7 @@ export function TwoToneBoard({
   size: number
   tiles: string
   givens: string
+  showGivens: boolean
   broken: Set<number>
   hintLine: Set<number>
   hintTargets: Set<number>
@@ -29,7 +31,7 @@ export function TwoToneBoard({
       role="grid"
       aria-label="Board"
       className={cn(
-        'grid aspect-square w-full max-w-md gap-1 sm:gap-1.5',
+        'grid aspect-square w-full max-w-md gap-1 sm:gap-1.5 lg:max-w-[min(100%,calc(100dvh-16rem))]',
         GRID_COLUMNS_CLASS[size],
       )}
     >
@@ -64,7 +66,7 @@ export function TwoToneBoard({
                 : broken.has(cell) && 'ring-3 ring-tt-broken',
             )}
           >
-            {given && (
+            {given && showGivens && (
               <span className="absolute inset-0 m-auto size-1.5 rounded-full bg-white/60" />
             )}
           </button>

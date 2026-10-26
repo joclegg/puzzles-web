@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { formatDuration } from '@/common/format.functions'
 import { useGameTimer } from '@/common/gameTimer.hooks'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
-import { navigate } from '@/common/route.hooks'
+import { navigate, replaceRoute } from '@/common/route.hooks'
 import {
   boardOf,
   isSolved,
@@ -131,7 +131,7 @@ export function SlideOutGameView({ id }: { id: number }) {
   const moveCount = game.moves.length
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-4 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-4 pb-6 lg:max-w-4xl">
       <div className="w-full">
         <ScreenHeader
           title={slideOutTitle(saved)}
@@ -215,12 +215,15 @@ export function SlideOutGameView({ id }: { id: number }) {
         onClose={() => setResult(null)}
         actions={
           <>
-            <Button onClick={() => navigate([GAME_ROUTE.SLIDE_OUT])}>
+            <Button onClick={() => replaceRoute([GAME_ROUTE.SLIDE_OUT])}>
               Home
             </Button>
             <Button
               variant={BUTTON_VARIANT.OUTLINE}
-              onClick={() => startRandom(levelOf(saved))}
+              onClick={() => {
+                replaceRoute([GAME_ROUTE.SLIDE_OUT])
+                startRandom(levelOf(saved))
+              }}
             >
               New puzzle
             </Button>

@@ -1,5 +1,5 @@
 import { formatDuration } from '@/common/format.functions'
-import { CircleHelp, Lightbulb, Undo2 } from 'lucide-react'
+import { CircleHelp, Lightbulb, Undo2, CircleDot } from 'lucide-react'
 import { useState } from 'react'
 
 import { useGameTimer } from '@/common/gameTimer.hooks'
@@ -63,6 +63,7 @@ export function TwoToneGameView({ id }: { id: number }) {
   )
   const [hints, setHints] = useState(saved?.hints ?? 0)
   const [colour, setColour] = useState<Tile>(TILE.RED)
+  const [showGivens, setShowGivens] = useState(false)
   const [rulesOpen, setRulesOpen] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const solved = game !== null && isSolved(game)
@@ -161,7 +162,7 @@ export function TwoToneGameView({ id }: { id: number }) {
     hint?.kind === HINT_KIND.NEXT ? new Set(hint.cells) : new Set<number>()
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-4 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-4 pb-6 lg:max-w-4xl">
       <div className="w-full">
         <ScreenHeader title={puzzleTitle(saved)} back={[GAME_ROUTE.TWO_TONE]}>
           <Button
@@ -171,6 +172,15 @@ export function TwoToneGameView({ id }: { id: number }) {
             onClick={() => move(undo)}
           >
             <Undo2 className="size-5" />
+          </Button>
+          <Button
+            size={BUTTON_SIZE.ICON}
+            aria-label="Show the starting tiles"
+            aria-pressed={showGivens}
+            className={showGivens ? 'bg-muted' : undefined}
+            onClick={() => setShowGivens(!showGivens)}
+          >
+            <CircleDot className="size-5" />
           </Button>
           <Button
             size={BUTTON_SIZE.ICON}
@@ -209,6 +219,7 @@ export function TwoToneGameView({ id }: { id: number }) {
         size={game.puzzle.givens.size}
         tiles={game.grid.tiles}
         givens={game.puzzle.givens.tiles}
+        showGivens={showGivens}
         broken={settings.markBrokenRules ? gameBrokenCells(game) : new Set()}
         hintLine={hintLine}
         hintTargets={hintTargets(hint)}

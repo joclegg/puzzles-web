@@ -202,7 +202,7 @@ export function SudokuGameView({ id }: { id: number }) {
   )
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-3 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-3 pb-6 lg:max-w-4xl">
       <div className="w-full">
         <ScreenHeader
           title={sudokuTitle(saved)}

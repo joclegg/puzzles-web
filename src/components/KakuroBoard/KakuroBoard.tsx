@@ -32,7 +32,7 @@ export function KakuroBoard({
       role="grid"
       aria-label="Board"
       className={cn(
-        '@container grid w-full max-w-md gap-px border border-kk-line bg-kk-line',
+        '@container grid w-full max-w-md gap-px border border-kk-line bg-kk-line lg:max-w-[min(100%,calc(100dvh-16rem))]',
         GRID_COLUMNS_CLASS[puzzle.size],
       )}
     >

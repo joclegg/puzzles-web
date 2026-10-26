@@ -65,3 +65,14 @@ test('keeps progress after a reload', async ({ twoTonePage }) => {
 
   await twoTonePage.expectTile({ row: 1, column: 1, state: /, red/ })
 })
+
+test('shows the starting tiles only when asked', async ({ twoTonePage }) => {
+  await twoTonePage.openDaily(6)
+  const toggle = twoTonePage.startingTilesToggle
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+
+  await toggle.click()
+
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  await twoTonePage.expectScreenshot('starting-tiles-shown')
+})

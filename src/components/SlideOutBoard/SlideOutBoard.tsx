@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import type { KeyboardEvent, PointerEvent } from 'react'
 
 import { cn } from '@/common/utils.functions'
@@ -6,7 +6,6 @@ import { EXIT_ROW, SIZE } from '@/common/slideOut/slideOut.constants'
 import type { Block, Move } from '@/common/slideOut/slideOut.types'
 import {
   blockPosition,
-  movedTo,
   slideRange,
 } from '@/common/slideOut/slideOutBoard.functions'
 import {
@@ -16,7 +15,10 @@ import {
   ROW_START_CLASS,
   SLOTS,
 } from '@/components/SlideOutBoard/SlideOutBoard.constants'
-import { dragPosition } from '@/components/SlideOutBoard/SlideOutBoard.functions'
+import {
+  dragOffset,
+  dragPosition,
+} from '@/components/SlideOutBoard/SlideOutBoard.functions'
 
 export function SlideOutBoard({
   blocks,
@@ -33,7 +35,6 @@ export function SlideOutBoard({
     startX: number
     startY: number
   } | null>(null)
-  const [dragging, setDragging] = useState<Move | null>(null)
 
   function cellSize() {
     return (boardRef.current?.getBoundingClientRect().width ?? SIZE) / SIZE
@@ -48,36 +49,56 @@ export function SlideOutBoard({
   }) {
     event.currentTarget.setPointerCapture(event.pointerId)
     dragRef.current = { index, startX: event.clientX, startY: event.clientY }
-    setDragging({ block: index, position: blockPosition(blocks[index]) })
+  }
+
+  function dragDelta(event: PointerEvent<HTMLButtonElement>) {
+    const drag = dragRef.current
+    if (drag === null) {
+      return null
+    }
+    const block = blocks[drag.index]
+    return {
+      block,
+      index: drag.index,
+      delta: block.horizontal
+        ? event.clientX - drag.startX
+        : event.clientY - drag.startY,
+      range: slideRange({ blocks, index: drag.index }),
+    }
   }
 
   function onPointerMove(event: PointerEvent<HTMLButtonElement>) {
-    const drag = dragRef.current
+    const drag = dragDelta(event)
     if (drag === null) {
       return
     }
-    const block = blocks[drag.index]
-    const range = slideRange({ blocks, index: drag.index })
-    const delta = block.horizontal
-      ? event.clientX - drag.startX
-      : event.clientY - drag.startY
-    setDragging({
-      block: drag.index,
-      position: dragPosition({
-        start: blockPosition(block),
-        delta,
-        cellSize: cellSize(),
-        ...range,
-      }),
+    const offset = dragOffset({
+      start: blockPosition(drag.block),
+      delta: drag.delta,
+      cellSize: cellSize(),
+      ...drag.range,
     })
+    event.currentTarget.style.transform = drag.block.horizontal
+      ? `translateX(${offset}px)`
+      : `translateY(${offset}px)`
   }
 
-  function onPointerUp() {
-    if (dragging !== null) {
-      onSlide(dragging)
-    }
+  function onPointerUp(event: PointerEvent<HTMLButtonElement>) {
+    const drag = dragDelta(event)
+    event.currentTarget.style.transform = ''
     dragRef.current = null
-    setDragging(null)
+    if (drag === null) {
+      return
+    }
+    const position = dragPosition({
+      start: blockPosition(drag.block),
+      delta: drag.delta,
+      cellSize: cellSize(),
+      ...drag.range,
+    })
+    if (position !== blockPosition(drag.block)) {
+      onSlide({ block: drag.index, position })
+    }
   }
 
   function onKeyDown({
@@ -107,7 +128,7 @@ export function SlideOutBoard({
       ref={boardRef}
       role="group"
       aria-label="Board"
-      className="relative grid aspect-square w-full max-w-md touch-none grid-cols-6 grid-rows-6 rounded-xl bg-so-board p-1"
+      className="relative grid aspect-square w-full max-w-md touch-none grid-cols-6 grid-rows-6 rounded-xl bg-so-board p-1 lg:max-w-[min(100%,calc(100dvh-16rem))]"
     >
       {SLOTS.map((cell) => (
         <span
@@ -125,11 +146,7 @@ export function SlideOutBoard({
           ROW_START_CLASS[EXIT_ROW],
         )}
       />
-      {blocks.map((original, index) => {
-        const block =
-          dragging?.block === index
-            ? movedTo({ block: original, position: dragging.position })
-            : original
+      {blocks.map((block, index) => {
         const target = index === 0
         return (
           <button
@@ -143,9 +160,9 @@ export function SlideOutBoard({
             onPointerDown={(event) => onPointerDown({ event, index })}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
-            onPointerCancel={() => {
+            onPointerCancel={(event) => {
+              event.currentTarget.style.transform = ''
               dragRef.current = null
-              setDragging(null)
             }}
             onKeyDown={(event) => onKeyDown({ event, index })}
             className={cn(

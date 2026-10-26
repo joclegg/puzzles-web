@@ -164,7 +164,7 @@ export function SightlinesGameView({ id }: { id: number }) {
     hint?.kind === HINT_KIND.NEXT ? new Set(hint.cells) : new Set<number>()
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-4 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-4 pb-6 lg:max-w-4xl">
       <div className="w-full">
         <ScreenHeader title={puzzleTitle(saved)} back={[GAME_ROUTE.SIGHTLINES]}>
           <Button

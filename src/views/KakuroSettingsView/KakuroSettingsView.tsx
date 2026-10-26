@@ -81,6 +81,12 @@ export function KakuroSettingsView() {
         checked={settings.showCombinations}
         onChange={(showCombinations) => set({ showCombinations })}
       />
+      <SettingRow
+        label="Grey out used-up numbers"
+        detail="Dim a number on the pad once every cell that needs it has it."
+        checked={settings.greyUsedDigits}
+        onChange={(greyUsedDigits) => set({ greyUsedDigits })}
+      />
     </main>
   )
 }

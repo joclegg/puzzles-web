@@ -140,7 +140,7 @@ export function KakuroGameView({ id }: { id: number }) {
   )
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-3 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-3 pb-6 lg:max-w-4xl">
       <div className="w-full">
         <ScreenHeader
           title={puzzleTitle(saved)}
@@ -240,7 +240,9 @@ export function KakuroGameView({ id }: { id: number }) {
         activeDigit={digitFirst ? current.activeDigit : null}
         doneDigits={
           new Set(
-            DIGITS.filter((digit) => isDigitDone({ game: current, digit })),
+            settings.greyUsedDigits
+              ? DIGITS.filter((digit) => isDigitDone({ game: current, digit }))
+              : [],
           )
         }
         onDigit={(digit) => move((state) => tapDigit({ game: state, digit }))}

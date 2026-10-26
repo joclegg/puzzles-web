@@ -138,7 +138,7 @@ export function FiveLettersGameView({ id }: { id: number }) {
   return (
     <main
       className={cn(
-        'mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-2 pb-4',
+        'mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-2 pb-4 lg:max-w-4xl',
         settings.highContrast && 'high-contrast',
       )}
     >
@@ -178,7 +178,7 @@ export function FiveLettersGameView({ id }: { id: number }) {
       <p className="h-6 text-sm font-semibold" role="status">
         {game.rejection ? REJECTION_MESSAGE[game.rejection] : ''}
       </p>
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex w-full flex-1 items-center justify-center px-2">
         <FiveLettersBoard game={game} />
       </div>
       <FiveLettersKeyboard

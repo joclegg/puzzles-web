@@ -13,6 +13,7 @@ import {
   cycledStock,
   gameWon,
   restart,
+  dropCards,
   tapCard,
   tapEmptyPile,
   tapStock,
@@ -145,7 +146,7 @@ export function SolitaireGameView({ id }: { id: number }) {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-xl flex-col items-center gap-3 px-2 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-xl flex-col items-center gap-3 px-2 pb-6 lg:max-w-4xl">
       <div className="w-full px-2">
         <ScreenHeader
           title={dealTitle(saved)}
@@ -191,6 +192,9 @@ export function SolitaireGameView({ id }: { id: number }) {
         }
         onEmpty={(pile) =>
           update((state) => tapEmptyPile({ game: state, pile }))
+        }
+        onDrop={({ from, index, to }) =>
+          update((state) => dropCards({ game: state, from, index, to }))
         }
       />
       {canAutoFinish(current) && (

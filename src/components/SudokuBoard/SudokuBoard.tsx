@@ -44,7 +44,7 @@ export function SudokuBoard({
       role="grid"
       aria-label="Board"
       className={cn(
-        '@container grid aspect-square w-full max-w-md border-2 border-sd-thick bg-sd-background',
+        '@container grid aspect-square w-full max-w-md border-2 border-sd-thick bg-sd-background lg:max-w-[min(100%,calc(100dvh-16rem))]',
         GRID_COLUMNS_CLASS[grid.size],
       )}
     >

@@ -13,8 +13,8 @@ import { TwoToneIcon } from '@/components/TwoToneIcon/TwoToneIcon'
 
 export function LauncherView() {
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 py-6">
-      <header className="flex items-center">
+    <main className="mx-auto grid max-w-md gap-4 px-4 py-6 md:max-w-3xl md:grid-cols-2">
+      <header className="flex items-center md:col-span-2">
         <h1 className="flex-1 text-3xl font-semibold">Puzzles</h1>
         <ThemeToggle />
       </header>
