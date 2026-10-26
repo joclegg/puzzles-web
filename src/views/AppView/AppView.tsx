@@ -3,6 +3,7 @@ import { useRoute } from '@/common/route.hooks'
 import { FiveLettersView } from '@/views/FiveLettersView/FiveLettersView'
 import { KakuroView } from '@/views/KakuroView/KakuroView'
 import { LauncherView } from '@/views/LauncherView/LauncherView'
+import { SlideOutView } from '@/views/SlideOutView/SlideOutView'
 import { SightlinesView } from '@/views/SightlinesView/SightlinesView'
 import { TwoToneView } from '@/views/TwoToneView/TwoToneView'
 
@@ -20,6 +21,9 @@ export function AppView() {
   }
   if (game === GAME_ROUTE.KAKURO) {
     return <KakuroView screen={screen} id={id} />
+  }
+  if (game === GAME_ROUTE.SLIDE_OUT) {
+    return <SlideOutView screen={screen} id={id} />
   }
   return <LauncherView />
 }

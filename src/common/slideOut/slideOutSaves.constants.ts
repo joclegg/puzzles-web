@@ -1,0 +1,12 @@
+import type { SlideOutSettings } from '@/common/slideOut/slideOutSaves.types'
+
+export const GAMES_KEY = 'slideOut.games'
+
+export const SETTINGS_KEY = 'slideOut.settings'
+
+export const DEFAULT_SETTINGS: SlideOutSettings = {
+  showTimer: true,
+  showPar: true,
+}
+
+export const TITLE = 'Slide Out'

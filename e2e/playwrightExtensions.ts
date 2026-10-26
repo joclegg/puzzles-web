@@ -4,6 +4,7 @@ import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { KakuroPage } from '@e2e/kakuroPage'
 import { LauncherPage } from '@e2e/launcherPage'
 import { SightlinesPage } from '@e2e/sightlinesPage'
+import { SlideOutPage } from '@e2e/slideOutPage'
 import { TwoTonePage } from '@e2e/twoTonePage'
 
 const FIXED_NOW = new Date('2026-10-25T10:00:00')
@@ -14,6 +15,7 @@ export const test = base.extend<{
   twoTonePage: TwoTonePage
   sightlinesPage: SightlinesPage
   kakuroPage: KakuroPage
+  slideOutPage: SlideOutPage
 }>({
   page: async ({ page }, use) => {
     await page.clock.setFixedTime(FIXED_NOW)
@@ -43,6 +45,11 @@ export const test = base.extend<{
     const kakuroPage = new KakuroPage(page)
     await kakuroPage.open()
     await use(kakuroPage)
+  },
+  slideOutPage: async ({ page }, use) => {
+    const slideOutPage = new SlideOutPage(page)
+    await slideOutPage.open()
+    await use(slideOutPage)
   },
 })
 
