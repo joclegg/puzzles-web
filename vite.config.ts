@@ -11,6 +11,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
       '@e2e': path.resolve(import.meta.dirname, './e2e'),
+      '@data': path.resolve(import.meta.dirname, './puzzles-data'),
     },
   },
   test: {

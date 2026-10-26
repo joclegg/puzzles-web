@@ -28,8 +28,9 @@ Puzzles for the web: eight offline puzzle games served at https://joclegg.github
 - `src/components/<Component>/`: every other component, one folder per component holding all of its files
 - `src/common/`: shared code (random numbers, dates, routing, storage)
 - `src/common/<game>/`: every rule of one game as plain functions, with its types, constants and save logic, e.g. `src/common/fiveLetters/`
-- `src/assets/`: bundled data such as word lists and puzzle banks
-- `public/sudoku/<mode>_<level>/<chunk>.txt`: the Sudoku bank, 250 puzzles per chunk, fetched one chunk at a time so a game loads only what it needs
+- `puzzles-data/`: a git submodule ([joclegg/puzzles-data](https://github.com/joclegg/puzzles-data)) holding every puzzle bank and word list, shared with puzzles-android. Import its files with the `@data/` alias, e.g. `@data/slideout/easy.txt?raw`. Clone with `--recurse-submodules`, or run `git submodule update --init`. Change banks in that repository, then bump the submodule here.
+- `src/assets/`: data used only by tests, such as `sudoku-samples/`
+- `public/sudoku/<mode>_<level>/<chunk>.txt`: the Sudoku bank, 250 puzzles per chunk, fetched one chunk at a time so a game loads only what it needs. Built from `puzzles-data/sudoku/` by `scripts/sudokuChunks.mjs` before `dev` and `build`; not committed.
 - `src/views/AppView/`: the hash router that picks the view
 - `src/views/<Game><Screen>View/`: one view per game screen, e.g. `FiveLettersHomeView`, `FiveLettersGameView`, `FiveLettersStatsView`, `FiveLettersSettingsView`
 - `__tests__/`: Vitest unit tests, next to the files they test

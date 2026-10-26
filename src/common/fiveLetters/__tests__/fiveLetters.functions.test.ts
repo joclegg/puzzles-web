@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import answersText from '@/assets/words/answers.txt?raw'
-import guessesText from '@/assets/words/guesses.txt?raw'
+import answersText from '@data/words/answers.txt?raw'
+import guessesText from '@data/words/guesses.txt?raw'
 import { addDays } from '@/common/date.functions'
 import { MARK, REJECTION } from '@/common/fiveLetters/fiveLetters.constants'
 import {
