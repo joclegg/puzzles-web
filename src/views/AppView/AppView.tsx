@@ -4,6 +4,7 @@ import { FiveLettersView } from '@/views/FiveLettersView/FiveLettersView'
 import { KakuroView } from '@/views/KakuroView/KakuroView'
 import { LauncherView } from '@/views/LauncherView/LauncherView'
 import { SlideOutView } from '@/views/SlideOutView/SlideOutView'
+import { SolitaireView } from '@/views/SolitaireView/SolitaireView'
 import { SightlinesView } from '@/views/SightlinesView/SightlinesView'
 import { TwoToneView } from '@/views/TwoToneView/TwoToneView'
 import { WordWheelView } from '@/views/WordWheelView/WordWheelView'
@@ -28,6 +29,9 @@ export function AppView() {
   }
   if (game === GAME_ROUTE.WORD_WHEEL) {
     return <WordWheelView screen={screen} id={id} />
+  }
+  if (game === GAME_ROUTE.SOLITAIRE) {
+    return <SolitaireView screen={screen} id={id} />
   }
   return <LauncherView />
 }

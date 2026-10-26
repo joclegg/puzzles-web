@@ -6,6 +6,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-sol-felt: var(--sol-felt);
+  --color-sol-empty-pile: var(--sol-empty-pile);
+  --color-sol-card-face: var(--sol-card-face);
+  --color-sol-card-edge: var(--sol-card-edge);
+  --color-sol-card-back: var(--sol-card-back);
+  --color-sol-card-back-pattern: var(--sol-card-back-pattern);
+  --color-sol-black-suit: var(--sol-black-suit);
+  --color-sol-red-suit: var(--sol-red-suit);
+  --color-sol-selected: var(--sol-selected);
+  --color-sol-on-felt: var(--sol-on-felt);
   --color-ww-cell: var(--ww-cell);
   --color-ww-cell-found: var(--ww-cell-found);
   --color-ww-cell-hinted: var(--ww-cell-hinted);
@@ -102,6 +112,16 @@
 }
 
 :root {
+  --sol-felt: #2e6b4a;
+  --sol-empty-pile: #ffffff33;
+  --sol-card-face: #ffffff;
+  --sol-card-edge: #a7afbb;
+  --sol-card-back: #1565d8;
+  --sol-card-back-pattern: #8ec0fa;
+  --sol-black-suit: #14181f;
+  --sol-red-suit: #c62828;
+  --sol-selected: #8ec0fa;
+  --sol-on-felt: #f1f5f2;
   --ww-cell: #e6e9ee;
   --ww-cell-found: #1565d8;
   --ww-cell-hinted: #bcd9fc;
@@ -190,6 +210,16 @@
 }
 
 .dark {
+  --sol-felt: #15301f;
+  --sol-empty-pile: #ffffff26;
+  --sol-card-face: #e3e6ea;
+  --sol-card-edge: #555e6c;
+  --sol-card-back: #2f5e99;
+  --sol-card-back-pattern: #7db5ff;
+  --sol-black-suit: #121418;
+  --sol-red-suit: #b3261e;
+  --sol-selected: #7db5ff;
+  --sol-on-felt: #dde1e7;
   --ww-cell: #2a2e35;
   --ww-cell-found: #2f5e99;
   --ww-cell-hinted: #244a78;

@@ -53,6 +53,7 @@ Rules marked (lint) are enforced by `npm run lint`.
 - MUST name component and view folders and files in PascalCase, matching the folder, e.g. `ThemeToggle/ThemeToggle.hooks.ts`. (lint)
 - MUST name files in `src/common` in camelCase, e.g. `random.types.ts`, or in a camelCase game folder, e.g. `fiveLetters/fiveLetters.functions.ts`. (lint)
 - MUST split code by kind using file suffixes: `.tsx` for the component, then `.types.ts`, `.constants.ts`, `.functions.ts` and `.hooks.ts`. (lint)
+- MAY add a `.worker.ts` Web Worker in `src/common/<game>/` for slow searches, such as the Solitaire solver, so the page stays responsive. (lint)
 - MUST define exactly one component per file. (lint)
 - MUST NOT define components inside other components. (lint)
 

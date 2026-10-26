@@ -339,9 +339,11 @@ function commonFileProblem(segments) {
   const file = segments.at(-1)
   const [name, ...suffix] = file.split('.')
   if (segments.length === 1) {
-    return CAMEL_CASE.test(name) && KIND_SUFFIX.test(`.${suffix.join('.')}`)
+    return CAMEL_CASE.test(name) &&
+      (KIND_SUFFIX.test(`.${suffix.join('.')}`) ||
+        suffix.join('.') === 'worker.ts')
       ? null
-      : `${file} must be camelCase <name>.<types|constants|functions|hooks>.ts.`
+      : `${file} must be camelCase <name>.<types|constants|functions|hooks|worker>.ts.`
   }
   if (segments.length === 2 && segments[0] === '__tests__') {
     return CAMEL_CASE.test(name) && suffix.join('.') === 'functions.test.ts'
