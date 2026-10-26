@@ -3,6 +3,7 @@ import { expect, type Locator, type Page } from '@playwright/test'
 export class FiveLettersPage {
   readonly page: Page
   readonly dailyButton: Locator
+  readonly nytButton: Locator
   readonly status: Locator
   readonly dialog: Locator
   readonly guesses: Locator
@@ -11,6 +12,7 @@ export class FiveLettersPage {
   constructor(page: Page) {
     this.page = page
     this.dailyButton = page.getByRole('button', { name: /Today's word/ })
+    this.nytButton = page.getByRole('button', { name: /NY Times daily/ })
     this.status = page.getByRole('status')
     this.dialog = page.getByRole('dialog')
     this.guesses = page.getByRole('grid', { name: 'Guesses' })
@@ -24,6 +26,25 @@ export class FiveLettersPage {
 
   async openDaily() {
     await this.dailyButton.click()
+    await expect(this.key('ENTER')).toBeVisible()
+  }
+
+  async fakeNytWord(word: string) {
+    await this.page.route('https://r.jina.ai/**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'text/plain',
+        body: `Markdown Content:\n{"solution":"${word}"}`,
+      }),
+    )
+  }
+
+  async failNytWord() {
+    await this.page.route('https://r.jina.ai/**', (route) => route.abort())
+  }
+
+  async openNytDaily() {
+    await this.nytButton.click()
     await expect(this.key('ENTER')).toBeVisible()
   }
 
@@ -79,6 +100,12 @@ export class FiveLettersPage {
 
   async expectStat({ label, value }: { label: string; value: string }) {
     await expect(this.page.getByLabel(label, { exact: true })).toHaveText(value)
+  }
+
+  async expectNytUnavailable() {
+    await expect(this.page.getByRole('alert')).toContainText(
+      "Couldn't reach the New York Times",
+    )
   }
 
   async expectScreenshot(name: string) {

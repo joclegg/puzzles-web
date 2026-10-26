@@ -2,6 +2,8 @@ import { MAX_GUESSES } from '@/common/fiveLetters/fiveLetters.constants'
 import {
   DAILY_PREFIX,
   GAME_STATUS,
+  MONTHS,
+  NYT_PREFIX,
   PRACTICE_SLOT,
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import type {
@@ -41,6 +43,19 @@ export function isDaily(wordId: string): boolean {
   return wordId.startsWith(DAILY_PREFIX)
 }
 
+export function isNyt(wordId: string): boolean {
+  return wordId.startsWith(NYT_PREFIX)
+}
+
+export function nytId(date: string): string {
+  return `${NYT_PREFIX}${date}`
+}
+
+export function nytLabel(wordId: string): string {
+  const [, month, day] = wordId.slice(NYT_PREFIX.length).split('-')
+  return `NY Times · ${Number(day)} ${MONTHS[Number(month) - 1]}`
+}
+
 export function saveGuesses({
   games,
   id,
@@ -54,7 +69,7 @@ export function saveGuesses({
 }
 
 export function slotOf(wordId: string): string {
-  return isDaily(wordId) ? wordId : PRACTICE_SLOT
+  return isDaily(wordId) || isNyt(wordId) ? wordId : PRACTICE_SLOT
 }
 
 export function startGame({

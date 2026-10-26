@@ -1,10 +1,17 @@
-import { randomWord } from '@/common/fiveLetters/fiveLetters.functions'
+import {
+  nytSolution,
+  randomWord,
+} from '@/common/fiveLetters/fiveLetters.functions'
 import {
   DEFAULT_SETTINGS,
   GAMES_KEY,
+  NYT_PROXY_URL,
   SETTINGS_KEY,
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
-import { startGame } from '@/common/fiveLetters/fiveLettersSaves.functions'
+import {
+  nytId,
+  startGame,
+} from '@/common/fiveLetters/fiveLettersSaves.functions'
 import type {
   FiveLettersSettings,
   SavedGame,
@@ -32,7 +39,12 @@ export function useFiveLettersGames() {
       key: SETTINGS_KEY,
       fallback: DEFAULT_SETTINGS,
     })
-    const created = startGame({ games, ref, hardMode, now: Date.now() })
+    const created = startGame({
+      games: readStored<SavedGame[]>({ key: GAMES_KEY, fallback: [] }),
+      ref,
+      hardMode,
+      now: Date.now(),
+    })
     setGames(() => created.games)
     openGame(created.game)
   }
@@ -45,5 +57,30 @@ export function useFiveLettersGames() {
     })
   }
 
-  return { games, setGames, openGame, startAndOpen, startPractice }
+  async function startNytDaily(date: string): Promise<boolean> {
+    const answer = await fetchNytWord(date)
+    if (answer === null) {
+      return false
+    }
+    startAndOpen({ id: nytId(date), answer })
+    return true
+  }
+
+  return {
+    games,
+    setGames,
+    openGame,
+    startAndOpen,
+    startPractice,
+    startNytDaily,
+  }
+}
+
+async function fetchNytWord(date: string): Promise<string | null> {
+  try {
+    const response = await fetch(`${NYT_PROXY_URL}${date}.json`)
+    return response.ok ? nytSolution(await response.text()) : null
+  } catch {
+    return null
+  }
 }

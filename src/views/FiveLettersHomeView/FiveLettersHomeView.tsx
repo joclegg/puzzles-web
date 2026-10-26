@@ -1,5 +1,6 @@
 import { useFiveLettersGames } from '@/common/fiveLetters/fiveLetters.hooks'
 import { BarChart3, Settings } from 'lucide-react'
+import { useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
 import {
@@ -10,6 +11,8 @@ import { GAME_STATUS } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
   dailyId,
   isDaily,
+  isNyt,
+  nytId,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
 import { WORDS } from '@/common/fiveLetters/fiveLettersWords.constants'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
@@ -23,13 +26,35 @@ import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { DAILY_RESULT_LABEL } from '@/views/FiveLettersHomeView/FiveLettersHomeView.constants'
 
 export function FiveLettersHomeView() {
-  const { games, openGame, startAndOpen, startPractice } = useFiveLettersGames()
+  const { games, openGame, startAndOpen, startPractice, startNytDaily } =
+    useFiveLettersGames()
+  const [fetching, setFetching] = useState(false)
+  const [nytUnavailable, setNytUnavailable] = useState(false)
   const today = todayIso()
   const daily = games.findLast((game) => game.wordId === dailyId(today))
+  const nyt = games.findLast(
+    (game) =>
+      game.wordId === nytId(today) && game.status !== GAME_STATUS.ABANDONED,
+  )
   const practice = games.findLast(
-    (game) => !isDaily(game.wordId) && game.status === GAME_STATUS.IN_PROGRESS,
+    (game) =>
+      !isDaily(game.wordId) &&
+      !isNyt(game.wordId) &&
+      game.status === GAME_STATUS.IN_PROGRESS,
   )
   const dailyResult = daily ? DAILY_RESULT_LABEL[daily.status] : null
+  const nytResult = nyt ? DAILY_RESULT_LABEL[nyt.status] : null
+
+  async function openNyt() {
+    if (nyt) {
+      openGame(nyt)
+      return
+    }
+    setFetching(true)
+    const started = await startNytDaily(today)
+    setFetching(false)
+    setNytUnavailable(!started)
+  }
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-4 px-4 pb-8">
@@ -66,6 +91,23 @@ export function FiveLettersHomeView() {
           <span className="text-xs text-muted-foreground">{dailyResult}</span>
         )}
       </Button>
+      <Button
+        variant={BUTTON_VARIANT.OUTLINE}
+        className="h-auto flex-col py-4 text-base"
+        disabled={fetching}
+        onClick={() => void openNyt()}
+      >
+        <span>NY Times daily</span>
+        {nytResult && (
+          <span className="text-xs text-muted-foreground">{nytResult}</span>
+        )}
+      </Button>
+      {nytUnavailable && (
+        <p role="alert" className="text-sm text-destructive">
+          Couldn't reach the New York Times. Check your connection and try
+          again.
+        </p>
+      )}
       <div className="flex gap-2">
         <Button
           variant={BUTTON_VARIANT.OUTLINE}
