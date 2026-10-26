@@ -6,6 +6,7 @@ import { LauncherView } from '@/views/LauncherView/LauncherView'
 import { SlideOutView } from '@/views/SlideOutView/SlideOutView'
 import { SolitaireView } from '@/views/SolitaireView/SolitaireView'
 import { SightlinesView } from '@/views/SightlinesView/SightlinesView'
+import { SudokuView } from '@/views/SudokuView/SudokuView'
 import { TwoToneView } from '@/views/TwoToneView/TwoToneView'
 import { WordWheelView } from '@/views/WordWheelView/WordWheelView'
 
@@ -32,6 +33,9 @@ export function AppView() {
   }
   if (game === GAME_ROUTE.SOLITAIRE) {
     return <SolitaireView screen={screen} id={id} />
+  }
+  if (game === GAME_ROUTE.SUDOKU) {
+    return <SudokuView screen={screen} id={id} />
   }
   return <LauncherView />
 }

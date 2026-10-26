@@ -1,0 +1,174 @@
+import { describe, expect, it } from 'vitest'
+
+import {
+  DIFFICULTY,
+  GAME_MODE,
+  MISTAKE_CHECK,
+} from '@/common/sudoku/sudoku.constants'
+import { MEDAL, SUDOKU_STATUS } from '@/common/sudoku/sudokuSaves.constants'
+import {
+  bestTimes,
+  dailyDays,
+  finishSudoku,
+  startSudoku,
+  sudokuTitle,
+} from '@/common/sudoku/sudokuSaves.functions'
+import type { SavedSudoku, SudokuRef } from '@/common/sudoku/sudokuSaves.types'
+
+const PUZZLE = `${'0'.repeat(81)}|${'1'.repeat(81)}|`
+
+function playAndFinish({
+  games,
+  patch,
+  finishedAt,
+  elapsedMs = 1000,
+}: {
+  games: SavedSudoku[]
+  patch: Partial<SudokuRef>
+  finishedAt: number
+  elapsedMs?: number
+}) {
+  const started = startSudoku({
+    games,
+    ref: ref(patch),
+    mistakeCheck: MISTAKE_CHECK.SHOW_WRONG,
+    now: finishedAt - 1,
+  })
+  return finishSudoku({
+    games: started.games,
+    id: started.game.id,
+    status: SUDOKU_STATUS.COMPLETED,
+    patch: { elapsedMs },
+    now: finishedAt,
+  })
+}
+
+function ref(patch: Partial<SudokuRef>): SudokuRef {
+  return {
+    puzzleId: 'classic_easy:1',
+    mode: GAME_MODE.CLASSIC,
+    difficulty: DIFFICULTY.EASY,
+    custom: false,
+    puzzle: PUZZLE,
+    ...patch,
+  }
+}
+
+describe('startSudoku', () => {
+  it('abandons the game of the same level and keeps the daily and custom ones', () => {
+    const daily = startSudoku({
+      games: [],
+      ref: ref({ puzzleId: 'daily_classic:2026-10-25' }),
+      mistakeCheck: MISTAKE_CHECK.OFF,
+      now: 1,
+    })
+    const custom = startSudoku({
+      games: daily.games,
+      ref: ref({ puzzleId: 'custom', custom: true }),
+      mistakeCheck: MISTAKE_CHECK.OFF,
+      now: 2,
+    })
+    const first = startSudoku({
+      games: custom.games,
+      ref: ref({}),
+      mistakeCheck: MISTAKE_CHECK.OFF,
+      now: 3,
+    })
+
+    const second = startSudoku({
+      games: first.games,
+      ref: ref({ puzzleId: 'classic_easy:2' }),
+      mistakeCheck: MISTAKE_CHECK.OFF,
+      now: 4,
+    })
+
+    expect(second.games.map((game) => game.status)).toEqual([
+      SUDOKU_STATUS.IN_PROGRESS,
+      SUDOKU_STATUS.IN_PROGRESS,
+      SUDOKU_STATUS.ABANDONED,
+      SUDOKU_STATUS.IN_PROGRESS,
+    ])
+  })
+})
+
+describe('bestTimes', () => {
+  it('leaves custom puzzles out of best times', () => {
+    const first = playAndFinish({
+      games: [],
+      patch: {},
+      finishedAt: 10,
+      elapsedMs: 5000,
+    })
+    const custom = playAndFinish({
+      games: first.games,
+      patch: { puzzleId: 'custom', custom: true },
+      finishedAt: 20,
+      elapsedMs: 1000,
+    })
+
+    const easy = bestTimes(custom.games).find(
+      (it) =>
+        it.mode === GAME_MODE.CLASSIC && it.difficulty === DIFFICULTY.EASY,
+    )
+
+    expect([first.newBest, easy?.bestMs, easy?.completed]).toEqual([
+      true,
+      5000,
+      1,
+    ])
+  })
+})
+
+describe('dailyDays', () => {
+  it.each([
+    [[GAME_MODE.CLASSIC], MEDAL.SILVER],
+    [[GAME_MODE.CLASSIC, GAME_MODE.KILLER], MEDAL.GOLD],
+  ])('gives a medal for %s done on the day', (modes, medal) => {
+    const games = modes.reduce<SavedSudoku[]>(
+      (all, mode) =>
+        playAndFinish({
+          games: all,
+          patch: { mode, puzzleId: `daily_${mode}:2026-10-25` },
+          finishedAt: 100,
+        }).games,
+      [],
+    )
+
+    const day = dailyDays({ games, dayOf: () => '2026-10-25' }).get(
+      '2026-10-25',
+    )
+
+    expect(day?.medal).toBe(medal)
+  })
+
+  it('marks a daily done on a later day', () => {
+    const { games } = playAndFinish({
+      games: [],
+      patch: { puzzleId: 'daily_classic:2026-10-25' },
+      finishedAt: 100,
+    })
+
+    const day = dailyDays({ games, dayOf: () => '2026-10-27' }).get(
+      '2026-10-25',
+    )
+
+    expect([day?.medal, day?.doneLate]).toEqual([MEDAL.NONE, true])
+  })
+})
+
+describe('sudokuTitle', () => {
+  it.each([
+    [ref({}), 'Classic · Easy'],
+    [
+      ref({
+        puzzleId: 'daily_killer:2026-10-25',
+        mode: GAME_MODE.KILLER,
+        difficulty: DIFFICULTY.HARD,
+      }),
+      'Daily killer · 25 Oct · Hard',
+    ],
+    [ref({ custom: true, difficulty: null }), 'Classic · Custom'],
+  ])('names the game', (game, title) => {
+    expect(sudokuTitle(game)).toBe(title)
+  })
+})
