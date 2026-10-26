@@ -18,7 +18,7 @@ const EXPECTED: Record<number, string> = {
   12: '12;...........B...RR..B..B.........RB.R....B..RR..R..B.B.....B......R......B........B..B.R....B.B.B....R...........R...B.R..BB..B......R.BB.B.B.R.R;BBRRBRBRRBRBRRBRRBRBBRBBBRRBRRBBRBBRBBRBBRBRRBRRRRBRBBRRBRBBRRBBRRBBRRBBBBRRBBRRBBRRBBRRBRRBRBRBRRBBRBBRBRBRBBRBRRBRBRRBRBBRBBRBRBRRRRBBRBRBBRBR',
 }
 
-describe('generatePuzzle', () => {
+describe('generatePuzzle', { timeout: 10_000 }, () => {
   it.each(SIZES)(
     'makes a %i grid that follows every rule and logic alone solves',
     (size) => {

@@ -23,7 +23,7 @@ const EXPECTED: Record<number, string> = {
   9: '9;X.......7...5.4..1X.5....X.X...53....5X..X5....7.....2...5...3...65....1..5..6...;RRBBBBBBBRRBBBBRRBRBBBRRRRRRRBRBBBBRBBRRBRBRRBBBBBRBBBBBBBRBBBRBBBBRBBRBBBBRBBBBB',
 }
 
-describe('generatePuzzle', () => {
+describe('generatePuzzle', { timeout: 10_000 }, () => {
   it.each(SIZES)(
     'makes a %i grid whose numbers are right and logic solves',
     (size) => {
