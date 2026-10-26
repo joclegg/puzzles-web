@@ -1,6 +1,7 @@
 import { test as base } from '@playwright/test'
 
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
+import { KakuroPage } from '@e2e/kakuroPage'
 import { LauncherPage } from '@e2e/launcherPage'
 import { SightlinesPage } from '@e2e/sightlinesPage'
 import { TwoTonePage } from '@e2e/twoTonePage'
@@ -12,6 +13,7 @@ export const test = base.extend<{
   fiveLettersPage: FiveLettersPage
   twoTonePage: TwoTonePage
   sightlinesPage: SightlinesPage
+  kakuroPage: KakuroPage
 }>({
   page: async ({ page }, use) => {
     await page.clock.setFixedTime(FIXED_NOW)
@@ -36,6 +38,11 @@ export const test = base.extend<{
     const sightlinesPage = new SightlinesPage(page)
     await sightlinesPage.open()
     await use(sightlinesPage)
+  },
+  kakuroPage: async ({ page }, use) => {
+    const kakuroPage = new KakuroPage(page)
+    await kakuroPage.open()
+    await use(kakuroPage)
   },
 })
 

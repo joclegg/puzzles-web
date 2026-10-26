@@ -1,6 +1,7 @@
 import { GAME_ROUTE } from '@/common/route.constants'
 import { routeHash } from '@/common/route.functions'
 import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
+import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
 import { GameCard } from '@/components/GameCard/GameCard'
 import { SightlinesIcon } from '@/components/SightlinesIcon/SightlinesIcon'
 import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle'
@@ -30,6 +31,12 @@ export function LauncherView() {
         detail="Guess the word in six tries, a new one every day"
         href={routeHash([GAME_ROUTE.FIVE_LETTERS])}
         icon={<FiveLettersIcon />}
+      />
+      <GameCard
+        title="Kakuro"
+        detail="Cross sums: runs of different digits that add up"
+        href={routeHash([GAME_ROUTE.KAKURO])}
+        icon={<KakuroIcon />}
       />
     </main>
   )

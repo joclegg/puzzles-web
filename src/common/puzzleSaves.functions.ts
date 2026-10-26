@@ -68,6 +68,7 @@ export function solvePuzzle({
   elapsedMs,
   changes,
   hints,
+  mistakes = 0,
   now,
 }: {
   games: SavedPuzzle[]
@@ -75,6 +76,7 @@ export function solvePuzzle({
   elapsedMs: number
   changes: string
   hints: number
+  mistakes?: number
   now: number
 }): { games: SavedPuzzle[]; newBest: boolean } {
   const solved = games.find((game) => game.id === id)
@@ -94,6 +96,7 @@ export function solvePuzzle({
         elapsedMs,
         changes,
         hints,
+        mistakes,
         status: PUZZLE_STATUS.SOLVED,
         finishedAt: now,
       },
@@ -126,6 +129,7 @@ export function startPuzzle({
     changes: '',
     elapsedMs: 0,
     hints: 0,
+    mistakes: 0,
     status: PUZZLE_STATUS.IN_PROGRESS,
     startedAt: now,
     finishedAt: null,

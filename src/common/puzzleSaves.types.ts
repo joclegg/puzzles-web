@@ -16,6 +16,7 @@ export interface SavedPuzzle {
   changes: string
   elapsedMs: number
   hints: number
+  mistakes: number
   status: PuzzleStatus
   startedAt: number
   finishedAt: number | null
