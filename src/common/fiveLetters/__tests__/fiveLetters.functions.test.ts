@@ -8,12 +8,15 @@ import {
   createWords,
   dailyWord,
   dayNumber,
+  hintLetter,
   isLost,
+  isOver,
   isWon,
   letterMarks,
   newGame,
   nytSolution,
   randomWord,
+  revealWord,
   score,
   shareText,
   submit,
@@ -208,5 +211,21 @@ describe('an answer missing from the word list', () => {
     )
 
     expect(isWon(submit({ game, words: WORDS }))).toBe(true)
+  })
+})
+
+describe('hintLetter', () => {
+  it('gives the first letter not yet found in place', () => {
+    const game = newGame({ answer: 'crane', guesses: ['cloud'] })
+
+    expect(hintLetter(game)).toEqual({ index: 1, letter: 'r' })
+  })
+})
+
+describe('revealWord', () => {
+  it('ends the game as lost', () => {
+    const game = revealWord(newGame({ answer: 'crane', guesses: ['cloud'] }))
+
+    expect([isOver(game), isLost(game)]).toEqual([true, true])
   })
 })

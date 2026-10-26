@@ -4,6 +4,7 @@ import {
   boardOf,
   isSolved,
   newGame,
+  revealSolution,
   slide,
   undo,
   withHint,
@@ -116,5 +117,13 @@ describe('encodeMoves', () => {
     ]
 
     expect(decodeMoves(encodeMoves(moves))).toEqual(moves)
+  })
+})
+
+describe('revealSolution', () => {
+  it('plays the shortest path to the end', () => {
+    const game = newGame({ puzzle: PUZZLE })
+
+    expect(isSolved(revealSolution(game))).toBe(true)
   })
 })

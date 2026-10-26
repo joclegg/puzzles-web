@@ -35,6 +35,24 @@ export function puzzleSlot({
   return isDailyPuzzle(puzzleId) ? puzzleId : `size_${size}`
 }
 
+export function revealPuzzle({
+  games,
+  id,
+  elapsedMs,
+  now,
+}: {
+  games: SavedPuzzle[]
+  id: number
+  elapsedMs: number
+  now: number
+}): SavedPuzzle[] {
+  return updatePuzzle({
+    games,
+    id,
+    patch: { elapsedMs, status: PUZZLE_STATUS.REVEALED, finishedAt: now },
+  })
+}
+
 export function sizeStats({
   games,
   sizes,

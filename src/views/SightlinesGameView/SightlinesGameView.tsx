@@ -1,9 +1,14 @@
+import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { formatDuration } from '@/common/format.functions'
-import { CircleHelp, Lightbulb, Undo2 } from 'lucide-react'
+import { Lightbulb, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { useGameTimer } from '@/common/gameTimer.hooks'
-import { solvePuzzle, updatePuzzle } from '@/common/puzzleSaves.functions'
+import {
+  revealPuzzle,
+  solvePuzzle,
+  updatePuzzle,
+} from '@/common/puzzleSaves.functions'
 import { puzzleTitle } from '@/common/puzzleTitle.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
@@ -49,6 +54,21 @@ import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SightlinesBoard } from '@/components/SightlinesBoard/SightlinesBoard'
 import { SightlinesColourPicker } from '@/components/SightlinesColourPicker/SightlinesColourPicker'
 
+const TUTORIAL = [
+  {
+    target: '[aria-label="Board"]',
+    text: 'Tap a dot to cycle it blue, red, empty. A number says how many blue dots it can see along its row and column; red dots block the view.',
+  },
+  {
+    target: '[aria-label="Show a hint"]',
+    text: 'Stuck? The bulb points at the next step and explains it.',
+  },
+  {
+    target: '[aria-label="More"]',
+    text: 'Restart, show the solution and settings live in this menu.',
+  },
+]
+
 export function SightlinesGameView({ id }: { id: number }) {
   const { games, setGames, startRandom } = useSightlinesGames()
   const saved = games.find((game) => game.id === id)
@@ -66,7 +86,7 @@ export function SightlinesGameView({ id }: { id: number }) {
   )
   const [hints, setHints] = useState(saved?.hints ?? 0)
   const [colour, setColour] = useState<Dot>(DOT.BLUE)
-  const [rulesOpen, setRulesOpen] = useState(false)
+  const [revealing, setRevealing] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const solved = game !== null && isSolved(game)
   const elapsedMs = useGameTimer({
@@ -149,6 +169,22 @@ export function SightlinesGameView({ id }: { id: number }) {
     persist({ next, hintCount: hints + 1 })
   }
 
+  function onReveal() {
+    if (!game || !saved) {
+      return
+    }
+    setGame({ ...game, grid: game.puzzle.solution, hint: null })
+    setRevealing(false)
+    setGames((current) =>
+      revealPuzzle({
+        games: current,
+        id: saved.id,
+        elapsedMs: elapsedMs(),
+        now: Date.now(),
+      }),
+    )
+  }
+
   function onRestart() {
     if (!game || solved) {
       return
@@ -175,25 +211,42 @@ export function SightlinesGameView({ id }: { id: number }) {
           >
             <Undo2 className="size-5" />
           </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show a hint"
-            disabled={solved}
-            onClick={onHint}
-          >
-            <Lightbulb className="size-5" />
-          </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show the rules"
-            onClick={() => setRulesOpen(true)}
-          >
-            <CircleHelp className="size-5" />
-          </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a hint"
+              disabled={solved}
+              onClick={onHint}
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
+          {settings.showTutorial && (
+            <HowToPlay steps={TUTORIAL}>
+              <p>
+                Fill every dot blue or red. Tap a dot to cycle it: blue, red,
+                empty.
+              </p>
+              <p>
+                Blue dots can see other blue dots in their own row and column.
+                Red dots block the view.
+              </p>
+              <p>A number says how many blue dots that dot can see.</p>
+              <p>Every blue dot must see at least one other.</p>
+            </HowToPlay>
+          )}
           <MoreMenu
             items={[
               { label: 'Restart this puzzle', onClick: onRestart },
               { label: 'New puzzle', onClick: () => startRandom(saved.size) },
+              ...(settings.allowReveal && !solved
+                ? [
+                    {
+                      label: 'Show solution',
+                      onClick: () => setRevealing(true),
+                    },
+                  ]
+                : []),
               {
                 label: 'Settings',
                 onClick: () =>
@@ -242,20 +295,19 @@ export function SightlinesGameView({ id }: { id: number }) {
         </p>
       )}
       <AppDialog
-        open={rulesOpen}
-        title="Rules"
-        onClose={() => setRulesOpen(false)}
-        actions={<Button onClick={() => setRulesOpen(false)}>Got it</Button>}
+        open={revealing}
+        title="Show the solution?"
+        onClose={() => setRevealing(false)}
+        actions={
+          <>
+            <Button onClick={() => setRevealing(false)}>Cancel</Button>
+            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onReveal}>
+              Show solution
+            </Button>
+          </>
+        }
       >
-        <p>
-          Fill every dot blue or red. Tap a dot to cycle it: blue, red, empty.
-        </p>
-        <p>
-          Blue dots can see other blue dots in their own row and column. Red
-          dots block the view.
-        </p>
-        <p>A number says how many blue dots that dot can see.</p>
-        <p>Every blue dot must see at least one other.</p>
+        <p>This ends the puzzle. It won't count towards best times.</p>
       </AppDialog>
       <AppDialog
         open={result !== null}

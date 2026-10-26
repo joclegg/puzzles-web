@@ -4,6 +4,7 @@ import type {
   CombinationLine,
   InputMode,
   KakuroGame,
+  KakuroHint,
   MistakeCheck,
   Puzzle,
   Run,
@@ -152,6 +153,20 @@ export function newGame({
   }
 }
 
+export function placeHint({
+  game,
+  hint,
+}: {
+  game: KakuroGame
+  hint: KakuroHint
+}): KakuroGame {
+  return place({
+    game: { ...game, notesMode: false, selected: hint.cell, rejected: null },
+    cell: hint.cell,
+    digit: hint.digit,
+  })
+}
+
 export function redo(game: KakuroGame): KakuroGame {
   const next = game.undone.at(-1)
   if (next === undefined || isSolved(game)) {
@@ -200,6 +215,16 @@ export function restart(game: KakuroGame): KakuroGame {
     mistakeCheck: game.mistakeCheck,
     autoRemoveNotes: game.autoRemoveNotes,
   })
+}
+
+export function revealSolution(game: KakuroGame): KakuroGame {
+  return {
+    ...game,
+    values: [...game.puzzle.solution],
+    notes: game.notes.map(() => 0),
+    selected: null,
+    rejected: null,
+  }
 }
 
 export function runCellsOf(game: KakuroGame): Set<number> {

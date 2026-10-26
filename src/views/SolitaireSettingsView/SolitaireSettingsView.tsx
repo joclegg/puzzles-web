@@ -1,3 +1,4 @@
+import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { GAME_ROUTE } from '@/common/route.constants'
 import {
   DRAW_MODE,
@@ -70,6 +71,12 @@ export function SolitaireSettingsView() {
         label="Show the move counter"
         checked={settings.showMoveCount}
         onChange={(showMoveCount) => set({ showMoveCount })}
+      />
+      <AssistSettings
+        assists={settings}
+        hintStyles
+        reveal={false}
+        onChange={set}
       />
     </main>
   )

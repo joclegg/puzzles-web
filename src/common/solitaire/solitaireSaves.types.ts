@@ -1,3 +1,4 @@
+import type { Assists } from '@/common/assists.types'
 import type {
   BuildOrder,
   DrawMode,
@@ -30,7 +31,7 @@ export interface SavedDeal {
   finishedAt: number | null
 }
 
-export interface SolitaireSettings {
+export interface SolitaireSettings extends Assists {
   drawMode: DrawMode
   reverse: boolean
   oneTapMove: boolean

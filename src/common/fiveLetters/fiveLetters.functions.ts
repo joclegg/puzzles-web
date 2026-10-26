@@ -61,8 +61,17 @@ export function guessMarks(game: FiveLettersGame): Mark[][] {
   return game.guesses.map((guess) => score({ guess, answer: game.answer }))
 }
 
+export function hintLetter(
+  game: FiveLettersGame,
+): { index: number; letter: string } | null {
+  const index = [...game.answer].findIndex(
+    (letter, i) => !game.guesses.some((guess) => guess[i] === letter),
+  )
+  return index === -1 ? null : { index, letter: game.answer[index] }
+}
+
 export function isLost(game: FiveLettersGame): boolean {
-  return !isWon(game) && game.guesses.length === MAX_GUESSES
+  return !isWon(game) && (game.revealed || game.guesses.length === MAX_GUESSES)
 }
 
 export function isOver(game: FiveLettersGame): boolean {
@@ -92,12 +101,14 @@ export function newGame({
   answer,
   guesses = [],
   hardMode = false,
+  revealed = false,
 }: {
   answer: string
   guesses?: string[]
   hardMode?: boolean
+  revealed?: boolean
 }): FiveLettersGame {
-  return { answer, guesses, typing: '', hardMode, rejection: null }
+  return { answer, guesses, typing: '', hardMode, rejection: null, revealed }
 }
 
 export function nytSolution(text: string): string | null {
@@ -108,6 +119,10 @@ export function nytSolution(text: string): string | null {
 
 export function randomWord({ words, seed }: { words: Words; seed: bigint }) {
   return randomItem({ items: words.answers, random: createRandom(seed) })
+}
+
+export function revealWord(game: FiveLettersGame): FiveLettersGame {
+  return { ...game, typing: '', rejection: null, revealed: true }
 }
 
 export function score({

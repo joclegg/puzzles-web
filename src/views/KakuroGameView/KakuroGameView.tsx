@@ -1,5 +1,6 @@
+import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import {
-  CircleHelp,
+  Lightbulb,
   Eraser,
   Pencil,
   Redo2,
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
+import { HINT_STYLE } from '@/common/assists.constants'
 import { formatDuration } from '@/common/format.functions'
 import { useGameTimer } from '@/common/gameTimer.hooks'
 import { DIGITS, INPUT_MODE } from '@/common/kakuro/kakuro.constants'
@@ -20,9 +22,11 @@ import {
   isSolved,
   mark,
   newGame,
+  placeHint,
   redo,
   replay,
   restart,
+  revealSolution,
   runCellsOf,
   shownWrongCells,
   tapCell,
@@ -31,7 +35,8 @@ import {
   undo,
 } from '@/common/kakuro/kakuro.functions'
 import { useKakuroGames } from '@/common/kakuro/kakuro.hooks'
-import type { KakuroGame } from '@/common/kakuro/kakuro.types'
+import type { KakuroGame, KakuroHint } from '@/common/kakuro/kakuro.types'
+import { findHint } from '@/common/kakuro/kakuroHint.functions'
 import { decodePuzzle } from '@/common/kakuro/kakuroPuzzle.functions'
 import {
   DEFAULT_SETTINGS,
@@ -55,8 +60,33 @@ import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { NumberPad } from '@/components/NumberPad/NumberPad'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
+const TUTORIAL = [
+  {
+    target: '[aria-label="Board"]',
+    text: 'Each white cell takes a digit from 1 to 9. The clue above a diagonal is the sum of the run to its right; below it, the run beneath.',
+  },
+  {
+    target: '[aria-label="Number pad"]',
+    text: 'Tap a cell, then a number. The pencil adds notes, the eraser clears a cell.',
+  },
+  {
+    target: '[aria-label="Show a hint"]',
+    text: 'Stuck? The bulb points at a cell you can work out and says why.',
+  },
+  {
+    target: '[aria-label="More"]',
+    text: 'Restart, show the solution and settings live in this menu.',
+  },
+]
+
 export function KakuroGameView({ id }: { id: number }) {
-  const { games, startRandom, saveProgress, finish } = useKakuroGames()
+  const {
+    games,
+    startRandom,
+    saveProgress,
+    finish,
+    reveal: revealSaved,
+  } = useKakuroGames()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<KakuroSettings>({
     key: SETTINGS_KEY,
@@ -73,7 +103,8 @@ export function KakuroGameView({ id }: { id: number }) {
         }
       : null,
   )
-  const [rulesOpen, setRulesOpen] = useState(false)
+  const [hint, setHint] = useState<KakuroHint | null>(null)
+  const [revealing, setRevealing] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const solved = game !== null && isSolved(game)
   const elapsedMs = useGameTimer({
@@ -104,6 +135,7 @@ export function KakuroGameView({ id }: { id: number }) {
     }
     const next = change(current)
     setGame(next)
+    setHint(null)
     if (
       next.changes === current.changes &&
       next.mistakes === current.mistakes
@@ -125,6 +157,29 @@ export function KakuroGameView({ id }: { id: number }) {
       id: saved.id,
       patch: { changes, mistakes: next.mistakes, elapsedMs: elapsedMs() },
     })
+  }
+
+  function onHint() {
+    const found = findHint(current)
+    if (found === null || solved) {
+      return
+    }
+    if (settings.hintStyle === HINT_STYLE.FILL) {
+      move((state) => placeHint({ game: state, hint: found }))
+      return
+    }
+    setGame({ ...current, selected: found.cell })
+    setHint(found)
+  }
+
+  function reveal() {
+    if (!saved) {
+      return
+    }
+    const next = revealSolution(current)
+    setGame(next)
+    setRevealing(false)
+    revealSaved({ id: saved.id, elapsedMs: elapsedMs() })
   }
 
   const wrong = shownWrongCells(current)
@@ -171,13 +226,26 @@ export function KakuroGameView({ id }: { id: number }) {
           >
             <Redo2 className="size-5" />
           </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show the rules"
-            onClick={() => setRulesOpen(true)}
-          >
-            <CircleHelp className="size-5" />
-          </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a hint"
+              disabled={solved}
+              onClick={onHint}
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
+          {settings.showTutorial && (
+            <HowToPlay steps={TUTORIAL}>
+              <p>Fill each white cell with a digit from 1 to 9.</p>
+              <p>
+                The number above a diagonal is the sum of the run to its right;
+                below it, the run beneath.
+              </p>
+              <p>A digit can't repeat within a run.</p>
+            </HowToPlay>
+          )}
           <MoreMenu
             items={[
               {
@@ -185,6 +253,14 @@ export function KakuroGameView({ id }: { id: number }) {
                 onClick: () => !solved && move(restart),
               },
               { label: 'New puzzle', onClick: () => startRandom(saved.size) },
+              ...(settings.allowReveal && !solved
+                ? [
+                    {
+                      label: 'Show solution',
+                      onClick: () => setRevealing(true),
+                    },
+                  ]
+                : []),
               {
                 label: 'Settings',
                 onClick: () => navigate([GAME_ROUTE.KAKURO, SCREEN.SETTINGS]),
@@ -235,6 +311,9 @@ export function KakuroGameView({ id }: { id: number }) {
           ))}
         </ul>
       )}
+      <p className="h-6 text-sm font-semibold" role="status">
+        {hint?.message ?? ''}
+      </p>
       <NumberPad
         digits={DIGITS}
         activeDigit={digitFirst ? current.activeDigit : null}
@@ -276,17 +355,19 @@ export function KakuroGameView({ id }: { id: number }) {
         ]}
       />
       <AppDialog
-        open={rulesOpen}
-        title="Rules"
-        onClose={() => setRulesOpen(false)}
-        actions={<Button onClick={() => setRulesOpen(false)}>Got it</Button>}
+        open={revealing}
+        title="Show the solution?"
+        onClose={() => setRevealing(false)}
+        actions={
+          <>
+            <Button onClick={() => setRevealing(false)}>Cancel</Button>
+            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={reveal}>
+              Show solution
+            </Button>
+          </>
+        }
       >
-        <p>Fill each white cell with a digit from 1 to 9.</p>
-        <p>
-          The number above a diagonal is the sum of the run to its right; below
-          it, the run beneath.
-        </p>
-        <p>A digit can't repeat within a run.</p>
+        <p>This ends the puzzle. It won't count towards best times.</p>
       </AppDialog>
       <AppDialog
         open={result !== null}

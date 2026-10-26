@@ -1,3 +1,4 @@
+import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { cn } from '@/common/utils.functions'
 import { GAME_ROUTE } from '@/common/route.constants'
 import { useStoredState } from '@/common/storage.hooks'
@@ -67,6 +68,7 @@ export function TwoToneSettingsView() {
         checked={settings.showProgress}
         onChange={(showProgress) => set({ showProgress })}
       />
+      <AssistSettings assists={settings} onChange={set} />
     </main>
   )
 }

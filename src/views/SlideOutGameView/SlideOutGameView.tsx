@@ -1,4 +1,5 @@
-import { CircleHelp, Lightbulb, Undo2 } from 'lucide-react'
+import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
+import { Lightbulb, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { formatDuration } from '@/common/format.functions'
@@ -10,6 +11,7 @@ import {
   isSolved,
   newGame,
   restart,
+  revealSolution,
   slide,
   undo,
   withHint,
@@ -42,8 +44,24 @@ import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SlideOutBoard } from '@/components/SlideOutBoard/SlideOutBoard'
 
+const TUTORIAL = [
+  {
+    target: '[aria-label="Board"]',
+    text: 'Drag a block along its length to slide it. Free the red block through the gap on the right.',
+  },
+  {
+    target: '[aria-label="Show a hint"]',
+    text: 'Stuck? The bulb highlights the block to move next.',
+  },
+  {
+    target: '[aria-label="More"]',
+    text: 'Restart, show the solution and settings live in this menu.',
+  },
+]
+
 export function SlideOutGameView({ id }: { id: number }) {
-  const { games, startRandom, saveProgress, finish } = useSlideOutGames()
+  const { games, startRandom, saveProgress, finish, reveal } =
+    useSlideOutGames()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<SlideOutSettings>({
     key: SETTINGS_KEY,
@@ -58,7 +76,7 @@ export function SlideOutGameView({ id }: { id: number }) {
       : null,
   )
   const [hints, setHints] = useState(saved?.hints ?? 0)
-  const [rulesOpen, setRulesOpen] = useState(false)
+  const [revealing, setRevealing] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const solved = game !== null && isSolved(game)
   const elapsedMs = useGameTimer({
@@ -114,6 +132,15 @@ export function SlideOutGameView({ id }: { id: number }) {
     }
   }
 
+  function onReveal() {
+    if (!game || !saved) {
+      return
+    }
+    setGame(revealSolution(game))
+    setRevealing(false)
+    reveal({ id: saved.id, elapsedMs: elapsedMs() })
+  }
+
   function onHint() {
     if (!game || solved) {
       return
@@ -152,21 +179,29 @@ export function SlideOutGameView({ id }: { id: number }) {
           >
             <Undo2 className="size-5" />
           </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show a hint"
-            disabled={solved}
-            onClick={onHint}
-          >
-            <Lightbulb className="size-5" />
-          </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show the rules"
-            onClick={() => setRulesOpen(true)}
-          >
-            <CircleHelp className="size-5" />
-          </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a hint"
+              disabled={solved}
+              onClick={onHint}
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
+          {settings.showTutorial && (
+            <HowToPlay steps={TUTORIAL}>
+              <p>Slide the red block out through the gap on the right.</p>
+              <p>
+                Blocks only slide along their length: across ones left and
+                right, upright ones up and down.
+              </p>
+              <p>
+                Each slide of a block is one move, however far it goes. Par is
+                the fewest moves possible.
+              </p>
+            </HowToPlay>
+          )}
           <MoreMenu
             items={[
               {
@@ -177,6 +212,14 @@ export function SlideOutGameView({ id }: { id: number }) {
                 label: 'New puzzle',
                 onClick: () => startRandom(levelOf(saved)),
               },
+              ...(settings.allowReveal && !solved
+                ? [
+                    {
+                      label: 'Show solution',
+                      onClick: () => setRevealing(true),
+                    },
+                  ]
+                : []),
               {
                 label: 'Settings',
                 onClick: () =>
@@ -194,20 +237,19 @@ export function SlideOutGameView({ id }: { id: number }) {
         }
       />
       <AppDialog
-        open={rulesOpen}
-        title="Rules"
-        onClose={() => setRulesOpen(false)}
-        actions={<Button onClick={() => setRulesOpen(false)}>Got it</Button>}
+        open={revealing}
+        title="Show the solution?"
+        onClose={() => setRevealing(false)}
+        actions={
+          <>
+            <Button onClick={() => setRevealing(false)}>Cancel</Button>
+            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onReveal}>
+              Show solution
+            </Button>
+          </>
+        }
       >
-        <p>Slide the red block out through the gap on the right.</p>
-        <p>
-          Blocks only slide along their length: across ones left and right,
-          upright ones up and down.
-        </p>
-        <p>
-          Each slide of a block is one move, however far it goes. Par is the
-          fewest moves possible.
-        </p>
+        <p>This ends the puzzle. It won't count towards best times.</p>
       </AppDialog>
       <AppDialog
         open={result !== null}

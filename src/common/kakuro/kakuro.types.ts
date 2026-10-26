@@ -43,6 +43,12 @@ export interface KakuroGame {
   markActive: boolean
 }
 
+export interface KakuroHint {
+  cell: number
+  digit: number
+  message: string
+}
+
 export type MistakeCheck = (typeof MISTAKE_CHECK)[keyof typeof MISTAKE_CHECK]
 
 export interface Puzzle {

@@ -91,3 +91,9 @@ export interface SudokuGame {
   marked: Set<number>
   markActive: boolean
 }
+
+export interface SudokuHint {
+  cell: number
+  digit: number
+  message: string
+}

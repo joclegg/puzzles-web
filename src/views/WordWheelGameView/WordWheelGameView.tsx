@@ -1,4 +1,5 @@
-import { Check, CircleHelp, Lightbulb, Shuffle, X } from 'lucide-react'
+import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
+import { Check, Lightbulb, Shuffle, X } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
 
 import { formatDuration } from '@/common/format.functions'
@@ -17,6 +18,7 @@ import {
   isSolved,
   newGame,
   reveal,
+  revealAll,
   shownCells,
   shuffleWheel,
   submit,
@@ -48,8 +50,24 @@ import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { WordWheelGrid } from '@/components/WordWheelGrid/WordWheelGrid'
 import { WordWheelLetters } from '@/components/WordWheelLetters/WordWheelLetters'
 
+const TUTORIAL = [
+  {
+    target: '[aria-label="Crossword"]',
+    text: 'Find every word in this crossword.',
+  },
+  {
+    target: '[aria-label="Letters"]',
+    text: 'Swipe across the letters to make a word, or tap them in turn and press the tick.',
+  },
+  {
+    target: '[aria-label="Show a letter"]',
+    text: 'Stuck? The bulb fills in one letter of the crossword.',
+  },
+]
+
 export function WordWheelGameView({ id }: { id: number }) {
-  const { games, startRandom, saveProgress, finish } = useWordWheelGames()
+  const { games, startRandom, saveProgress, finish, revealSaved } =
+    useWordWheelGames()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<WordWheelSettings>({
     key: SETTINGS_KEY,
@@ -65,7 +83,7 @@ export function WordWheelGameView({ id }: { id: number }) {
   )
   const [random] = useState(() => createRandom(newSeed()))
   const [chosen, setChosen] = useState<number[]>([])
-  const [rulesOpen, setRulesOpen] = useState(false)
+  const [revealing, setRevealing] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const solved = game !== null && isSolved(game)
   const elapsedMs = useGameTimer({
@@ -140,6 +158,16 @@ export function WordWheelGameView({ id }: { id: number }) {
     })
   }
 
+  function onReveal() {
+    if (!game || !saved) {
+      return
+    }
+    setGame(revealAll(game))
+    setChosen([])
+    setRevealing(false)
+    revealSaved({ id: saved.id, elapsedMs: elapsedMs() })
+  }
+
   function enter() {
     if (!game || chosen.length === 0) {
       return
@@ -165,37 +193,53 @@ export function WordWheelGameView({ id }: { id: number }) {
             .join(' · ')}
           back={[GAME_ROUTE.WORD_WHEEL]}
         >
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show a letter"
-            disabled={solved}
-            onClick={() =>
-              update(
-                reveal({
-                  game,
-                  pick: (hidden) =>
-                    hidden.length === 0
-                      ? undefined
-                      : randomItem({ items: hidden, random }),
-                }),
-              )
-            }
-          >
-            <Lightbulb className="size-5" />
-          </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show the rules"
-            onClick={() => setRulesOpen(true)}
-          >
-            <CircleHelp className="size-5" />
-          </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a letter"
+              disabled={solved}
+              onClick={() =>
+                update(
+                  reveal({
+                    game,
+                    pick: (hidden) =>
+                      hidden.length === 0
+                        ? undefined
+                        : randomItem({ items: hidden, random }),
+                  }),
+                )
+              }
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
+          {settings.showTutorial && (
+            <HowToPlay steps={TUTORIAL}>
+              <p>
+                Swipe across the letters to make a word, or tap them and press
+                the tick.
+              </p>
+              <p>
+                Find every word in the crossword. Other real words count as
+                bonus words.
+              </p>
+              <p>Each letter can be used once per word.</p>
+            </HowToPlay>
+          )}
           <MoreMenu
             items={[
               {
                 label: 'New puzzle',
                 onClick: () => startRandom(levelOf(saved)),
               },
+              ...(settings.allowReveal && !solved
+                ? [
+                    {
+                      label: 'Show solution',
+                      onClick: () => setRevealing(true),
+                    },
+                  ]
+                : []),
               {
                 label: 'Settings',
                 onClick: () =>
@@ -271,20 +315,19 @@ export function WordWheelGameView({ id }: { id: number }) {
         </div>
       </div>
       <AppDialog
-        open={rulesOpen}
-        title="How to play"
-        onClose={() => setRulesOpen(false)}
-        actions={<Button onClick={() => setRulesOpen(false)}>Got it</Button>}
+        open={revealing}
+        title="Show the solution?"
+        onClose={() => setRevealing(false)}
+        actions={
+          <>
+            <Button onClick={() => setRevealing(false)}>Cancel</Button>
+            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onReveal}>
+              Show solution
+            </Button>
+          </>
+        }
       >
-        <p>
-          Swipe across the letters to make a word, or tap them and press the
-          tick.
-        </p>
-        <p>
-          Find every word in the crossword. Other real words count as bonus
-          words.
-        </p>
-        <p>Each letter can be used once per word.</p>
+        <p>This ends the puzzle. It won't count towards best times.</p>
       </AppDialog>
       <AppDialog
         open={result !== null}

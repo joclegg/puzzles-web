@@ -1,3 +1,4 @@
+import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import {
   INPUT_MODE,
   INPUT_MODE_LABEL,
@@ -87,6 +88,7 @@ export function KakuroSettingsView() {
         checked={settings.greyUsedDigits}
         onChange={(greyUsedDigits) => set({ greyUsedDigits })}
       />
+      <AssistSettings assists={settings} hintStyles onChange={set} />
     </main>
   )
 }

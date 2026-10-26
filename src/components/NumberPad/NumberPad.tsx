@@ -19,7 +19,11 @@ export function NumberPad({
   onDigit: (digit: number) => void
 }) {
   return (
-    <div className="grid w-full max-w-md grid-cols-6 gap-1.5 lg:max-w-[min(100%,calc(100dvh-16rem))]">
+    <div
+      role="group"
+      aria-label="Number pad"
+      className="grid w-full max-w-md grid-cols-6 gap-1.5 lg:max-w-[min(100%,calc(100dvh-16rem))]"
+    >
       {digits.map((digit) => (
         <button
           key={digit}

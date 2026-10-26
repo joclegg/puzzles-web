@@ -18,7 +18,11 @@ export function FiveLettersKeyboard({
   onDelete: () => void
 }) {
   return (
-    <div className="flex w-full max-w-lg flex-col gap-1.5 px-1">
+    <div
+      role="group"
+      aria-label="Keyboard"
+      className="flex w-full max-w-lg flex-col gap-1.5 px-1"
+    >
       {KEY_ROWS.map((row, index) => (
         <div key={row} className="flex gap-1.5">
           {index === KEY_ROWS.length - 1 && (

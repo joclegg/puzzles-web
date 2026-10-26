@@ -38,6 +38,14 @@ export function restart(game: SlideOutGame): SlideOutGame {
   return newGame({ puzzle: game.puzzle })
 }
 
+export function revealSolution(game: SlideOutGame): SlideOutGame {
+  return {
+    ...game,
+    moves: [...game.moves, ...(shortestPath(boardOf(game)) ?? [])],
+    hint: null,
+  }
+}
+
 export function slide({
   game,
   block,

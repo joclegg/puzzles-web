@@ -1,9 +1,14 @@
+import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { formatDuration } from '@/common/format.functions'
-import { CircleHelp, Lightbulb, Undo2, CircleDot } from 'lucide-react'
+import { Lightbulb, Undo2, CircleDot } from 'lucide-react'
 import { useState } from 'react'
 
 import { useGameTimer } from '@/common/gameTimer.hooks'
-import { solvePuzzle, updatePuzzle } from '@/common/puzzleSaves.functions'
+import {
+  revealPuzzle,
+  solvePuzzle,
+  updatePuzzle,
+} from '@/common/puzzleSaves.functions'
 import { puzzleTitle } from '@/common/puzzleTitle.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
@@ -46,6 +51,21 @@ import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { TwoToneBoard } from '@/components/TwoToneBoard/TwoToneBoard'
 import { TwoToneColourPicker } from '@/components/TwoToneColourPicker/TwoToneColourPicker'
 
+const TUTORIAL = [
+  {
+    target: '[aria-label="Board"]',
+    text: 'Tap a tile to cycle it red, blue, empty. No three of a colour in a line, and every row and column is half red, half blue.',
+  },
+  {
+    target: '[aria-label="Show a hint"]',
+    text: 'Stuck? The bulb points at the next step and explains it.',
+  },
+  {
+    target: '[aria-label="More"]',
+    text: 'Restart, show the solution and settings live in this menu.',
+  },
+]
+
 export function TwoToneGameView({ id }: { id: number }) {
   const { games, setGames, startRandom } = useTwoToneGames()
   const saved = games.find((game) => game.id === id)
@@ -64,7 +84,7 @@ export function TwoToneGameView({ id }: { id: number }) {
   const [hints, setHints] = useState(saved?.hints ?? 0)
   const [colour, setColour] = useState<Tile>(TILE.RED)
   const [showGivens, setShowGivens] = useState(false)
-  const [rulesOpen, setRulesOpen] = useState(false)
+  const [revealing, setRevealing] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const solved = game !== null && isSolved(game)
   const elapsedMs = useGameTimer({
@@ -147,6 +167,22 @@ export function TwoToneGameView({ id }: { id: number }) {
     persist({ next, hintCount: hints + 1 })
   }
 
+  function onReveal() {
+    if (!game || !saved) {
+      return
+    }
+    setGame({ ...game, grid: game.puzzle.solution, hint: null })
+    setRevealing(false)
+    setGames((current) =>
+      revealPuzzle({
+        games: current,
+        id: saved.id,
+        elapsedMs: elapsedMs(),
+        now: Date.now(),
+      }),
+    )
+  }
+
   function onRestart() {
     if (!game || solved) {
       return
@@ -182,25 +218,42 @@ export function TwoToneGameView({ id }: { id: number }) {
           >
             <CircleDot className="size-5" />
           </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show a hint"
-            disabled={solved}
-            onClick={onHint}
-          >
-            <Lightbulb className="size-5" />
-          </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show the rules"
-            onClick={() => setRulesOpen(true)}
-          >
-            <CircleHelp className="size-5" />
-          </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a hint"
+              disabled={solved}
+              onClick={onHint}
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
+          {settings.showTutorial && (
+            <HowToPlay steps={TUTORIAL}>
+              <p>
+                Fill every tile red or blue. Tap a tile to cycle it: red, blue,
+                empty.
+              </p>
+              <p>
+                No three tiles of the same colour next to each other in a row or
+                column.
+              </p>
+              <p>Every row and column has as many red tiles as blue.</p>
+              <p>No two rows are the same, and no two columns are the same.</p>
+            </HowToPlay>
+          )}
           <MoreMenu
             items={[
               { label: 'Restart this puzzle', onClick: onRestart },
               { label: 'New puzzle', onClick: () => startRandom(saved.size) },
+              ...(settings.allowReveal && !solved
+                ? [
+                    {
+                      label: 'Show solution',
+                      onClick: () => setRevealing(true),
+                    },
+                  ]
+                : []),
               {
                 label: 'Settings',
                 onClick: () => navigate([GAME_ROUTE.TWO_TONE, SCREEN.SETTINGS]),
@@ -234,20 +287,19 @@ export function TwoToneGameView({ id }: { id: number }) {
         </p>
       )}
       <AppDialog
-        open={rulesOpen}
-        title="Rules"
-        onClose={() => setRulesOpen(false)}
-        actions={<Button onClick={() => setRulesOpen(false)}>Got it</Button>}
+        open={revealing}
+        title="Show the solution?"
+        onClose={() => setRevealing(false)}
+        actions={
+          <>
+            <Button onClick={() => setRevealing(false)}>Cancel</Button>
+            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onReveal}>
+              Show solution
+            </Button>
+          </>
+        }
       >
-        <p>
-          Fill every tile red or blue. Tap a tile to cycle it: red, blue, empty.
-        </p>
-        <p>
-          No three tiles of the same colour next to each other in a row or
-          column.
-        </p>
-        <p>Every row and column has as many red tiles as blue.</p>
-        <p>No two rows are the same, and no two columns are the same.</p>
+        <p>This ends the puzzle. It won't count towards best times.</p>
       </AppDialog>
       <AppDialog
         open={result !== null}

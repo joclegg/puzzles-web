@@ -1,3 +1,4 @@
+import type { Assists } from '@/common/assists.types'
 import type {
   Difficulty,
   GameMode,
@@ -75,7 +76,7 @@ export interface SudokuRef {
   puzzle: string
 }
 
-export interface SudokuSettings {
+export interface SudokuSettings extends Assists {
   inputMode: InputMode
   classic: ModeSettings
   killer: ModeSettings
