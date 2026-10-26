@@ -56,12 +56,15 @@ export function hasTwin({
   line: Line
   tiles: string
 }): boolean {
-  return linesOf(grid).some(
-    (other) =>
-      !sameLine({ a: other, b: line }) &&
-      other.isRow === line.isRow &&
-      tilesOf({ grid, line: other }) === tiles,
-  )
+  for (let index = 0; index < grid.size; index++) {
+    if (
+      index !== line.index &&
+      tilesOf({ grid, line: { isRow: line.isRow, index } }) === tiles
+    ) {
+      return true
+    }
+  }
+  return false
 }
 
 export function isFull(grid: Grid): boolean {
@@ -69,7 +72,7 @@ export function isFull(grid: Grid): boolean {
 }
 
 export function isRun(run: string): boolean {
-  return run[0] !== TILE.EMPTY && [...run].every((tile) => tile === run[0])
+  return run[0] !== TILE.EMPTY && run[1] === run[0] && run[2] === run[0]
 }
 
 export function linesOf(grid: Grid): Line[] {
@@ -92,9 +95,15 @@ export function tileAt({ grid, cell }: { grid: Grid; cell: number }): Tile {
 }
 
 export function tilesOf({ grid, line }: { grid: Grid; line: Line }): string {
-  return cellsOf({ grid, line })
-    .map((cell) => grid.tiles[cell])
-    .join('')
+  if (line.isRow) {
+    const start = line.index * grid.size
+    return grid.tiles.slice(start, start + grid.size)
+  }
+  let tiles = ''
+  for (let position = 0; position < grid.size; position++) {
+    tiles += grid.tiles[position * grid.size + line.index]
+  }
+  return tiles
 }
 
 export function withTile({
