@@ -24,6 +24,8 @@ import {
 import {
   finishGame,
   isDaily,
+  isNyt,
+  nytLabel,
   saveGuesses,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
 import type { FiveLettersSettings } from '@/common/fiveLetters/fiveLettersSaves.types'
@@ -89,10 +91,12 @@ export function FiveLettersGameView({ id }: { id: number }) {
     )
   }
 
-  const daily = isDaily(saved.wordId)
-  const title = daily
-    ? `${TITLE} #${dayNumber(saved.wordId.slice('daily_'.length))}`
-    : `${TITLE} practice`
+  const daily = isDaily(saved.wordId) || isNyt(saved.wordId)
+  const title = isNyt(saved.wordId)
+    ? nytLabel(saved.wordId)
+    : isDaily(saved.wordId)
+      ? `${TITLE} #${dayNumber(saved.wordId.slice('daily_'.length))}`
+      : `${TITLE} practice`
   const over = isOver(game)
   const share = shareText({ game, title })
 

@@ -60,7 +60,7 @@ Rules marked (lint) are enforced by `npm run lint`.
 
 ### Games
 
-- MUST keep every game playable offline: no analytics, accounts, ads or cloud sync. Every asset ships with the build. The only call to another site is the opt-in New York Times word for the Five Letters daily, fetched through the free `r.jina.ai` reader (which allows browser calls), falling back to the bundled daily word when it fails. MUST NOT add any other.
+- MUST keep every game playable offline: no analytics, accounts, ads or cloud sync. Every asset ships with the build. The only call to another site is the Five Letters **NY Times daily**, a separate game (id `nyt_<date>`) next to the Puzzles daily that fetches today's Wordle answer through the free `r.jina.ai` reader (which allows browser calls). It needs a connection and says so when the fetch fails; it never replaces the Puzzles daily. MUST NOT add any other.
 - MUST keep all player data in the browser, in `localStorage`, through `useStoredState` and `readStored`/`writeStored`, under keys prefixed with the game, e.g. `fiveLetters.games`.
 - MUST put every game rule in `src/common/<game>/` as a pure function on that game's state. Views only wire state to those functions.
 - MUST NOT import one game's `src/common/<game>/` code from another game.

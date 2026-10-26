@@ -1,5 +1,4 @@
 import {
-  dailyWord,
   nytSolution,
   randomWord,
 } from '@/common/fiveLetters/fiveLetters.functions'
@@ -10,7 +9,7 @@ import {
   SETTINGS_KEY,
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
-  dailyId,
+  nytId,
   startGame,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
 import type {
@@ -58,19 +57,23 @@ export function useFiveLettersGames() {
     })
   }
 
-  async function startDaily(date: string) {
-    const { nytWord } = readStored<FiveLettersSettings>({
-      key: SETTINGS_KEY,
-      fallback: DEFAULT_SETTINGS,
-    })
-    const nyt = nytWord ? await fetchNytWord(date) : null
-    startAndOpen({
-      id: dailyId(date),
-      answer: nyt ?? dailyWord({ words: WORDS, date }),
-    })
+  async function startNytDaily(date: string): Promise<boolean> {
+    const answer = await fetchNytWord(date)
+    if (answer === null) {
+      return false
+    }
+    startAndOpen({ id: nytId(date), answer })
+    return true
   }
 
-  return { games, setGames, openGame, startAndOpen, startPractice, startDaily }
+  return {
+    games,
+    setGames,
+    openGame,
+    startAndOpen,
+    startPractice,
+    startNytDaily,
+  }
 }
 
 async function fetchNytWord(date: string): Promise<string | null> {

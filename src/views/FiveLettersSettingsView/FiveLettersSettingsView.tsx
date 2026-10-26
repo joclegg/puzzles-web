@@ -33,14 +33,6 @@ export function FiveLettersSettingsView() {
           setSettings((current) => ({ ...current, highContrast }))
         }
       />
-      <SettingRow
-        label="Use the New York Times word"
-        detail="The daily game uses today's Wordle answer, fetched from nytimes.com through the free r.jina.ai reader. Falls back to the Puzzles word when that fails. Applies to new daily games."
-        checked={settings.nytWord}
-        onChange={(nytWord) =>
-          setSettings((current) => ({ ...current, nytWord }))
-        }
-      />
     </main>
   )
 }

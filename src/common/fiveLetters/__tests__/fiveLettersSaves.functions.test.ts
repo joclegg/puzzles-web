@@ -4,6 +4,10 @@ import { GAME_STATUS } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
   finishGame,
   inProgress,
+  isNyt,
+  nytId,
+  nytLabel,
+  slotOf,
   startGame,
   statsOf,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
@@ -98,5 +102,25 @@ describe('statsOf', () => {
       maxStreak: 2,
       guessCounts: [0, 0, 2, 1, 0, 0],
     })
+  })
+})
+
+describe('the NY Times daily', () => {
+  it('has its own id and slot for each date', () => {
+    const id = nytId('2026-10-26')
+
+    expect([id, isNyt(id), slotOf(id)]).toEqual([
+      'nyt_2026-10-26',
+      true,
+      'nyt_2026-10-26',
+    ])
+  })
+
+  it('never shares a slot with the Puzzles daily', () => {
+    expect(slotOf(nytId('2026-10-26'))).not.toBe(slotOf('daily_2026-10-26'))
+  })
+
+  it('is labelled with its date', () => {
+    expect(nytLabel(nytId('2026-03-05'))).toBe('NY Times · 5 Mar')
   })
 })
