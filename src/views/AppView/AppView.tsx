@@ -6,6 +6,7 @@ import { LauncherView } from '@/views/LauncherView/LauncherView'
 import { SlideOutView } from '@/views/SlideOutView/SlideOutView'
 import { SightlinesView } from '@/views/SightlinesView/SightlinesView'
 import { TwoToneView } from '@/views/TwoToneView/TwoToneView'
+import { WordWheelView } from '@/views/WordWheelView/WordWheelView'
 
 export function AppView() {
   const [game, screen = SCREEN.HOME, id = ''] = useRoute()
@@ -24,6 +25,9 @@ export function AppView() {
   }
   if (game === GAME_ROUTE.SLIDE_OUT) {
     return <SlideOutView screen={screen} id={id} />
+  }
+  if (game === GAME_ROUTE.WORD_WHEEL) {
+    return <WordWheelView screen={screen} id={id} />
   }
   return <LauncherView />
 }

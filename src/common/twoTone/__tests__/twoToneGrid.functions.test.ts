@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import { brokenCells, parseGrid } from '@/common/twoTone/twoToneGrid.functions'
+import {
+  brokenCells,
+  hasBrokenRule,
+  parseGrid,
+} from '@/common/twoTone/twoToneGrid.functions'
 
 describe('brokenCells', () => {
   it.each([
@@ -13,5 +17,15 @@ describe('brokenCells', () => {
     const cells = brokenCells(parseGrid({ size: 4, text }))
 
     expect([...cells].sort((a, b) => a - b)).toEqual(broken)
+  })
+})
+
+describe('hasBrokenRule', () => {
+  it.each([
+    ['RRR. .... .... ....', true],
+    ['RBRR .... .... ....', true],
+    ['RB.. BR.. .... ....', false],
+  ])('spots a broken rule in %s', (text, broken) => {
+    expect(hasBrokenRule(parseGrid({ size: 4, text }))).toBe(broken)
   })
 })

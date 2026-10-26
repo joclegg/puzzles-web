@@ -12,9 +12,9 @@ import type {
   Tile,
 } from '@/common/twoTone/twoTone.types'
 import {
-  brokenCells,
   cellsOf,
   countOf,
+  hasBrokenRule,
   isFull,
   linesOf,
   sameLine,
@@ -43,7 +43,7 @@ export function solveLogically(grid: Grid): Grid | null {
       (next, cell) => withTile({ grid: next, cell, tile: deduction.tile }),
       current,
     )
-    if (brokenCells(current).size > 0) {
+    if (hasBrokenRule(current)) {
       return null
     }
   }

@@ -47,6 +47,26 @@ export function emptyGrid(size: number): Grid {
   return { size, tiles: TILE.EMPTY.repeat(size * size) }
 }
 
+export function hasBrokenRule(grid: Grid): boolean {
+  for (const line of linesOf(grid)) {
+    const tiles = tilesOf({ grid, line })
+    for (let start = 0; start <= grid.size - RUN; start++) {
+      if (isRun(tiles.slice(start, start + RUN))) {
+        return true
+      }
+    }
+    if (
+      COLOURS.some((colour) => countOf({ tiles, tile: colour }) > grid.size / 2)
+    ) {
+      return true
+    }
+    if (!tiles.includes(TILE.EMPTY) && hasTwin({ grid, line, tiles })) {
+      return true
+    }
+  }
+  return false
+}
+
 export function hasTwin({
   grid,
   line,

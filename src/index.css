@@ -6,6 +6,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-ww-cell: var(--ww-cell);
+  --color-ww-cell-found: var(--ww-cell-found);
+  --color-ww-cell-hinted: var(--ww-cell-hinted);
+  --color-ww-cell-text: var(--ww-cell-text);
+  --color-ww-wheel: var(--ww-wheel);
+  --color-ww-letter: var(--ww-letter);
+  --color-ww-letter-text: var(--ww-letter-text);
+  --color-ww-chosen: var(--ww-chosen);
+  --color-ww-chosen-text: var(--ww-chosen-text);
+  --color-ww-line: var(--ww-line);
   --color-so-board: var(--so-board);
   --color-so-slot: var(--so-slot);
   --color-so-block: var(--so-block);
@@ -92,6 +102,16 @@
 }
 
 :root {
+  --ww-cell: #e6e9ee;
+  --ww-cell-found: #1565d8;
+  --ww-cell-hinted: #bcd9fc;
+  --ww-cell-text: #ffffff;
+  --ww-wheel: #e5f0fe;
+  --ww-letter: #ffffff;
+  --ww-letter-text: #14181f;
+  --ww-chosen: #1565d8;
+  --ww-chosen-text: #ffffff;
+  --ww-line: #1565d8;
   --so-board: #263040;
   --so-slot: #353a42;
   --so-block: #d9b98a;
@@ -170,6 +190,16 @@
 }
 
 .dark {
+  --ww-cell: #2a2e35;
+  --ww-cell-found: #2f5e99;
+  --ww-cell-hinted: #244a78;
+  --ww-cell-text: #e9ecf1;
+  --ww-wheel: #1a2b40;
+  --ww-letter: #2a2e35;
+  --ww-letter-text: #e9ecf1;
+  --ww-chosen: #7db5ff;
+  --ww-chosen-text: #0b2545;
+  --ww-line: #7db5ff;
   --so-board: #15191f;
   --so-slot: #22272e;
   --so-block: #b59a72;
