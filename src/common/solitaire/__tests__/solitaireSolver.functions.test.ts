@@ -1,0 +1,63 @@
+import { describe, expect, it } from 'vitest'
+
+import { epochDay } from '@/common/date.functions'
+import {
+  BUILD_ORDER,
+  DAILY_SEED_SPREAD,
+  DRAW_MODE,
+  VERDICT,
+} from '@/common/solitaire/solitaire.constants'
+import { deal } from '@/common/solitaire/solitaireBoard.functions'
+import { encodeBoard } from '@/common/solitaire/solitaireCodec.functions'
+import {
+  solve,
+  winnableDeal,
+} from '@/common/solitaire/solitaireSolver.functions'
+
+const DAILY_SEED = BigInt(epochDay('2026-10-25')) * DAILY_SEED_SPREAD
+
+describe('winnableDeal', { timeout: 20_000 }, () => {
+  it.each([
+    [
+      DRAW_MODE.DRAW_ONE,
+      BUILD_ORDER.DOWN,
+      '/TS|JS/9D|9SKD/AC|JH5D3S/6D|KS2H3C4D/JC|7SQDTC9C2S/TD|3D4S4C6C3H8D/2D;8C5CTH6H2C5H4H7HAD6S8HAS7DQHAHKC9H5S8SJDQSKH7CQC;;|||',
+    ],
+    [
+      DRAW_MODE.DRAW_THREE,
+      BUILD_ORDER.DOWN,
+      '/TH|4S/7D|6S3H/8S|TC9HAS/3D|9S6H3CJC/KH|2SQH5HAHKS/QS|JS4DAD7C7S8D/9C;6CAC5D4C5C2DTSQC3S9DJD6D8C8H5S2HJH2CKCTDKD4H7HQD;;|||',
+    ],
+    [
+      DRAW_MODE.DRAW_ONE,
+      BUILD_ORDER.UP,
+      '/TH|4S/7D|6S3H/8S|TC9HAS/3D|9S6H3CJC/KH|2SQH5HAHKS/QS|JS4DAD7C7S8D/9C;6CAC5D4C5C2DTSQC3S9DJD6D8C8H5S2HJH2CKCTDKD4H7HQD;;|||',
+    ],
+  ])('deals the fixed daily %s %s game', (drawMode, order, expected) => {
+    const { board } = winnableDeal({ seed: DAILY_SEED, drawMode, order })
+
+    expect(encodeBoard(board)).toBe(expected)
+  })
+})
+
+describe('solve', { timeout: 20_000 }, () => {
+  it('reaches the fixed verdicts for the first six draw 3 deals', () => {
+    const verdicts = [1n, 2n, 3n, 4n, 5n, 6n].map((seed) =>
+      solve({
+        start: deal(seed),
+        drawMode: DRAW_MODE.DRAW_THREE,
+        order: BUILD_ORDER.DOWN,
+        budget: 20_000,
+      }),
+    )
+
+    expect(verdicts).toEqual([
+      VERDICT.UNKNOWN,
+      VERDICT.WINNABLE,
+      VERDICT.WINNABLE,
+      VERDICT.WINNABLE,
+      VERDICT.UNWINNABLE,
+      VERDICT.UNKNOWN,
+    ])
+  })
+})
