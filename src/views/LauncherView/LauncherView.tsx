@@ -5,6 +5,7 @@ import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
 import { SlideOutIcon } from '@/components/SlideOutIcon/SlideOutIcon'
 import { WordWheelIcon } from '@/components/WordWheelIcon/WordWheelIcon'
 import { SolitaireIcon } from '@/components/SolitaireIcon/SolitaireIcon'
+import { SudokuIcon } from '@/components/SudokuIcon/SudokuIcon'
 import { GameCard } from '@/components/GameCard/GameCard'
 import { SightlinesIcon } from '@/components/SightlinesIcon/SightlinesIcon'
 import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle'
@@ -17,6 +18,12 @@ export function LauncherView() {
         <h1 className="flex-1 text-3xl font-semibold">Puzzles</h1>
         <ThemeToggle />
       </header>
+      <GameCard
+        title="Sudoku"
+        detail="Classic and killer, from 6x6 to evil"
+        href={routeHash([GAME_ROUTE.SUDOKU])}
+        icon={<SudokuIcon />}
+      />
       <GameCard
         title="Solitaire"
         detail="Klondike, draw 1 or 3, or reverse"

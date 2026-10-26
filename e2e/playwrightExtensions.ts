@@ -6,6 +6,7 @@ import { LauncherPage } from '@e2e/launcherPage'
 import { SightlinesPage } from '@e2e/sightlinesPage'
 import { SlideOutPage } from '@e2e/slideOutPage'
 import { SolitairePage } from '@e2e/solitairePage'
+import { SudokuPage } from '@e2e/sudokuPage'
 import { TwoTonePage } from '@e2e/twoTonePage'
 import { WordWheelPage } from '@e2e/wordWheelPage'
 
@@ -20,6 +21,7 @@ export const test = base.extend<{
   slideOutPage: SlideOutPage
   wordWheelPage: WordWheelPage
   solitairePage: SolitairePage
+  sudokuPage: SudokuPage
 }>({
   page: async ({ page }, use) => {
     await page.clock.setFixedTime(FIXED_NOW)
@@ -64,6 +66,11 @@ export const test = base.extend<{
     const solitairePage = new SolitairePage(page)
     await solitairePage.open()
     await use(solitairePage)
+  },
+  sudokuPage: async ({ page }, use) => {
+    const sudokuPage = new SudokuPage(page)
+    await sudokuPage.open()
+    await use(sudokuPage)
   },
 })
 

@@ -29,6 +29,7 @@ Puzzles for the web: eight offline puzzle games served at https://joclegg.github
 - `src/common/`: shared code (random numbers, dates, routing, storage)
 - `src/common/<game>/`: every rule of one game as plain functions, with its types, constants and save logic, e.g. `src/common/fiveLetters/`
 - `src/assets/`: bundled data such as word lists and puzzle banks
+- `public/sudoku/<mode>_<level>/<chunk>.txt`: the Sudoku bank, 250 puzzles per chunk, fetched one chunk at a time so a game loads only what it needs
 - `src/views/AppView/`: the hash router that picks the view
 - `src/views/<Game><Screen>View/`: one view per game screen, e.g. `FiveLettersHomeView`, `FiveLettersGameView`, `FiveLettersStatsView`, `FiveLettersSettingsView`
 - `__tests__/`: Vitest unit tests, next to the files they test

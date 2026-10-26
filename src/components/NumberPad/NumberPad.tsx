@@ -5,12 +5,16 @@ export function NumberPad({
   digits,
   activeDigit,
   doneDigits,
+  disabledDigits = new Set(),
+  badges = new Map(),
   tools,
   onDigit,
 }: {
   digits: readonly number[]
   activeDigit: number | null
   doneDigits: Set<number>
+  disabledDigits?: Set<number>
+  badges?: Map<number, string>
   tools: readonly PadTool[]
   onDigit: (digit: number) => void
 }) {
@@ -22,14 +26,20 @@ export function NumberPad({
           type="button"
           aria-label={`Digit ${digit}`}
           aria-pressed={activeDigit === digit}
+          disabled={disabledDigits.has(digit)}
           onClick={() => onDigit(digit)}
           className={cn(
-            'h-12 rounded-lg bg-muted text-xl font-semibold active:opacity-70',
+            'relative h-12 rounded-lg bg-muted text-xl font-semibold active:opacity-70 disabled:opacity-30',
             activeDigit === digit && 'bg-primary text-primary-foreground',
             doneDigits.has(digit) && 'opacity-40',
           )}
         >
           {digit}
+          {badges.has(digit) && (
+            <span className="absolute top-0.5 right-1 text-[0.6rem] font-medium opacity-70">
+              {badges.get(digit)}
+            </span>
+          )}
         </button>
       ))}
       {tools.map((tool) => (
