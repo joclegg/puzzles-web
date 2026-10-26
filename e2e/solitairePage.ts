@@ -69,6 +69,10 @@ export class SolitairePage {
     await this.card(name).click()
   }
 
+  async finish() {
+    await this.page.getByRole('button', { name: 'Finish', exact: true }).click()
+  }
+
   async draw() {
     await this.stock.click()
   }

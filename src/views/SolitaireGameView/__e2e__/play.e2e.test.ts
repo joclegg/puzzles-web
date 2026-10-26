@@ -53,3 +53,13 @@ test('wins when the last kings go up', async ({ solitairePage }) => {
   await expect(solitairePage.dialog).toContainText('You won!')
   await solitairePage.expectScreenshot('won')
 })
+
+test('finishes the game once every card is face up', async ({
+  solitairePage,
+}) => {
+  await solitairePage.seedNearlyWonGame()
+
+  await solitairePage.finish()
+
+  await expect(solitairePage.dialog).toContainText('You won!')
+})

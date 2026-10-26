@@ -8,7 +8,11 @@ import {
   SUITS,
 } from '@/common/solitaire/solitaire.constants'
 import {
+  autoFinish,
+  autoFinishMoves,
   boardOf,
+  canAutoFinish,
+  cycledStock,
   dropCards,
   gameWon,
   restart,
@@ -21,7 +25,7 @@ import type {
   BuildOrder,
   SolitaireGame,
 } from '@/common/solitaire/solitaire.types'
-import { deal } from '@/common/solitaire/solitaireBoard.functions'
+import { cardsIn, deal } from '@/common/solitaire/solitaireBoard.functions'
 import { decodeBoard } from '@/common/solitaire/solitaireCodec.functions'
 
 function column(index: number) {
@@ -237,3 +241,95 @@ describe('dropCards', () => {
     expect(after.moves).toHaveLength(0)
   })
 })
+
+describe('canAutoFinish', () => {
+  it.each([
+    ['every card is face up and the stock is empty', '/KH|/AHQS;;;|||', true],
+    ['a tableau card is still face down', 'KH/|/AHQS;;;|||', false],
+    ['the stock still has cards', '/KH|/AH;QS;;|||', false],
+    ['the waste still has cards', '/KH|/AH;;QS;|||', false],
+  ])('when %s it is %s', (_, text, expected) => {
+    expect(canAutoFinish(state({ text }))).toBe(expected)
+  })
+
+  it('is false once the game is won', () => {
+    const text = `/|/;;;${foundationsUpTo({ ranks: [...RANK_CODES] })}`
+
+    expect(canAutoFinish(state({ text }))).toBe(false)
+  })
+})
+
+describe('autoFinish', () => {
+  it('plays every remaining card to the foundations', () => {
+    const game = state({
+      text: `/KCQD|/KDQC|/KHQS|/KSQH;;;${foundationsUpTo({ ranks: [...RANK_CODES].slice(0, -2) })}`,
+    })
+
+    const after = autoFinish(game)
+
+    expect([autoFinishMoves(game).length, gameWon(after)]).toEqual([8, true])
+  })
+
+  it('builds down from the kings in reverse', () => {
+    const game = state({
+      text: `/AC|/AD|/AH|/AS;;;${foundationsUpTo({ ranks: [...RANK_CODES].reverse().slice(0, -1) })}`,
+      order: BUILD_ORDER.UP,
+    })
+
+    expect(gameWon(autoFinish(game))).toBe(true)
+  })
+
+  it('leaves the game alone while cards are face down', () => {
+    const game = state({ text: 'KH/AH|/;;;|||' })
+
+    expect(autoFinish(game)).toBe(game)
+  })
+})
+
+function foundationsUpTo({ ranks }: { ranks: string[] }) {
+  return SUITS.map((suit) =>
+    ranks.map((rank) => `${rank}${suit.code}`).join(''),
+  ).join('|')
+}
+
+describe('cycledStock', () => {
+  it.each([
+    [0, false],
+    [3, false],
+    [4, true],
+  ])('after %i draws through three cards it is %s', (draws, expected) => {
+    const game = drawn({ game: state({ text: '/KH|/;2C3C4C;;|||' }), draws })
+
+    expect(cycledStock(game)).toBe(expected)
+  })
+
+  it('starts again after a card is played', () => {
+    const cycled = drawn({ game: state({ text: '/4S|/;5C3H;;|||' }), draws: 4 })
+    const played = dropCards({
+      game: cycled,
+      from: { kind: PILE_KIND.WASTE, index: 0 },
+      index:
+        cardsIn({
+          board: boardOf(cycled),
+          pile: { kind: PILE_KIND.WASTE, index: 0 },
+        }).length - 1,
+      to: column(0),
+    })
+
+    expect([cycledStock(cycled), cycledStock(tapStock(played))]).toEqual([
+      true,
+      false,
+    ])
+  })
+
+  it('is true when there is nothing left to draw', () => {
+    expect(cycledStock(state({ text: '/KH|/QS;;;|||' }))).toBe(true)
+  })
+})
+
+function drawn({ game, draws }: { game: SolitaireGame; draws: number }) {
+  return Array.from({ length: draws }).reduce<SolitaireGame>(
+    (state) => tapStock(state),
+    game,
+  )
+}
