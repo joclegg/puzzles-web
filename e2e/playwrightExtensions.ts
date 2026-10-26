@@ -2,12 +2,14 @@ import { test as base } from '@playwright/test'
 
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { LauncherPage } from '@e2e/launcherPage'
+import { TwoTonePage } from '@e2e/twoTonePage'
 
 const FIXED_NOW = new Date('2026-10-25T10:00:00')
 
 export const test = base.extend<{
   launcherPage: LauncherPage
   fiveLettersPage: FiveLettersPage
+  twoTonePage: TwoTonePage
 }>({
   page: async ({ page }, use) => {
     await page.clock.setFixedTime(FIXED_NOW)
@@ -22,6 +24,11 @@ export const test = base.extend<{
     const fiveLettersPage = new FiveLettersPage(page)
     await fiveLettersPage.open()
     await use(fiveLettersPage)
+  },
+  twoTonePage: async ({ page }, use) => {
+    const twoTonePage = new TwoTonePage(page)
+    await twoTonePage.open()
+    await use(twoTonePage)
   },
 })
 

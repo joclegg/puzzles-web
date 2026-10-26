@@ -14,4 +14,5 @@ export const SCREEN = {
   GAME: 'game',
   STATS: 'stats',
   SETTINGS: 'settings',
+  HISTORY: 'history',
 } as const

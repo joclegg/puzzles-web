@@ -6,6 +6,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-tt-empty: var(--tt-empty);
+  --color-tt-red: var(--tt-red);
+  --color-tt-red-edge: var(--tt-red-edge);
+  --color-tt-blue: var(--tt-blue);
+  --color-tt-blue-edge: var(--tt-blue-edge);
+  --color-tt-broken: var(--tt-broken);
+  --color-tt-hint-line: var(--tt-hint-line);
+  --color-tt-hint-target: var(--tt-hint-target);
   --color-fl-correct: var(--fl-correct);
   --color-fl-present: var(--fl-present);
   --color-fl-absent: var(--fl-absent);
@@ -55,6 +63,14 @@
 }
 
 :root {
+  --tt-empty: #e6e9ee;
+  --tt-red: #e0603f;
+  --tt-red-edge: #b54a30;
+  --tt-blue: #34a7c8;
+  --tt-blue-edge: #2785a0;
+  --tt-broken: #14181f;
+  --tt-hint-line: #e5f0fe;
+  --tt-hint-target: #1565d8;
   --fl-correct: #5fa463;
   --fl-present: #d7b23e;
   --fl-absent: #7a808a;
@@ -96,6 +112,14 @@
 }
 
 .dark {
+  --tt-empty: #2a2e35;
+  --tt-red: #d5583a;
+  --tt-red-edge: #a6432c;
+  --tt-blue: #2e9ebe;
+  --tt-blue-edge: #227a93;
+  --tt-broken: #f1f3f6;
+  --tt-hint-line: #1a2b40;
+  --tt-hint-target: #7db5ff;
   --fl-correct: #538d4e;
   --fl-present: #b59f3b;
   --fl-absent: #3a3f47;
