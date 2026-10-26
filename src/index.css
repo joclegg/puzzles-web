@@ -6,6 +6,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-so-board: var(--so-board);
+  --color-so-slot: var(--so-slot);
+  --color-so-block: var(--so-block);
+  --color-so-block-edge: var(--so-block-edge);
+  --color-so-target: var(--so-target);
+  --color-so-target-edge: var(--so-target-edge);
+  --color-so-exit: var(--so-exit);
+  --color-so-hint: var(--so-hint);
   --color-sl-empty: var(--sl-empty);
   --color-sl-red: var(--sl-red);
   --color-sl-red-edge: var(--sl-red-edge);
@@ -84,6 +92,14 @@
 }
 
 :root {
+  --so-board: #263040;
+  --so-slot: #353a42;
+  --so-block: #d9b98a;
+  --so-block-edge: #b09068;
+  --so-target: #e0603f;
+  --so-target-edge: #b54a30;
+  --so-exit: #e0603f;
+  --so-hint: #8ec0fa;
   --sl-empty: #e6e9ee;
   --sl-red: #e0603f;
   --sl-red-edge: #b54a30;
@@ -154,6 +170,14 @@
 }
 
 .dark {
+  --so-board: #15191f;
+  --so-slot: #22272e;
+  --so-block: #b59a72;
+  --so-block-edge: #8c7354;
+  --so-target: #d5583a;
+  --so-target-edge: #a6432c;
+  --so-exit: #d5583a;
+  --so-hint: #7db5ff;
   --sl-empty: #2a2e35;
   --sl-red: #d5583a;
   --sl-red-edge: #a6432c;

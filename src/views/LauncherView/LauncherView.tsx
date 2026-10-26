@@ -2,6 +2,7 @@ import { GAME_ROUTE } from '@/common/route.constants'
 import { routeHash } from '@/common/route.functions'
 import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
 import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
+import { SlideOutIcon } from '@/components/SlideOutIcon/SlideOutIcon'
 import { GameCard } from '@/components/GameCard/GameCard'
 import { SightlinesIcon } from '@/components/SightlinesIcon/SightlinesIcon'
 import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle'
@@ -37,6 +38,12 @@ export function LauncherView() {
         detail="Cross sums: runs of different digits that add up"
         href={routeHash([GAME_ROUTE.KAKURO])}
         icon={<KakuroIcon />}
+      />
+      <GameCard
+        title="Slide Out"
+        detail="Slide the blocks to free the red one"
+        href={routeHash([GAME_ROUTE.SLIDE_OUT])}
+        icon={<SlideOutIcon />}
       />
     </main>
   )
