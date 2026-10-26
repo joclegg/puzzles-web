@@ -27,6 +27,16 @@ export class FiveLettersPage {
     await expect(this.key('ENTER')).toBeVisible()
   }
 
+  async fakeNytWord(word: string) {
+    await this.page.route('https://r.jina.ai/**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'text/plain',
+        body: `Markdown Content:\n{"solution":"${word}"}`,
+      }),
+    )
+  }
+
   async reload() {
     await this.page.reload()
   }

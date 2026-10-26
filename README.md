@@ -11,7 +11,7 @@ Eight offline puzzle games for the browser, served at https://joclegg.github.io/
 - **Slide Out**: slide the blocks to free the red one. Beginner to Expert, graded by the fewest moves, with par, hints and undo.
 - **Word Wheel**: swipe the letters on the wheel to fill a small crossword. Bonus words, shuffle and letter hints.
 
-No account, no ads, no network requests: progress stays in your browser.
+No account, no ads: progress stays in your browser. The one network call is an opt-in Five Letters setting that fetches the New York Times Wordle word for the daily game.
 
 See [`AGENTS.md`](AGENTS.md) for commands and coding rules.
 

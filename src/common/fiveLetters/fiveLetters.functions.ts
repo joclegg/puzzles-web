@@ -100,6 +100,12 @@ export function newGame({
   return { answer, guesses, typing: '', hardMode, rejection: null }
 }
 
+export function nytSolution(text: string): string | null {
+  const match = /"solution"\s*:\s*"([A-Za-z]+)"/.exec(text)
+  const word = match?.[1].toUpperCase() ?? null
+  return word !== null && word.length === WORD_LENGTH ? word : null
+}
+
 export function randomWord({ words, seed }: { words: Words; seed: bigint }) {
   return randomItem({ items: words.answers, random: createRandom(seed) })
 }
@@ -202,7 +208,7 @@ function rejectionFor({
   if (game.typing.length < WORD_LENGTH) {
     return REJECTION.TOO_SHORT
   }
-  if (!words.allowed.has(game.typing)) {
+  if (game.typing !== game.answer && !words.allowed.has(game.typing)) {
     return REJECTION.NOT_A_WORD
   }
   if (game.hardMode && !usesHints({ game, word: game.typing })) {

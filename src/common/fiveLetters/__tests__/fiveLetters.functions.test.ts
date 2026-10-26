@@ -12,6 +12,7 @@ import {
   isWon,
   letterMarks,
   newGame,
+  nytSolution,
   randomWord,
   score,
   shareText,
@@ -183,5 +184,29 @@ describe('randomWord', () => {
       randomWord({ words: REAL_WORDS, seed: 123456789012345n }),
       randomWord({ words: REAL_WORDS, seed: -7n }),
     ]).toEqual(['SHEEP', 'CROSS'])
+  })
+})
+
+describe('nytSolution', () => {
+  it('reads the answer out of the proxied NYT response', () => {
+    const text =
+      'Title:\n\nURL Source: https://www.nytimes.com/svc/wordle/v2/2026-10-26.json\n\nMarkdown Content:\n{"id":921,"solution":"geeky","print_date":"2026-10-26"}'
+
+    expect(nytSolution(text)).toBe('GEEKY')
+  })
+
+  it('ignores a response without a five-letter answer', () => {
+    expect(nytSolution('{"solution":"toolong"}')).toBeNull()
+  })
+})
+
+describe('an answer missing from the word list', () => {
+  it('is accepted as a guess and wins', () => {
+    const game = [...'GEEKY'].reduce(
+      (state, letter) => typeLetter({ game: state, letter }),
+      newGame({ answer: 'GEEKY' }),
+    )
+
+    expect(isWon(submit({ game, words: WORDS }))).toBe(true)
   })
 })

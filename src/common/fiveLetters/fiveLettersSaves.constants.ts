@@ -13,4 +13,11 @@ export const GAME_STATUS = {
   ABANDONED: 'abandoned',
 } as const
 
-export const DEFAULT_SETTINGS = { hardMode: false, highContrast: false }
+export const DEFAULT_SETTINGS = {
+  hardMode: false,
+  highContrast: false,
+  nytWord: false,
+}
+
+export const NYT_PROXY_URL =
+  'https://r.jina.ai/https://www.nytimes.com/svc/wordle/v2/'

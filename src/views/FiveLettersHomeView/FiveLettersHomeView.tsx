@@ -2,16 +2,12 @@ import { useFiveLettersGames } from '@/common/fiveLetters/fiveLetters.hooks'
 import { BarChart3, Settings } from 'lucide-react'
 
 import { todayIso } from '@/common/date.functions'
-import {
-  dailyWord,
-  dayNumber,
-} from '@/common/fiveLetters/fiveLetters.functions'
+import { dayNumber } from '@/common/fiveLetters/fiveLetters.functions'
 import { GAME_STATUS } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
   dailyId,
   isDaily,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
-import { WORDS } from '@/common/fiveLetters/fiveLettersWords.constants'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { Button } from '@/components/Button/Button'
@@ -23,7 +19,7 @@ import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { DAILY_RESULT_LABEL } from '@/views/FiveLettersHomeView/FiveLettersHomeView.constants'
 
 export function FiveLettersHomeView() {
-  const { games, openGame, startAndOpen, startPractice } = useFiveLettersGames()
+  const { games, openGame, startDaily, startPractice } = useFiveLettersGames()
   const today = todayIso()
   const daily = games.findLast((game) => game.wordId === dailyId(today))
   const practice = games.findLast(
@@ -52,14 +48,7 @@ export function FiveLettersHomeView() {
       <Button
         variant={BUTTON_VARIANT.OUTLINE}
         className="h-auto flex-col py-4 text-base"
-        onClick={() =>
-          daily
-            ? openGame(daily)
-            : startAndOpen({
-                id: dailyId(today),
-                answer: dailyWord({ words: WORDS, date: today }),
-              })
-        }
+        onClick={() => (daily ? openGame(daily) : void startDaily(today))}
       >
         <span>Today's word · #{dayNumber(today)}</span>
         {dailyResult && (

@@ -3,6 +3,7 @@ import type { GAME_STATUS } from '@/common/fiveLetters/fiveLettersSaves.constant
 export interface FiveLettersSettings {
   hardMode: boolean
   highContrast: boolean
+  nytWord: boolean
 }
 
 export type GameStatus = (typeof GAME_STATUS)[keyof typeof GAME_STATUS]
