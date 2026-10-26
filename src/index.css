@@ -6,6 +6,15 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-sl-empty: var(--sl-empty);
+  --color-sl-red: var(--sl-red);
+  --color-sl-red-edge: var(--sl-red-edge);
+  --color-sl-blue: var(--sl-blue);
+  --color-sl-blue-edge: var(--sl-blue-edge);
+  --color-sl-number: var(--sl-number);
+  --color-sl-broken: var(--sl-broken);
+  --color-sl-hint-line: var(--sl-hint-line);
+  --color-sl-hint-target: var(--sl-hint-target);
   --color-tt-empty: var(--tt-empty);
   --color-tt-red: var(--tt-red);
   --color-tt-red-edge: var(--tt-red-edge);
@@ -63,6 +72,15 @@
 }
 
 :root {
+  --sl-empty: #e6e9ee;
+  --sl-red: #e0603f;
+  --sl-red-edge: #b54a30;
+  --sl-blue: #34a7c8;
+  --sl-blue-edge: #2785a0;
+  --sl-number: #ffffff;
+  --sl-broken: #14181f;
+  --sl-hint-line: #e5f0fe;
+  --sl-hint-target: #1565d8;
   --tt-empty: #e6e9ee;
   --tt-red: #e0603f;
   --tt-red-edge: #b54a30;
@@ -112,6 +130,15 @@
 }
 
 .dark {
+  --sl-empty: #2a2e35;
+  --sl-red: #d5583a;
+  --sl-red-edge: #a6432c;
+  --sl-blue: #2e9ebe;
+  --sl-blue-edge: #227a93;
+  --sl-number: #f1f3f6;
+  --sl-broken: #f1f3f6;
+  --sl-hint-line: #1a2b40;
+  --sl-hint-target: #7db5ff;
   --tt-empty: #2a2e35;
   --tt-red: #d5583a;
   --tt-red-edge: #a6432c;

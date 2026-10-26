@@ -2,6 +2,7 @@ import { GAME_ROUTE } from '@/common/route.constants'
 import { routeHash } from '@/common/route.functions'
 import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
 import { GameCard } from '@/components/GameCard/GameCard'
+import { SightlinesIcon } from '@/components/SightlinesIcon/SightlinesIcon'
 import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle'
 import { TwoToneIcon } from '@/components/TwoToneIcon/TwoToneIcon'
 
@@ -17,6 +18,12 @@ export function LauncherView() {
         detail="Fill the grid red and blue, three simple rules"
         href={routeHash([GAME_ROUTE.TWO_TONE])}
         icon={<TwoToneIcon />}
+      />
+      <GameCard
+        title="Sightlines"
+        detail="Blue dots count what they can see"
+        href={routeHash([GAME_ROUTE.SIGHTLINES])}
+        icon={<SightlinesIcon />}
       />
       <GameCard
         title="Five Letters"
