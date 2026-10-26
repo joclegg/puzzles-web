@@ -1,6 +1,7 @@
 import { INPUT_MODE, MISTAKE_CHECK } from '@/common/kakuro/kakuro.constants'
 import type {
   Change,
+  CombinationLine,
   InputMode,
   KakuroGame,
   MistakeCheck,
@@ -23,13 +24,16 @@ export function brokenRuns(game: KakuroGame): Run[] {
   })
 }
 
-export function combinationLines(game: KakuroGame): string[] {
-  return selectedCombinations(game).map(({ run, masks }) => {
-    const direction = run.isAcross ? 'Across' : 'Down'
-    const options =
-      masks.map((mask) => digitsOf(mask).join('')).join('  ') || 'none fit'
-    return `${direction} ${run.sum} in ${run.cells.length}: ${options}`
-  })
+export function combinationLines(game: KakuroGame): CombinationLine[] {
+  return selectedCombinations(game).map(({ run, masks, placed }) => ({
+    label: `${run.isAcross ? 'Across' : 'Down'} ${run.sum} in ${run.cells.length}`,
+    options: masks.map((mask) =>
+      digitsOf(mask).map((digit) => ({
+        digit,
+        placed: (placed & bit(digit)) !== 0,
+      })),
+    ),
+  }))
 }
 
 export function decodeChanges(text: string): Change[] {
@@ -344,6 +348,9 @@ function place({
   digit: number
 }): KakuroGame {
   if (game.notesMode) {
+    if (game.values[cell] !== 0) {
+      return game
+    }
     return setCell({
       game,
       cell,
@@ -397,6 +404,7 @@ function selectedCombinations(game: KakuroGame) {
       .reduce((mask, other) => mask | bit(game.values[other]), 0)
     return {
       run,
+      placed,
       masks: masksFor({ length: run.cells.length, sum: run.sum }).filter(
         (mask) => (mask & placed) === placed,
       ),

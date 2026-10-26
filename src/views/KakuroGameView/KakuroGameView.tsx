@@ -210,7 +210,28 @@ export function KakuroGameView({ id }: { id: number }) {
           aria-label="Combinations"
         >
           {combinationLines(current).map((line) => (
-            <li key={line}>{line}</li>
+            <li key={line.label}>
+              {line.label}:{' '}
+              {line.options.length === 0
+                ? 'none fit'
+                : line.options.map((option) => (
+                    <span
+                      key={option.map((it) => it.digit).join('')}
+                      className="mr-3"
+                    >
+                      {option.map((it) => (
+                        <span
+                          key={it.digit}
+                          className={
+                            it.placed ? 'font-bold text-foreground' : undefined
+                          }
+                        >
+                          {it.digit}
+                        </span>
+                      ))}
+                    </span>
+                  ))}
+            </li>
           ))}
         </ul>
       )}
