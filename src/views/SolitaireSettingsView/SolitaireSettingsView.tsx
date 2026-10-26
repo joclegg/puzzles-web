@@ -57,7 +57,7 @@ export function SolitaireSettingsView() {
       />
       <SettingRow
         label="Tell me when a deal can't be won"
-        detail="Checks after each move, and offers to undo back to the last winnable position."
+        detail="Checks once you have been through the whole stock without playing a card, and offers to undo back to the last winnable position."
         checked={settings.warnUnwinnable}
         onChange={(warnUnwinnable) => set({ warnUnwinnable })}
       />

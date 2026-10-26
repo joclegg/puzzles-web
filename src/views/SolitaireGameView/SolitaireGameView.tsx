@@ -7,7 +7,10 @@ import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { DECK, VERDICT } from '@/common/solitaire/solitaire.constants'
 import {
+  autoFinish,
   boardOf,
+  canAutoFinish,
+  cycledStock,
   gameWon,
   restart,
   tapCard,
@@ -86,6 +89,7 @@ export function SolitaireGameView({ id }: { id: number }) {
     const nextBoard = boardOf(next)
     if (
       !settings.warnUnwinnable ||
+      !cycledStock(next) ||
       gameWon(next) ||
       cardCount(nextBoard) !== DECK.length
     ) {
@@ -189,6 +193,9 @@ export function SolitaireGameView({ id }: { id: number }) {
           update((state) => tapEmptyPile({ game: state, pile }))
         }
       />
+      {canAutoFinish(current) && (
+        <Button onClick={() => update(autoFinish)}>Finish</Button>
+      )}
       <AppDialog
         open={unwinnable && !won}
         title="This deal can't be won now"

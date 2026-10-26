@@ -1,4 +1,4 @@
-import { PILE_KIND } from '@/common/solitaire/solitaire.constants'
+import { DRAW_CARDS, PILE_KIND } from '@/common/solitaire/solitaire.constants'
 import type {
   Board,
   Move,
@@ -17,6 +17,48 @@ import {
   samePile,
 } from '@/common/solitaire/solitaireBoard.functions'
 
+export function autoFinish(game: SolitaireGame): SolitaireGame {
+  return canAutoFinish(game)
+    ? {
+        ...game,
+        moves: [...game.moves, ...autoFinishMoves(game)],
+        selection: null,
+      }
+    : game
+}
+
+export function autoFinishMoves(game: SolitaireGame): Move[] {
+  const moves: Move[] = []
+  let board = boardOf(game)
+  while (!isWon(board)) {
+    const move = board.tableau
+      .map((column, index) => ({ column, index }))
+      .filter(({ column }) => column.cards.length > 0)
+      .map(({ column, index }) =>
+        transfer({
+          from: { kind: PILE_KIND.TABLEAU, index },
+          count: 1,
+          to: { kind: PILE_KIND.FOUNDATION, index: column.cards.at(-1)!.suit },
+        }),
+      )
+      .find((it) =>
+        canMove({
+          board,
+          from: it.from!,
+          count: 1,
+          to: it.to!,
+          order: game.order,
+        }),
+      )
+    if (move === undefined) {
+      return []
+    }
+    moves.push(move)
+    board = moveCards({ board, from: move.from!, count: 1, to: move.to! })
+  }
+  return moves
+}
+
 export function boardOf(game: SolitaireGame): Board {
   return game.moves.reduce(
     (board, move) =>
@@ -29,6 +71,26 @@ export function boardOf(game: SolitaireGame): Board {
             to: move.to!,
           }),
     game.start,
+  )
+}
+
+export function canAutoFinish(game: SolitaireGame): boolean {
+  const board = boardOf(game)
+  return (
+    !isWon(board) &&
+    board.stock.length === 0 &&
+    board.waste.length === 0 &&
+    board.tableau.every((column) => column.faceUpFrom === 0)
+  )
+}
+
+export function cycledStock(game: SolitaireGame): boolean {
+  const board = boardOf(game)
+  const cards = board.stock.length + board.waste.length
+  const lastPlay = game.moves.findLastIndex((move) => !move.draw)
+  const draws = game.moves.length - 1 - lastPlay
+  return (
+    cards === 0 || draws >= Math.ceil(cards / DRAW_CARDS[game.drawMode]) + 1
   )
 }
 
