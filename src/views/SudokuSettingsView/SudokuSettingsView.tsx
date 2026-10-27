@@ -43,7 +43,7 @@ export function SudokuSettingsView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
       <ScreenHeader title="Settings" back={[GAME_ROUTE.SUDOKU]} />
       <h2 className="pt-2 font-semibold">Entering numbers</h2>
       <OptionGroup

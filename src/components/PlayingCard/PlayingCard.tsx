@@ -45,11 +45,10 @@ export function PlayingCard({
             suit.isRed ? 'text-sol-red-suit' : 'text-sol-black-suit',
           )}
         >
-          <span className="absolute top-[3cqw] left-[6cqw] flex items-center gap-[2cqw] text-[30cqw] leading-none">
-            <span>{RANK_LABEL[card.rank]}</span>
-            <span>{suit.symbol}</span>
+          <span className="absolute top-[3cqw] left-[6cqw] text-[34cqw] leading-none">
+            {RANK_LABEL[card.rank]}
           </span>
-          <span className="absolute right-0 bottom-[6cqw] left-0 text-center text-[60cqw] leading-none">
+          <span className="absolute top-[3cqw] right-[6cqw] text-[34cqw] leading-none">
             {suit.symbol}
           </span>
         </span>

@@ -21,7 +21,7 @@ export function SolitaireHistoryView() {
     .sort((a, b) => b.startedAt - a.startedAt)
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
       <ScreenHeader title="History" back={[GAME_ROUTE.SOLITAIRE]} />
       <div className="flex flex-wrap gap-2" role="group" aria-label="Draw mode">
         {[null, ...Object.values(DRAW_MODE)].map((mode) => (

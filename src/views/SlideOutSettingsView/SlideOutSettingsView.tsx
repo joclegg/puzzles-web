@@ -16,7 +16,7 @@ export function SlideOutSettingsView() {
   })
 
   return (
-    <main className="mx-auto flex max-w-md flex-col px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
       <ScreenHeader title="Settings" back={[GAME_ROUTE.SLIDE_OUT]} />
       <SettingRow
         label="Show the timer"

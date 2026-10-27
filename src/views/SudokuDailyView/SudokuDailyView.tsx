@@ -36,7 +36,7 @@ export function SudokuDailyView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
       <ScreenHeader title="Daily puzzles" back={[GAME_ROUTE.SUDOKU]} />
       <div className="flex items-center">
         <Button

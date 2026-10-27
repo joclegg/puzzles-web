@@ -23,7 +23,7 @@ export function SightlinesSettingsView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
       <ScreenHeader title="Settings" back={[GAME_ROUTE.SIGHTLINES]} />
       <h2 className="pt-2 font-semibold">Filling in</h2>
       <div

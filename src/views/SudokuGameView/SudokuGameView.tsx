@@ -127,7 +127,7 @@ export function SudokuGameView({ id }: { id: number }) {
 
   if (!saved || !game) {
     return (
-      <main className="mx-auto max-w-md px-4">
+      <main className="mx-auto max-w-3xl px-4">
         <ScreenHeader title={TITLE} back={[GAME_ROUTE.SUDOKU]} />
         <p>This game could not be found.</p>
       </main>
@@ -247,7 +247,7 @@ export function SudokuGameView({ id }: { id: number }) {
   )
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-3 pb-6 lg:max-w-4xl">
+    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col items-center gap-3 px-3 pb-6">
       <div className="w-full">
         <ScreenHeader
           title={sudokuTitle(saved)}
