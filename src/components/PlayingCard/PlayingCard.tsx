@@ -45,10 +45,10 @@ export function PlayingCard({
             suit.isRed ? 'text-sol-red-suit' : 'text-sol-black-suit',
           )}
         >
-          <span className="absolute top-[3cqw] left-[6cqw] text-[34cqw] leading-none">
+          <span className="absolute top-[3cqw] left-[6cqw] text-[30cqw] leading-none">
             {RANK_LABEL[card.rank]}
           </span>
-          <span className="absolute top-[3cqw] right-[6cqw] text-[34cqw] leading-none">
+          <span className="absolute inset-x-0 bottom-[10cqw] text-center text-[75cqw] leading-none">
             {suit.symbol}
           </span>
         </span>
