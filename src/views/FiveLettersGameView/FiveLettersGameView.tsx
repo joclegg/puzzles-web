@@ -188,7 +188,7 @@ export function FiveLettersGameView({ id }: { id: number }) {
   return (
     <main
       className={cn(
-        'mx-auto flex min-h-dvh max-w-3xl flex-col items-center gap-3 px-2 pb-4',
+        'mx-auto flex h-dvh max-w-3xl flex-col items-center gap-2 px-2 pb-3',
         settings.highContrast && 'high-contrast',
       )}
     >
@@ -254,7 +254,7 @@ export function FiveLettersGameView({ id }: { id: number }) {
             ? ''
             : (hint ?? '')}
       </p>
-      <div className="flex w-full flex-1 items-center justify-center px-2">
+      <div className="[container-type:size] flex min-h-0 w-full flex-1 items-center justify-center">
         <FiveLettersBoard game={game} />
       </div>
       <FiveLettersKeyboard

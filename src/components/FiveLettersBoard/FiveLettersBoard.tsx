@@ -24,7 +24,7 @@ export function FiveLettersBoard({ game }: { game: FiveLettersGame }) {
 
   return (
     <div
-      className="grid w-[min(100%,calc((100dvh-22rem)*5/6))] gap-1.5"
+      className="grid w-[min(100cqw,calc(100cqh*5/6))] gap-1.5"
       role="grid"
       aria-label="Guesses"
     >
