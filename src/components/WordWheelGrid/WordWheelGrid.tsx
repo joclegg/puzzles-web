@@ -5,7 +5,10 @@ import {
   crosswordSize,
   letterAt,
 } from '@/common/wordWheel/wordWheelCrossword.functions'
-import { GRID_COLUMNS_CLASS } from '@/components/WordWheelGrid/WordWheelGrid.constants'
+import {
+  CELL_GAP,
+  CELL_SIZE,
+} from '@/components/WordWheelGrid/WordWheelGrid.constants'
 
 export function WordWheelGrid({
   puzzle,
@@ -18,44 +21,52 @@ export function WordWheelGrid({
 }) {
   const { rows, cols } = crosswordSize(puzzle)
   const letters = letterAt(puzzle)
+  const step = CELL_SIZE + CELL_GAP
 
   return (
-    <div
+    <svg
       role="grid"
       aria-label="Crossword"
-      className={cn(
-        'grid w-full max-w-sm gap-1 lg:max-w-xl',
-        GRID_COLUMNS_CLASS[cols],
-      )}
+      viewBox={`0 0 ${cols * step - CELL_GAP} ${rows * step - CELL_GAP}`}
+      className="size-full max-w-xl"
     >
-      {Array.from({ length: rows * cols }, (_, index) => {
-        const key = cellKey({
-          row: Math.floor(index / cols),
-          col: index % cols,
-        })
-        const letter = letters.get(key)
-        if (letter === undefined) {
-          return <span key={key} aria-hidden className="aspect-square" />
-        }
+      {[...letters.entries()].map(([key, letter]) => {
+        const [row, col] = key.split(',').map(Number)
         const isShown = shown.has(key)
         return (
-          <span
-            key={key}
+          <g
+            key={cellKey({ row, col })}
             role="gridcell"
             aria-label={isShown ? letter : 'hidden'}
-            className={cn(
-              'flex aspect-square items-center justify-center rounded-md text-lg font-bold text-ww-cell-text',
-              isShown
-                ? revealed.has(key)
-                  ? 'bg-ww-cell-hinted'
-                  : 'bg-ww-cell-found'
-                : 'bg-ww-cell',
-            )}
           >
-            {isShown ? letter : ''}
-          </span>
+            <rect
+              x={col * step}
+              y={row * step}
+              width={CELL_SIZE}
+              height={CELL_SIZE}
+              rx={6}
+              className={cn(
+                isShown
+                  ? revealed.has(key)
+                    ? 'fill-ww-cell-hinted'
+                    : 'fill-ww-cell-found'
+                  : 'fill-ww-cell',
+              )}
+            />
+            {isShown && (
+              <text
+                x={col * step + CELL_SIZE / 2}
+                y={row * step + CELL_SIZE / 2}
+                dominantBaseline="central"
+                textAnchor="middle"
+                className="fill-ww-cell-text text-[22px] font-bold"
+              >
+                {letter}
+              </text>
+            )}
+          </g>
         )
       })}
-    </div>
+    </svg>
   )
 }

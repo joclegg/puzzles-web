@@ -181,7 +181,7 @@ export function WordWheelGameView({ id }: { id: number }) {
   const shown = shownCells(game)
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col items-center gap-3 px-4 pb-6">
+    <main className="mx-auto flex h-dvh max-w-3xl flex-col items-center gap-3 px-4 pb-4">
       <div className="w-full">
         <ScreenHeader
           title={wordWheelTitle(saved)}
@@ -249,8 +249,8 @@ export function WordWheelGameView({ id }: { id: number }) {
           />
         </ScreenHeader>
       </div>
-      <div className="flex w-full flex-col items-center gap-3 lg:flex-row lg:items-center lg:justify-center lg:gap-10">
-        <div className="flex w-full justify-center lg:flex-1">
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-3 lg:flex-row lg:items-center lg:justify-center lg:gap-10">
+        <div className="flex min-h-0 w-full flex-1 justify-center lg:h-full">
           <WordWheelGrid
             puzzle={game.puzzle}
             shown={shown}
