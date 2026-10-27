@@ -1,3 +1,4 @@
+import { DEFAULT_ASSISTS } from '@/common/assists.constants'
 import {
   HIGHLIGHT_STYLE,
   INPUT_MODE,
@@ -68,6 +69,7 @@ export const DEFAULT_MODE_SETTINGS: ModeSettings = {
 }
 
 export const DEFAULT_SETTINGS: SudokuSettings = {
+  ...DEFAULT_ASSISTS,
   inputMode: INPUT_MODE.CELL_FIRST,
   classic: DEFAULT_MODE_SETTINGS,
   killer: { ...DEFAULT_MODE_SETTINGS, greyGivenCells: false },

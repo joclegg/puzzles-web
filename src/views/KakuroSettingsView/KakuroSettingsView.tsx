@@ -1,3 +1,4 @@
+import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import {
   INPUT_MODE,
   INPUT_MODE_LABEL,
@@ -81,6 +82,13 @@ export function KakuroSettingsView() {
         checked={settings.showCombinations}
         onChange={(showCombinations) => set({ showCombinations })}
       />
+      <SettingRow
+        label="Grey out used-up numbers"
+        detail="Dim a number on the pad once every cell that needs it has it."
+        checked={settings.greyUsedDigits}
+        onChange={(greyUsedDigits) => set({ greyUsedDigits })}
+      />
+      <AssistSettings assists={settings} hintStyles onChange={set} />
     </main>
   )
 }

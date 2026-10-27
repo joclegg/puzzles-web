@@ -1,5 +1,6 @@
 import { test as base } from '@playwright/test'
 
+import { AssistsPage } from '@e2e/assistsPage'
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { KakuroPage } from '@e2e/kakuroPage'
 import { LauncherPage } from '@e2e/launcherPage'
@@ -13,6 +14,7 @@ import { WordWheelPage } from '@e2e/wordWheelPage'
 const FIXED_NOW = new Date('2026-10-25T10:00:00')
 
 export const test = base.extend<{
+  assistsPage: AssistsPage
   launcherPage: LauncherPage
   fiveLettersPage: FiveLettersPage
   twoTonePage: TwoTonePage
@@ -26,6 +28,9 @@ export const test = base.extend<{
   page: async ({ page }, use) => {
     await page.clock.setFixedTime(FIXED_NOW)
     await use(page)
+  },
+  assistsPage: async ({ page }, use) => {
+    await use(new AssistsPage(page))
   },
   launcherPage: async ({ page }, use) => {
     const launcherPage = new LauncherPage(page)

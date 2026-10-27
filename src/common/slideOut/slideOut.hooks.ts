@@ -1,5 +1,6 @@
 import { DAILY_PREFIX } from '@/common/puzzleSaves.constants'
 import {
+  revealPuzzle,
   solvePuzzle,
   startPuzzle,
   updatePuzzle,
@@ -90,5 +91,19 @@ export function useSlideOutGames() {
     return finished.newBest
   }
 
-  return { games, openGame, startRandom, openDaily, saveProgress, finish }
+  function reveal({ id, elapsedMs }: { id: number; elapsedMs: number }) {
+    setGames((all) =>
+      revealPuzzle({ games: all, id, elapsedMs, now: Date.now() }),
+    )
+  }
+
+  return {
+    games,
+    openGame,
+    startRandom,
+    openDaily,
+    saveProgress,
+    finish,
+    reveal,
+  }
 }

@@ -13,7 +13,7 @@ export function MoreMenu({ items }: { items: readonly MenuItem[] }) {
         <EllipsisVertical className="size-5" />
       </Menu.Trigger>
       <Menu.Portal>
-        <Menu.Positioner align="end" sideOffset={4}>
+        <Menu.Positioner className="z-50" align="end" sideOffset={4}>
           <Menu.Popup className="min-w-40 rounded-lg bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-border">
             {items.map((item) => (
               <Menu.Item

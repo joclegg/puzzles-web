@@ -1,6 +1,7 @@
+import type { Assists } from '@/common/assists.types'
 import type { GAME_STATUS } from '@/common/fiveLetters/fiveLettersSaves.constants'
 
-export interface FiveLettersSettings {
+export interface FiveLettersSettings extends Assists {
   hardMode: boolean
   highContrast: boolean
 }

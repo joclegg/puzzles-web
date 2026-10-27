@@ -1,11 +1,17 @@
-import { Undo2 } from 'lucide-react'
+import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
+import { Lightbulb, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 
+import { HINT_STYLE } from '@/common/assists.constants'
 import { formatDuration } from '@/common/format.functions'
 import { useGameTimer } from '@/common/gameTimer.hooks'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
-import { DECK, VERDICT } from '@/common/solitaire/solitaire.constants'
+import {
+  DECK,
+  PILE_KIND,
+  VERDICT,
+} from '@/common/solitaire/solitaire.constants'
 import {
   autoFinish,
   boardOf,
@@ -13,6 +19,7 @@ import {
   cycledStock,
   gameWon,
   restart,
+  dropCards,
   tapCard,
   tapEmptyPile,
   tapStock,
@@ -20,7 +27,8 @@ import {
 } from '@/common/solitaire/solitaire.functions'
 import { useSolitaireGames } from '@/common/solitaire/solitaire.hooks'
 import type { SolitaireGame } from '@/common/solitaire/solitaire.types'
-import { cardCount } from '@/common/solitaire/solitaireBoard.functions'
+import { cardCount, cardsIn } from '@/common/solitaire/solitaireBoard.functions'
+import { findHint } from '@/common/solitaire/solitaireHint.functions'
 import {
   decodeBoard,
   decodeMoves,
@@ -40,9 +48,29 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
+import { cardName } from '@/components/PlayingCard/PlayingCard.functions'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SolitaireTable } from '@/components/SolitaireTable/SolitaireTable'
+
+const TUTORIAL = [
+  {
+    target: '[aria-label="Column 1"]',
+    text: 'Build down the seven columns in alternating colours. Only a King, or a run starting with one, can go in an empty column.',
+  },
+  {
+    target: '[aria-label^="Stock"]',
+    text: 'Tap the stock to turn cards onto the waste. When it runs out, tap again to turn the waste over.',
+  },
+  {
+    target: '[aria-label^="Foundation"]',
+    text: 'Build each suit up from Ace to King here. Fill all four to win.',
+  },
+  {
+    target: '[aria-label="Show a hint"]',
+    text: 'Tap a card to send it to the best place, or drag it. Stuck? The bulb suggests a move.',
+  },
+]
 
 export function SolitaireGameView({ id }: { id: number }) {
   const { games, startRandom, saveProgress, finish, checkWinnable } =
@@ -65,6 +93,7 @@ export function SolitaireGameView({ id }: { id: number }) {
       : null,
   )
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
+  const [hint, setHint] = useState<string | null>(null)
   const [unwinnable, setUnwinnable] = useState(false)
   const [lastWinnable, setLastWinnable] = useState(0)
   const won = game !== null && gameWon(game)
@@ -109,12 +138,44 @@ export function SolitaireGameView({ id }: { id: number }) {
     })
   }
 
+  function onHint() {
+    const found = findHint(current)
+    if (found === null) {
+      setHint('No moves left.')
+      return
+    }
+    const { selection, to } = found
+    if (selection === null || to === null) {
+      if (settings.hintStyle === HINT_STYLE.FILL) {
+        update(tapStock)
+        return
+      }
+      setHint('Draw from the stock.')
+      return
+    }
+    const cards = cardsIn({ board, pile: selection.pile })
+    const index = cards.length - selection.count
+    if (settings.hintStyle === HINT_STYLE.FILL) {
+      update((state) =>
+        dropCards({ game: state, from: selection.pile, index, to }),
+      )
+      return
+    }
+    setGame({ ...current, selection })
+    setHint(
+      `Move the ${cardName(cards[index])} to ${
+        to.kind === PILE_KIND.FOUNDATION ? 'its foundation' : 'another column'
+      }.`,
+    )
+  }
+
   function update(change: (state: SolitaireGame) => SolitaireGame) {
     if (!saved) {
       return
     }
     const next = change(current)
     setGame(next)
+    setHint(null)
     if (next.moves === current.moves) {
       return
     }
@@ -145,7 +206,7 @@ export function SolitaireGameView({ id }: { id: number }) {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-xl flex-col items-center gap-3 px-2 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-xl flex-col items-center gap-3 px-2 pb-6 lg:max-w-4xl">
       <div className="w-full px-2">
         <ScreenHeader
           title={dealTitle(saved)}
@@ -165,6 +226,27 @@ export function SolitaireGameView({ id }: { id: number }) {
           >
             <Undo2 className="size-5" />
           </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a hint"
+              disabled={won}
+              onClick={onHint}
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
+          {settings.showTutorial && (
+            <HowToPlay steps={TUTORIAL}>
+              <p>Move every card up to the four foundations, Ace to King.</p>
+              <p>
+                In the columns, build down in alternating colours. Any face-up
+                run can move together.
+              </p>
+              <p>Only a King can fill an empty column.</p>
+              <p>Tap a card to send it to the best place, or drag it.</p>
+            </HowToPlay>
+          )}
           <MoreMenu
             items={[
               {
@@ -192,7 +274,13 @@ export function SolitaireGameView({ id }: { id: number }) {
         onEmpty={(pile) =>
           update((state) => tapEmptyPile({ game: state, pile }))
         }
+        onDrop={({ from, index, to }) =>
+          update((state) => dropCards({ game: state, from, index, to }))
+        }
       />
+      <p className="h-6 text-sm font-semibold" role="status">
+        {hint ?? ''}
+      </p>
       {canAutoFinish(current) && (
         <Button onClick={() => update(autoFinish)}>Finish</Button>
       )}

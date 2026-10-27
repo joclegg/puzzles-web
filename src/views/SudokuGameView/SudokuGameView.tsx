@@ -1,6 +1,14 @@
-import { Eraser, Pencil, Redo2, SquareDashed, Undo2 } from 'lucide-react'
+import {
+  Eraser,
+  Lightbulb,
+  Pencil,
+  Redo2,
+  SquareDashed,
+  Undo2,
+} from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
 
+import { HINT_STYLE } from '@/common/assists.constants'
 import { formatDuration } from '@/common/format.functions'
 import { useGameTimer } from '@/common/gameTimer.hooks'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
@@ -17,6 +25,7 @@ import {
   newGame,
   redo,
   restart,
+  placeHint,
   revealSolution,
   tapCell,
   tapDigit,
@@ -24,7 +33,8 @@ import {
   undo,
 } from '@/common/sudoku/sudoku.functions'
 import { useSudokuGames } from '@/common/sudoku/sudoku.hooks'
-import type { SudokuGame } from '@/common/sudoku/sudoku.types'
+import type { SudokuGame, SudokuHint } from '@/common/sudoku/sudoku.types'
+import { findHint } from '@/common/sudoku/sudokuHint.functions'
 import { decodeMoves, encodeMoves } from '@/common/sudoku/sudokuMoves.functions'
 import { decodePuzzle } from '@/common/sudoku/sudokuPuzzle.functions'
 import {
@@ -42,10 +52,30 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
+import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { NumberPad } from '@/components/NumberPad/NumberPad'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SudokuBoard } from '@/components/SudokuBoard/SudokuBoard'
+
+const TUTORIAL = [
+  {
+    target: '[aria-label="Board"]',
+    text: 'Tap a cell to select it. Givens are shaded and cannot change.',
+  },
+  {
+    target: '[aria-label="Number pad"]',
+    text: 'Then tap a number to place it. The pencil puts numbers in as notes, the eraser clears a cell.',
+  },
+  {
+    target: '[aria-label="Show a hint"]',
+    text: 'Stuck? The bulb points at a cell you can fill next and says why.',
+  },
+  {
+    target: '[aria-label="More"]',
+    text: 'Restart, show the solution and settings live in this menu.',
+  },
+]
 
 export function SudokuGameView({ id }: { id: number }) {
   const { games, saveProgress, finish } = useSudokuGames()
@@ -73,6 +103,7 @@ export function SudokuGameView({ id }: { id: number }) {
   const [confirming, setConfirming] = useState<'restart' | 'reveal' | null>(
     null,
   )
+  const [hint, setHint] = useState<SudokuHint | null>(null)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const finished = saved?.status !== SUDOKU_STATUS.IN_PROGRESS
   const complete = game !== null && isComplete(game)
@@ -160,6 +191,7 @@ export function SudokuGameView({ id }: { id: number }) {
     }
     const next = change(current)
     setGame(next)
+    setHint(null)
     if (
       next.values !== current.values ||
       next.notes !== current.notes ||
@@ -167,6 +199,19 @@ export function SudokuGameView({ id }: { id: number }) {
     ) {
       persist({ next, status: isComplete(next) ? 'done' : null })
     }
+  }
+
+  function onHint() {
+    const found = findHint(current)
+    if (found === null || finished || complete) {
+      return
+    }
+    if (settings.hintStyle === HINT_STYLE.FILL) {
+      update((state) => placeHint({ game: state, hint: found }))
+      return
+    }
+    setGame({ ...current, selected: found.cell })
+    setHint(found)
   }
 
   function confirm() {
@@ -202,7 +247,7 @@ export function SudokuGameView({ id }: { id: number }) {
   )
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-3 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-3 pb-6 lg:max-w-4xl">
       <div className="w-full">
         <ScreenHeader
           title={sudokuTitle(saved)}
@@ -232,13 +277,34 @@ export function SudokuGameView({ id }: { id: number }) {
           >
             <Redo2 className="size-5" />
           </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a hint"
+              disabled={complete || finished}
+              onClick={onHint}
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
+          {settings.showTutorial && (
+            <HowToPlay steps={TUTORIAL}>
+              <p>
+                Fill the grid so every row, column and box has each number once.
+              </p>
+              <p>
+                In killer sudoku the numbers in each dashed cage also add up to
+                its total, with no number repeated in a cage.
+              </p>
+            </HowToPlay>
+          )}
           <MoreMenu
             items={[
               {
                 label: 'Restart puzzle',
                 onClick: () => setConfirming('restart'),
               },
-              ...(current.puzzle.solution !== null
+              ...(current.puzzle.solution !== null && settings.allowReveal
                 ? [
                     {
                       label: 'Show solution',
@@ -260,6 +326,9 @@ export function SudokuGameView({ id }: { id: number }) {
         boldPlacedDigits={modeSettings.boldPlacedDigits}
         onCell={(cell) => update((state) => tapCell({ game: state, cell }))}
       />
+      <p className="h-6 text-sm font-semibold" role="status">
+        {hint?.message ?? ''}
+      </p>
       <NumberPad
         digits={digits}
         activeDigit={digitFirst ? current.activeDigit : null}

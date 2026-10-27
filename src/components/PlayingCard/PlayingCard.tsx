@@ -8,6 +8,7 @@ export function PlayingCard({
   faceUp,
   selected,
   label,
+  dragId,
   onTap,
   className,
 }: {
@@ -15,6 +16,7 @@ export function PlayingCard({
   faceUp: boolean
   selected: boolean
   label: string
+  dragId?: string
   onTap: () => void
   className?: string
 }) {
@@ -24,25 +26,32 @@ export function PlayingCard({
       type="button"
       aria-label={label}
       aria-pressed={selected}
+      data-drag={dragId}
       onClick={onTap}
       className={cn(
-        'relative block aspect-[5/7] w-full rounded-md border border-sol-card-edge text-left shadow-sm',
+        '@container relative block aspect-[5/7] w-full rounded-md border border-sol-card-edge text-left shadow-sm',
         faceUp && card !== null
           ? 'bg-sol-card-face'
           : 'bg-sol-card-back bg-[repeating-linear-gradient(45deg,transparent_0_4px,var(--sol-card-back-pattern)_4px_5px)]',
         selected && 'ring-3 ring-sol-selected',
+        dragId !== undefined && 'touch-none',
         className,
       )}
     >
       {faceUp && card !== null && suit !== null && (
         <span
           className={cn(
-            'absolute top-0.5 left-1 flex flex-col text-[0.8rem] leading-none font-bold sm:text-base',
+            'absolute inset-0 font-bold',
             suit.isRed ? 'text-sol-red-suit' : 'text-sol-black-suit',
           )}
         >
-          <span>{RANK_LABEL[card.rank]}</span>
-          <span>{suit.symbol}</span>
+          <span className="absolute top-[3cqw] left-[6cqw] flex items-center gap-[2cqw] text-[30cqw] leading-none">
+            <span>{RANK_LABEL[card.rank]}</span>
+            <span>{suit.symbol}</span>
+          </span>
+          <span className="absolute right-0 bottom-[6cqw] left-0 text-center text-[60cqw] leading-none">
+            {suit.symbol}
+          </span>
         </span>
       )}
     </button>

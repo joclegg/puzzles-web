@@ -32,7 +32,10 @@ export function SightlinesBoard({
     <div
       role="grid"
       aria-label="Board"
-      className={cn('grid w-full max-w-md gap-1.5', GRID_COLUMNS_CLASS[size])}
+      className={cn(
+        'grid w-full max-w-md gap-1.5 lg:max-w-[min(100%,calc(100dvh-16rem))]',
+        GRID_COLUMNS_CLASS[size],
+      )}
     >
       {[...dots].map((value, cell) => {
         const dot = value as Dot

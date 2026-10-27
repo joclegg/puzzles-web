@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { PUZZLE_STATUS } from '@/common/puzzleSaves.constants'
 import {
+  revealPuzzle,
   dailyDate,
   dailyPuzzleId,
   inProgressPuzzles,
@@ -115,5 +116,24 @@ describe('dailyDate', () => {
       '2026-10-25',
       null,
     ])
+  })
+})
+
+describe('revealPuzzle', () => {
+  it('ends the puzzle without solving it', () => {
+    const { games, game } = startPuzzle({
+      games: [],
+      ref: { id: 'bank_1', size: 6, puzzle: 'p' },
+      now: 1,
+    })
+
+    const [revealed] = revealPuzzle({
+      games,
+      id: game.id,
+      elapsedMs: 5,
+      now: 9,
+    })
+
+    expect([revealed.status, revealed.finishedAt]).toEqual(['revealed', 9])
   })
 })

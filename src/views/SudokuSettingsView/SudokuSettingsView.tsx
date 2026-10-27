@@ -22,6 +22,7 @@ import type {
   ModeSettings,
   SudokuSettings,
 } from '@/common/sudoku/sudokuSaves.types'
+import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
@@ -163,6 +164,11 @@ export function SudokuSettingsView() {
         detail="Best times are still recorded"
         checked={current.showTimer}
         onChange={(showTimer) => set({ showTimer })}
+      />
+      <AssistSettings
+        assists={settings}
+        hintStyles
+        onChange={(patch) => setSettings((all) => ({ ...all, ...patch }))}
       />
     </main>
   )

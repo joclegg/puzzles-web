@@ -12,6 +12,16 @@ export interface Change {
   clearedNotes: number[]
 }
 
+export interface CombinationDigit {
+  digit: number
+  placed: boolean
+}
+
+export interface CombinationLine {
+  label: string
+  options: CombinationDigit[][]
+}
+
 export type InputMode = (typeof INPUT_MODE)[keyof typeof INPUT_MODE]
 
 export interface KakuroGame {
@@ -31,6 +41,12 @@ export interface KakuroGame {
   undone: Change[]
   marked: Set<number>
   markActive: boolean
+}
+
+export interface KakuroHint {
+  cell: number
+  digit: number
+  message: string
 }
 
 export type MistakeCheck = (typeof MISTAKE_CHECK)[keyof typeof MISTAKE_CHECK]

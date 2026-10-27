@@ -53,6 +53,14 @@ describe('tapDigit', () => {
     expect([game.values[4], digitsOf(game.notes[4])]).toEqual([0, [2]])
   })
 
+  it('keeps a filled cell when a note is tapped on it', () => {
+    const filled = enter({ game: newGame({ puzzle: SMALL }), moves: [[4, 1]] })
+
+    const game = tapDigit({ game: toggleNotes(filled), digit: 2 })
+
+    expect([game.values[4], game.notes[4]]).toEqual([1, 0])
+  })
+
   it('leaves a starting digit alone', () => {
     const puzzle = createPuzzle({ ...SMALL, givens: new Set([4]) })
 
@@ -156,8 +164,24 @@ describe('combinationLines', () => {
     })
 
     expect(combinationLines(game)).toEqual([
-      'Across 3 in 2: 12',
-      'Down 4 in 2: 13',
+      {
+        label: 'Across 3 in 2',
+        options: [
+          [
+            { digit: 1, placed: false },
+            { digit: 2, placed: true },
+          ],
+        ],
+      },
+      {
+        label: 'Down 4 in 2',
+        options: [
+          [
+            { digit: 1, placed: false },
+            { digit: 3, placed: false },
+          ],
+        ],
+      },
     ])
   })
 })

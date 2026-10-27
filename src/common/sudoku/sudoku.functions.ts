@@ -15,6 +15,7 @@ import type {
   PlayOptions,
   Puzzle,
   SudokuGame,
+  SudokuHint,
 } from '@/common/sudoku/sudoku.types'
 import { digitBit, gridFor } from '@/common/sudoku/sudokuPuzzle.functions'
 
@@ -272,6 +273,20 @@ export function noteHighlightDigit(game: SudokuGame): number | null {
   return game.options.notesStyle === HIGHLIGHT_STYLE.NUMBER
     ? highlightDigit(game)
     : null
+}
+
+export function placeHint({
+  game,
+  hint,
+}: {
+  game: SudokuGame
+  hint: SudokuHint
+}): SudokuGame {
+  return enter({
+    game: { ...game, notesMode: false, selected: hint.cell },
+    cell: hint.cell,
+    digit: hint.digit,
+  })
 }
 
 export function redo(game: SudokuGame): SudokuGame {

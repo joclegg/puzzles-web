@@ -77,6 +77,10 @@ export function reveal({
   return { ...withCell, found: [...game.found, ...completed] }
 }
 
+export function revealAll(game: WordWheelGame): WordWheelGame {
+  return { ...game, found: [...puzzleWords(game.puzzle)], last: null }
+}
+
 export function shownCells(game: WordWheelGame): Set<string> {
   return new Set([
     ...game.puzzle.placements

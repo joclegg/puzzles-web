@@ -23,7 +23,10 @@ export function WordWheelGrid({
     <div
       role="grid"
       aria-label="Crossword"
-      className={cn('grid w-full max-w-sm gap-1', GRID_COLUMNS_CLASS[cols])}
+      className={cn(
+        'grid w-full max-w-sm gap-1 lg:max-w-xl',
+        GRID_COLUMNS_CLASS[cols],
+      )}
     >
       {Array.from({ length: rows * cols }, (_, index) => {
         const key = cellKey({

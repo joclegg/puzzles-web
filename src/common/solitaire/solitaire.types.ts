@@ -54,4 +54,9 @@ export interface SolitaireGame {
   order: BuildOrder
 }
 
+export interface SolitaireHint {
+  selection: Selection | null
+  to: Pile | null
+}
+
 export type Verdict = (typeof VERDICT)[keyof typeof VERDICT]

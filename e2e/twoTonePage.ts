@@ -8,12 +8,16 @@ export class TwoTonePage {
   readonly dialog: Locator
   readonly hintMessage: Locator
   readonly timer: Locator
+  readonly startingTilesToggle: Locator
 
   constructor(page: Page) {
     this.page = page
     this.board = page.getByRole('grid', { name: 'Board' })
     this.dialog = page.getByRole('dialog')
     this.hintMessage = page.getByRole('status')
+    this.startingTilesToggle = page.getByRole('button', {
+      name: 'Show the starting tiles',
+    })
     this.timer = page.getByRole('timer')
   }
 

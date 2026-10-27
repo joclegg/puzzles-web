@@ -9,6 +9,7 @@ export interface FiveLettersGame {
   typing: string
   hardMode: boolean
   rejection: Rejection | null
+  revealed: boolean
 }
 
 export type Mark = (typeof MARK)[keyof typeof MARK]

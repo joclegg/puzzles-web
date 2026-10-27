@@ -1,3 +1,4 @@
+import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import {
   DEFAULT_SETTINGS,
   SETTINGS_KEY,
@@ -31,6 +32,12 @@ export function FiveLettersSettingsView() {
         checked={settings.highContrast}
         onChange={(highContrast) =>
           setSettings((current) => ({ ...current, highContrast }))
+        }
+      />
+      <AssistSettings
+        assists={settings}
+        onChange={(patch) =>
+          setSettings((current) => ({ ...current, ...patch }))
         }
       />
     </main>

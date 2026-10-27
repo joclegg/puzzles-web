@@ -1,3 +1,4 @@
+import type { Assists } from '@/common/assists.types'
 import type { Level } from '@/common/wordWheel/wordWheel.types'
 
 export interface LevelStats {
@@ -14,7 +15,7 @@ export interface Progress {
   revealed: string[]
 }
 
-export interface WordWheelSettings {
+export interface WordWheelSettings extends Assists {
   showTimer: boolean
   showBonusCount: boolean
 }

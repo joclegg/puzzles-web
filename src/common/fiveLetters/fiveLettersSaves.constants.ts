@@ -1,3 +1,4 @@
+import { DEFAULT_ASSISTS } from '@/common/assists.constants'
 export const GAMES_KEY = 'fiveLetters.games'
 
 export const SETTINGS_KEY = 'fiveLetters.settings'
@@ -16,6 +17,7 @@ export const GAME_STATUS = {
 } as const
 
 export const DEFAULT_SETTINGS = {
+  ...DEFAULT_ASSISTS,
   hardMode: false,
   highContrast: false,
 }

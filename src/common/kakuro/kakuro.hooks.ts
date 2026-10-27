@@ -7,6 +7,7 @@ import {
 import { GAMES_KEY } from '@/common/kakuro/kakuroSettings.constants'
 import {
   dailyPuzzleId,
+  revealPuzzle,
   solvePuzzle,
   startPuzzle,
   updatePuzzle,
@@ -85,5 +86,19 @@ export function useKakuroGames() {
     return finished.newBest
   }
 
-  return { games, openGame, startRandom, openDaily, saveProgress, finish }
+  function reveal({ id, elapsedMs }: { id: number; elapsedMs: number }) {
+    setGames((all) =>
+      revealPuzzle({ games: all, id, elapsedMs, now: Date.now() }),
+    )
+  }
+
+  return {
+    games,
+    openGame,
+    startRandom,
+    openDaily,
+    saveProgress,
+    finish,
+    reveal,
+  }
 }

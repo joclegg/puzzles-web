@@ -1,3 +1,4 @@
+import { DEFAULT_ASSISTS } from '@/common/assists.constants'
 import { DRAW_MODE } from '@/common/solitaire/solitaire.constants'
 import type { SolitaireSettings } from '@/common/solitaire/solitaireSaves.types'
 
@@ -20,6 +21,7 @@ export const DEAL_STATUS_LABEL = {
 }
 
 export const DEFAULT_SETTINGS: SolitaireSettings = {
+  ...DEFAULT_ASSISTS,
   drawMode: DRAW_MODE.DRAW_ONE,
   reverse: false,
   oneTapMove: true,

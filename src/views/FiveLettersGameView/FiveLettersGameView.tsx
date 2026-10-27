@@ -1,5 +1,6 @@
+import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { useFiveLettersGames } from '@/common/fiveLetters/fiveLetters.hooks'
-import { CircleHelp, Share2 } from 'lucide-react'
+import { Lightbulb, Share2 } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
 
 import { cn } from '@/common/utils.functions'
@@ -7,11 +8,13 @@ import { REJECTION_MESSAGE } from '@/common/fiveLetters/fiveLetters.constants'
 import {
   dayNumber,
   deleteLetter,
+  hintLetter,
   isLost,
   isOver,
   isWon,
   letterMarks,
   newGame,
+  revealWord,
   shareText,
   submit,
   typeLetter,
@@ -19,6 +22,7 @@ import {
 import type { FiveLettersGame } from '@/common/fiveLetters/fiveLetters.types'
 import {
   DEFAULT_SETTINGS,
+  GAME_STATUS,
   SETTINGS_KEY,
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
@@ -44,6 +48,21 @@ import { FiveLettersKeyboard } from '@/components/FiveLettersKeyboard/FiveLetter
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
+const TUTORIAL = [
+  {
+    target: '[aria-label="Guesses"]',
+    text: 'Guess the word in six tries. After each guess, green is the right letter in the right place, yellow is in the word but elsewhere, grey is not in the word.',
+  },
+  {
+    target: '[aria-label="Keyboard"]',
+    text: 'Type with these keys, then Enter. Delete is on the left.',
+  },
+  {
+    target: '[aria-label="Show a hint"]',
+    text: 'Stuck? The bulb tells you one letter and where it goes.',
+  },
+]
+
 export function FiveLettersGameView({ id }: { id: number }) {
   const { games, setGames, startPractice } = useFiveLettersGames()
   const saved = games.find((game) => game.id === id)
@@ -57,10 +76,12 @@ export function FiveLettersGameView({ id }: { id: number }) {
           answer: saved.answer,
           guesses: saved.guesses,
           hardMode: saved.hardMode,
+          revealed: saved.status === GAME_STATUS.LOST,
         })
       : null,
   )
-  const [rulesOpen, setRulesOpen] = useState(false)
+  const [hint, setHint] = useState<string | null>(null)
+  const [revealing, setRevealing] = useState(false)
   const [resultClosed, setResultClosed] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -104,6 +125,35 @@ export function FiveLettersGameView({ id }: { id: number }) {
     setGame((current) => (current ? edit(current) : current))
   }
 
+  function onHint() {
+    if (!game || isOver(game)) {
+      return
+    }
+    const found = hintLetter(game)
+    setHint(
+      found === null
+        ? null
+        : `Letter ${found.index + 1} is ${found.letter.toUpperCase()}.`,
+    )
+  }
+
+  function onReveal() {
+    if (!game || !saved) {
+      return
+    }
+    setGame(revealWord(game))
+    setRevealing(false)
+    setGames((current) =>
+      finishGame({
+        games: current,
+        id: saved.id,
+        guesses: game.guesses,
+        won: false,
+        now: Date.now(),
+      }),
+    )
+  }
+
   function enter() {
     if (!game || !saved) {
       return
@@ -138,7 +188,7 @@ export function FiveLettersGameView({ id }: { id: number }) {
   return (
     <main
       className={cn(
-        'mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-2 pb-4',
+        'mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-2 pb-4 lg:max-w-4xl',
         settings.highContrast && 'high-contrast',
       )}
     >
@@ -157,15 +207,37 @@ export function FiveLettersGameView({ id }: { id: number }) {
               <Share2 className="size-5" />
             </Button>
           )}
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Show the rules"
-            onClick={() => setRulesOpen(true)}
-          >
-            <CircleHelp className="size-5" />
-          </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a hint"
+              disabled={over}
+              onClick={onHint}
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
+          {settings.showTutorial && (
+            <HowToPlay steps={TUTORIAL}>
+              <p>
+                Guess the five-letter word in six tries. After each guess the
+                tiles change colour:
+              </p>
+              <p>Green: right letter, right place.</p>
+              <p>Yellow: in the word, wrong place.</p>
+              <p>Grey: not in the word.</p>
+            </HowToPlay>
+          )}
           <MoreMenu
             items={[
+              ...(settings.allowReveal && !over
+                ? [
+                    {
+                      label: 'Show the word',
+                      onClick: () => setRevealing(true),
+                    },
+                  ]
+                : []),
               {
                 label: 'Settings',
                 onClick: () =>
@@ -176,9 +248,13 @@ export function FiveLettersGameView({ id }: { id: number }) {
         </ScreenHeader>
       </div>
       <p className="h-6 text-sm font-semibold" role="status">
-        {game.rejection ? REJECTION_MESSAGE[game.rejection] : ''}
+        {game.rejection
+          ? REJECTION_MESSAGE[game.rejection]
+          : over
+            ? ''
+            : (hint ?? '')}
       </p>
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex w-full flex-1 items-center justify-center px-2">
         <FiveLettersBoard game={game} />
       </div>
       <FiveLettersKeyboard
@@ -190,18 +266,19 @@ export function FiveLettersGameView({ id }: { id: number }) {
         onDelete={() => change(deleteLetter)}
       />
       <AppDialog
-        open={rulesOpen}
-        title="How to play"
-        onClose={() => setRulesOpen(false)}
-        actions={<Button onClick={() => setRulesOpen(false)}>Got it</Button>}
+        open={revealing}
+        title="Show the word?"
+        onClose={() => setRevealing(false)}
+        actions={
+          <>
+            <Button onClick={() => setRevealing(false)}>Cancel</Button>
+            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onReveal}>
+              Show the word
+            </Button>
+          </>
+        }
       >
-        <p>
-          Guess the five-letter word in six tries. After each guess the tiles
-          change colour:
-        </p>
-        <p>Green: right letter, right place.</p>
-        <p>Yellow: in the word, wrong place.</p>
-        <p>Grey: not in the word.</p>
+        <p>This ends the game and counts as a loss.</p>
       </AppDialog>
       <AppDialog
         open={over && !resultClosed}

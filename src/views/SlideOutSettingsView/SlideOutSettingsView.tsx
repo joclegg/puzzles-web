@@ -1,3 +1,4 @@
+import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { GAME_ROUTE } from '@/common/route.constants'
 import {
   DEFAULT_SETTINGS,
@@ -30,6 +31,12 @@ export function SlideOutSettingsView() {
         checked={settings.showPar}
         onChange={(showPar) =>
           setSettings((current) => ({ ...current, showPar }))
+        }
+      />
+      <AssistSettings
+        assists={settings}
+        onChange={(patch) =>
+          setSettings((current) => ({ ...current, ...patch }))
         }
       />
     </main>

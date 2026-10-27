@@ -1,3 +1,6 @@
+import { useRef } from 'react'
+import type { PointerEvent } from 'react'
+
 import { cn } from '@/common/utils.functions'
 import { PILE_KIND, SUITS } from '@/common/solitaire/solitaire.constants'
 import type {
@@ -12,6 +15,13 @@ import {
   FACE_DOWN_OFFSET_CLASS,
   FACE_UP_OFFSET_CLASS,
 } from '@/components/SolitaireTable/SolitaireTable.constants'
+import {
+  dragKey,
+  isDropPile,
+  parseDragKey,
+  parsePileKey,
+  pileKey,
+} from '@/components/SolitaireTable/SolitaireTable.functions'
 import { DRAW_CARDS } from '@/common/solitaire/solitaire.constants'
 
 export function SolitaireTable({
@@ -21,6 +31,7 @@ export function SolitaireTable({
   onStock,
   onCard,
   onEmpty,
+  onDrop,
 }: {
   board: Board
   drawMode: DrawMode
@@ -28,7 +39,16 @@ export function SolitaireTable({
   onStock: () => void
   onCard: (target: { pile: Pile; index: number }) => void
   onEmpty: (pile: Pile) => void
+  onDrop: (move: { from: Pile; index: number; to: Pile }) => void
 }) {
+  const dragRef = useRef<{
+    key: string
+    startX: number
+    startY: number
+    moving: HTMLElement[]
+    moved: boolean
+  } | null>(null)
+  const justDraggedRef = useRef(false)
   const shownWaste = board.waste.slice(-DRAW_CARDS[drawMode])
 
   function isSelected({ pile, index }: { pile: Pile; index: number }) {
@@ -48,8 +68,94 @@ export function SolitaireTable({
       : true
   }
 
+  function onPointerDown(event: PointerEvent<HTMLDivElement>) {
+    const card = (event.target as HTMLElement).closest<HTMLElement>(
+      '[data-drag]',
+    )
+    const key = card?.dataset.drag
+    if (!card || key === undefined) {
+      return
+    }
+    const slot = card.parentElement
+    const moving =
+      parseDragKey(key).pile.kind === PILE_KIND.TABLEAU
+        ? siblingsFrom(card)
+        : [slot?.dataset.cardSlot !== undefined ? slot : card]
+    dragRef.current = {
+      key,
+      startX: event.clientX,
+      startY: event.clientY,
+      moving,
+      moved: false,
+    }
+  }
+
+  function onPointerMove(event: PointerEvent<HTMLDivElement>) {
+    const drag = dragRef.current
+    if (drag === null) {
+      return
+    }
+    const dx = event.clientX - drag.startX
+    const dy = event.clientY - drag.startY
+    if (!drag.moved && Math.hypot(dx, dy) < 8) {
+      return
+    }
+    if (!drag.moved) {
+      event.currentTarget.setPointerCapture(event.pointerId)
+    }
+    drag.moved = true
+    for (const element of drag.moving) {
+      element.style.transform = `translate(${dx}px, ${dy}px)`
+      element.style.zIndex = '50'
+      element.style.pointerEvents = 'none'
+    }
+  }
+
+  function onPointerUp(event: PointerEvent<HTMLDivElement>) {
+    const drag = dragRef.current
+    dragRef.current = null
+    if (drag === null) {
+      return
+    }
+    for (const element of drag.moving) {
+      element.style.transform = ''
+      element.style.zIndex = ''
+      element.style.pointerEvents = ''
+    }
+    if (!drag.moved) {
+      return
+    }
+    justDraggedRef.current = true
+    const target = document
+      .elementsFromPoint(event.clientX, event.clientY)
+      .map((element) => element.closest<HTMLElement>('[data-pile]'))
+      .find((element) => element?.dataset.pile !== undefined)?.dataset.pile
+    if (target === undefined) {
+      return
+    }
+    const to = parsePileKey(target)
+    const { pile: from, index } = parseDragKey(drag.key)
+    if (isDropPile(to)) {
+      onDrop({ from, index, to })
+    }
+  }
+
+  function onClickCapture(event: { stopPropagation: () => void }) {
+    if (justDraggedRef.current) {
+      justDraggedRef.current = false
+      event.stopPropagation()
+    }
+  }
+
   return (
-    <div className="flex w-full max-w-xl flex-col gap-3 rounded-xl bg-sol-felt p-2 sm:p-3">
+    <div
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onClickCapture={onClickCapture}
+      className="flex w-full max-w-xl flex-col gap-3 rounded-xl bg-sol-felt p-2 sm:p-3 lg:max-w-4xl"
+    >
       <div className="grid grid-cols-7 gap-1 sm:gap-2">
         <button
           type="button"
@@ -77,7 +183,8 @@ export function SolitaireTable({
             return (
               <div
                 key={`${card.rank}-${card.suit}`}
-                className={cn('w-1/2', i > 0 && '-ml-[30%]')}
+                data-card-slot="waste"
+                className={cn('relative w-1/2', i > 0 && '-ml-[30%]')}
               >
                 <PlayingCard
                   card={card}
@@ -90,6 +197,14 @@ export function SolitaireTable({
                     })
                   }
                   label={top ? `Waste, ${cardName(card)}` : cardName(card)}
+                  dragId={
+                    top
+                      ? dragKey({
+                          pile: { kind: PILE_KIND.WASTE, index: 0 },
+                          index: board.waste.length - 1,
+                        })
+                      : undefined
+                  }
                   onTap={() =>
                     top &&
                     onCard({
@@ -105,25 +220,31 @@ export function SolitaireTable({
         {board.foundations.map((pile, index) => {
           const target: Pile = { kind: PILE_KIND.FOUNDATION, index }
           const top = pile.at(-1)
-          return top === undefined ? (
-            <button
-              key={index}
-              type="button"
-              aria-label={`Foundation ${SUITS[index].name}, empty`}
-              onClick={() => onEmpty(target)}
-              className="flex aspect-[5/7] items-center justify-center rounded-md bg-sol-empty-pile text-xl text-sol-on-felt"
-            >
-              {SUITS[index].symbol}
-            </button>
-          ) : (
-            <PlayingCard
-              key={index}
-              card={top}
-              faceUp
-              selected={isSelected({ pile: target, index: pile.length - 1 })}
-              label={`Foundation ${SUITS[index].name}, ${cardName(top)}`}
-              onTap={() => onCard({ pile: target, index: pile.length - 1 })}
-            />
+          return (
+            <div key={index} data-pile={pileKey(target)}>
+              {top === undefined ? (
+                <button
+                  type="button"
+                  aria-label={`Foundation ${SUITS[index].name}, empty`}
+                  onClick={() => onEmpty(target)}
+                  className="flex aspect-[5/7] w-full items-center justify-center rounded-md bg-sol-empty-pile text-xl text-sol-on-felt"
+                >
+                  {SUITS[index].symbol}
+                </button>
+              ) : (
+                <PlayingCard
+                  card={top}
+                  faceUp
+                  selected={isSelected({
+                    pile: target,
+                    index: pile.length - 1,
+                  })}
+                  label={`Foundation ${SUITS[index].name}, ${cardName(top)}`}
+                  dragId={dragKey({ pile: target, index: pile.length - 1 })}
+                  onTap={() => onCard({ pile: target, index: pile.length - 1 })}
+                />
+              )}
+            </div>
           )
         })}
       </div>
@@ -135,7 +256,8 @@ export function SolitaireTable({
               key={columnIndex}
               role="group"
               aria-label={`Column ${columnIndex + 1}`}
-              className="flex flex-col"
+              data-pile={pileKey(pile)}
+              className="flex min-h-full flex-col"
             >
               {column.cards.length === 0 && (
                 <button
@@ -154,6 +276,7 @@ export function SolitaireTable({
                     faceUp={faceUp}
                     selected={faceUp && isSelected({ pile, index })}
                     label={faceUp ? cardName(card) : 'Face down card'}
+                    dragId={faceUp ? dragKey({ pile, index }) : undefined}
                     onTap={() => onCard({ pile, index })}
                     className={cn(
                       index > 0 &&
@@ -170,4 +293,16 @@ export function SolitaireTable({
       </div>
     </div>
   )
+}
+
+function siblingsFrom(card: HTMLElement): HTMLElement[] {
+  const siblings: HTMLElement[] = []
+  for (
+    let element: Element | null = card;
+    element !== null;
+    element = element.nextElementSibling
+  ) {
+    siblings.push(element as HTMLElement)
+  }
+  return siblings
 }

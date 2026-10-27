@@ -69,6 +69,21 @@ export class SolitairePage {
     await this.card(name).click()
   }
 
+  async dragCard({ name, to }: { name: string; to: string }) {
+    const from = (await this.card(name).boundingBox())!
+    const target = (await this.page
+      .getByRole('button', { name: to })
+      .boundingBox())!
+    await this.page.mouse.move(from.x + from.width / 2, from.y + 10)
+    await this.page.mouse.down()
+    await this.page.mouse.move(
+      target.x + target.width / 2,
+      target.y + target.height / 2,
+      { steps: 8 },
+    )
+    await this.page.mouse.up()
+  }
+
   async finish() {
     await this.page.getByRole('button', { name: 'Finish', exact: true }).click()
   }

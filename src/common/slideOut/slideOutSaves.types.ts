@@ -1,3 +1,4 @@
+import type { Assists } from '@/common/assists.types'
 import type { Level } from '@/common/slideOut/slideOut.types'
 
 export interface LevelStats {
@@ -8,7 +9,7 @@ export interface LevelStats {
   bestMs: number | null
 }
 
-export interface SlideOutSettings {
+export interface SlideOutSettings extends Assists {
   showTimer: boolean
   showPar: boolean
 }

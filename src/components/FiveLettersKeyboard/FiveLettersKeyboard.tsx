@@ -18,16 +18,21 @@ export function FiveLettersKeyboard({
   onDelete: () => void
 }) {
   return (
-    <div className="flex w-full max-w-lg flex-col gap-1.5 px-1">
+    <div
+      role="group"
+      aria-label="Keyboard"
+      className="flex w-full max-w-lg flex-col gap-1.5 px-1"
+    >
       {KEY_ROWS.map((row, index) => (
         <div key={row} className="flex gap-1.5">
           {index === KEY_ROWS.length - 1 && (
             <button
               type="button"
+              aria-label="Delete"
               className={cn(KEY_CLASS, 'flex-[1.5] bg-fl-key')}
-              onClick={onEnter}
+              onClick={onDelete}
             >
-              ENTER
+              <Delete className="size-5" />
             </button>
           )}
           {[...row].map((letter) => {
@@ -49,11 +54,10 @@ export function FiveLettersKeyboard({
           {index === KEY_ROWS.length - 1 && (
             <button
               type="button"
-              aria-label="Delete"
               className={cn(KEY_CLASS, 'flex-[1.5] bg-fl-key')}
-              onClick={onDelete}
+              onClick={onEnter}
             >
-              <Delete className="size-5" />
+              ENTER
             </button>
           )}
         </div>

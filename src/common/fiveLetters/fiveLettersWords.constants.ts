@@ -1,5 +1,5 @@
-import answersText from '@/assets/words/answers.txt?raw'
-import guessesText from '@/assets/words/guesses.txt?raw'
+import answersText from '@data/words/answers.txt?raw'
+import guessesText from '@data/words/guesses.txt?raw'
 import { createWords } from '@/common/fiveLetters/fiveLetters.functions'
 
 export const WORDS = createWords({

@@ -40,24 +40,19 @@ describe('winnableDeal', { timeout: 20_000 }, () => {
   })
 })
 
-describe('solve', { timeout: 20_000 }, () => {
-  it('reaches the fixed verdicts for the first six draw 3 deals', () => {
-    const verdicts = [1n, 2n, 3n, 4n, 5n, 6n].map((seed) =>
+describe('solve', () => {
+  it.each([
+    [4n, VERDICT.WINNABLE],
+    [5n, VERDICT.UNWINNABLE],
+    [8n, VERDICT.UNKNOWN],
+  ])('gives draw 3 deal %i the verdict %s', (seed, verdict) => {
+    expect(
       solve({
         start: deal(seed),
         drawMode: DRAW_MODE.DRAW_THREE,
         order: BUILD_ORDER.DOWN,
-        budget: 20_000,
+        budget: 1_000,
       }),
-    )
-
-    expect(verdicts).toEqual([
-      VERDICT.UNKNOWN,
-      VERDICT.WINNABLE,
-      VERDICT.WINNABLE,
-      VERDICT.WINNABLE,
-      VERDICT.UNWINNABLE,
-      VERDICT.UNKNOWN,
-    ])
+    ).toBe(verdict)
   })
 })

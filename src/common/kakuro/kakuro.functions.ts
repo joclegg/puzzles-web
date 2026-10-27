@@ -1,8 +1,10 @@
 import { INPUT_MODE, MISTAKE_CHECK } from '@/common/kakuro/kakuro.constants'
 import type {
   Change,
+  CombinationLine,
   InputMode,
   KakuroGame,
+  KakuroHint,
   MistakeCheck,
   Puzzle,
   Run,
@@ -23,13 +25,16 @@ export function brokenRuns(game: KakuroGame): Run[] {
   })
 }
 
-export function combinationLines(game: KakuroGame): string[] {
-  return selectedCombinations(game).map(({ run, masks }) => {
-    const direction = run.isAcross ? 'Across' : 'Down'
-    const options =
-      masks.map((mask) => digitsOf(mask).join('')).join('  ') || 'none fit'
-    return `${direction} ${run.sum} in ${run.cells.length}: ${options}`
-  })
+export function combinationLines(game: KakuroGame): CombinationLine[] {
+  return selectedCombinations(game).map(({ run, masks, placed }) => ({
+    label: `${run.isAcross ? 'Across' : 'Down'} ${run.sum} in ${run.cells.length}`,
+    options: masks.map((mask) =>
+      digitsOf(mask).map((digit) => ({
+        digit,
+        placed: (placed & bit(digit)) !== 0,
+      })),
+    ),
+  }))
 }
 
 export function decodeChanges(text: string): Change[] {
@@ -148,6 +153,20 @@ export function newGame({
   }
 }
 
+export function placeHint({
+  game,
+  hint,
+}: {
+  game: KakuroGame
+  hint: KakuroHint
+}): KakuroGame {
+  return place({
+    game: { ...game, notesMode: false, selected: hint.cell, rejected: null },
+    cell: hint.cell,
+    digit: hint.digit,
+  })
+}
+
 export function redo(game: KakuroGame): KakuroGame {
   const next = game.undone.at(-1)
   if (next === undefined || isSolved(game)) {
@@ -196,6 +215,16 @@ export function restart(game: KakuroGame): KakuroGame {
     mistakeCheck: game.mistakeCheck,
     autoRemoveNotes: game.autoRemoveNotes,
   })
+}
+
+export function revealSolution(game: KakuroGame): KakuroGame {
+  return {
+    ...game,
+    values: [...game.puzzle.solution],
+    notes: game.notes.map(() => 0),
+    selected: null,
+    rejected: null,
+  }
 }
 
 export function runCellsOf(game: KakuroGame): Set<number> {
@@ -344,6 +373,9 @@ function place({
   digit: number
 }): KakuroGame {
   if (game.notesMode) {
+    if (game.values[cell] !== 0) {
+      return game
+    }
     return setCell({
       game,
       cell,
@@ -397,6 +429,7 @@ function selectedCombinations(game: KakuroGame) {
       .reduce((mask, other) => mask | bit(game.values[other]), 0)
     return {
       run,
+      placed,
       masks: masksFor({ length: run.cells.length, sum: run.sum }).filter(
         (mask) => (mask & placed) === placed,
       ),
