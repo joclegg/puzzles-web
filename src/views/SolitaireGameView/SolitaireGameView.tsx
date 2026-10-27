@@ -263,6 +263,11 @@ export function SolitaireGameView({ id }: { id: number }) {
           />
         </ScreenHeader>
       </div>
+      {canAutoFinish(current) && (
+        <Button className="w-full max-w-xl" onClick={() => update(autoFinish)}>
+          Finish
+        </Button>
+      )}
       <SolitaireTable
         board={board}
         drawMode={current.drawMode}
@@ -281,9 +286,6 @@ export function SolitaireGameView({ id }: { id: number }) {
       <p className="h-6 text-sm font-semibold" role="status">
         {hint ?? ''}
       </p>
-      {canAutoFinish(current) && (
-        <Button onClick={() => update(autoFinish)}>Finish</Button>
-      )}
       <AppDialog
         open={unwinnable && !won}
         title="This deal can't be won now"
