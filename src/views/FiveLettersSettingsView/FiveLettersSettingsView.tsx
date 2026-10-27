@@ -16,7 +16,7 @@ export function FiveLettersSettingsView() {
   })
 
   return (
-    <main className="mx-auto flex max-w-md flex-col px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
       <ScreenHeader title="Settings" back={[GAME_ROUTE.FIVE_LETTERS]} />
       <SettingRow
         label="Hard mode"

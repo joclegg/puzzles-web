@@ -135,7 +135,7 @@ export function SudokuEntryView() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center gap-3 px-3 pb-6">
+    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col items-center gap-3 px-3 pb-6">
       <div className="w-full">
         <ScreenHeader
           title="Enter puzzle"

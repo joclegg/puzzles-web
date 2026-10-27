@@ -10,7 +10,7 @@ export function KakuroStatsView() {
   const { games } = useKakuroGames()
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
       <ScreenHeader title="Stats" back={[GAME_ROUTE.KAKURO]} />
       <SizeStatsTable
         stats={sizeStats({ games, sizes: SIZES })}

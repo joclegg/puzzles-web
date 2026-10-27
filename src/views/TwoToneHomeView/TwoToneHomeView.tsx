@@ -43,7 +43,7 @@ export function TwoToneHomeView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
       <ScreenHeader title={TITLE} back={[]}>
         <Button
           size={BUTTON_SIZE.ICON}

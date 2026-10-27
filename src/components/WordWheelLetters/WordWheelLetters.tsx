@@ -70,7 +70,7 @@ export function WordWheelLetters({
       onPointerCancel={() => {
         swipingRef.current = false
       }}
-      className="relative aspect-square w-full max-w-72 touch-none rounded-full bg-ww-wheel select-none"
+      className="relative aspect-square w-[min(100%,18rem,34dvh)] touch-none rounded-full bg-ww-wheel select-none"
     >
       <svg
         viewBox="0 0 100 100"

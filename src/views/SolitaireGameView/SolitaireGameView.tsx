@@ -104,7 +104,7 @@ export function SolitaireGameView({ id }: { id: number }) {
 
   if (!saved || !game) {
     return (
-      <main className="mx-auto max-w-md px-4">
+      <main className="mx-auto max-w-3xl px-4">
         <ScreenHeader title={TITLE} back={[GAME_ROUTE.SOLITAIRE]} />
         <p>This game could not be found.</p>
       </main>
@@ -206,7 +206,7 @@ export function SolitaireGameView({ id }: { id: number }) {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-xl flex-col items-center gap-3 px-2 pb-6 lg:max-w-4xl">
+    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col items-center gap-3 px-2 pb-6">
       <div className="w-full px-2">
         <ScreenHeader
           title={dealTitle(saved)}
@@ -263,6 +263,11 @@ export function SolitaireGameView({ id }: { id: number }) {
           />
         </ScreenHeader>
       </div>
+      {canAutoFinish(current) && (
+        <Button className="w-full max-w-xl" onClick={() => update(autoFinish)}>
+          Finish
+        </Button>
+      )}
       <SolitaireTable
         board={board}
         drawMode={current.drawMode}
@@ -281,9 +286,6 @@ export function SolitaireGameView({ id }: { id: number }) {
       <p className="h-6 text-sm font-semibold" role="status">
         {hint ?? ''}
       </p>
-      {canAutoFinish(current) && (
-        <Button onClick={() => update(autoFinish)}>Finish</Button>
-      )}
       <AppDialog
         open={unwinnable && !won}
         title="This deal can't be won now"

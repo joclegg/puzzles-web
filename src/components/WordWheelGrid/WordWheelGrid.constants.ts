@@ -1,26 +1,3 @@
-export const GRID_COLUMNS_CLASS: Record<number, string> = {
-  1: 'grid-cols-1',
-  2: 'grid-cols-2',
-  3: 'grid-cols-3',
-  4: 'grid-cols-4',
-  5: 'grid-cols-5',
-  6: 'grid-cols-6',
-  7: 'grid-cols-7',
-  8: 'grid-cols-8',
-  9: 'grid-cols-9',
-  10: 'grid-cols-10',
-  11: 'grid-cols-11',
-  12: 'grid-cols-12',
-  13: 'grid-cols-[repeat(13,minmax(0,1fr))]',
-  14: 'grid-cols-[repeat(14,minmax(0,1fr))]',
-  15: 'grid-cols-[repeat(15,minmax(0,1fr))]',
-  16: 'grid-cols-[repeat(16,minmax(0,1fr))]',
-  17: 'grid-cols-[repeat(17,minmax(0,1fr))]',
-  18: 'grid-cols-[repeat(18,minmax(0,1fr))]',
-  19: 'grid-cols-[repeat(19,minmax(0,1fr))]',
-  20: 'grid-cols-[repeat(20,minmax(0,1fr))]',
-  21: 'grid-cols-[repeat(21,minmax(0,1fr))]',
-  22: 'grid-cols-[repeat(22,minmax(0,1fr))]',
-  23: 'grid-cols-[repeat(23,minmax(0,1fr))]',
-  24: 'grid-cols-[repeat(24,minmax(0,1fr))]',
-}
+export const CELL_SIZE = 40
+
+export const CELL_GAP = 4

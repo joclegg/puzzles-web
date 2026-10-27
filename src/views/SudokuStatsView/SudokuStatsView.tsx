@@ -14,7 +14,7 @@ export function SudokuStatsView() {
   const times = bestTimes(games)
 
   return (
-    <main className="mx-auto flex max-w-md flex-col gap-4 px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
       <ScreenHeader title="Best times" back={[GAME_ROUTE.SUDOKU]} />
       {GAME_MODES.map((mode) => (
         <section key={mode} aria-label={GAME_MODE_LABEL[mode]}>

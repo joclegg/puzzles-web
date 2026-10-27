@@ -154,7 +154,7 @@ export function SolitaireTable({
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
       onClickCapture={onClickCapture}
-      className="flex w-full max-w-xl flex-col gap-3 rounded-xl bg-sol-felt p-2 sm:p-3 lg:max-w-4xl"
+      className="@container flex w-full max-w-xl flex-col gap-3 rounded-xl bg-sol-felt p-2 sm:p-3 lg:max-w-4xl"
     >
       <div className="grid grid-cols-7 gap-1 sm:gap-2">
         <button
@@ -248,7 +248,7 @@ export function SolitaireTable({
           )
         })}
       </div>
-      <div className="grid min-h-80 grid-cols-7 items-start gap-1 sm:gap-2">
+      <div className="grid min-h-[112cqw] grid-cols-7 items-start gap-1 sm:gap-2">
         {board.tableau.map((column, columnIndex) => {
           const pile: Pile = { kind: PILE_KIND.TABLEAU, index: columnIndex }
           return (

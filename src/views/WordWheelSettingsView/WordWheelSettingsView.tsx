@@ -16,7 +16,7 @@ export function WordWheelSettingsView() {
   })
 
   return (
-    <main className="mx-auto flex max-w-md flex-col px-4 pb-8">
+    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
       <ScreenHeader title="Settings" back={[GAME_ROUTE.WORD_WHEEL]} />
       <SettingRow
         label="Show the timer"
