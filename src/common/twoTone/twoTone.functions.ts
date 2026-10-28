@@ -59,6 +59,17 @@ export function hintTargets(hint: Hint | null): Set<number> {
   )
 }
 
+export function hintTwin({
+  game,
+  hint,
+}: {
+  game: TwoToneGame
+  hint: Hint | null
+}): Set<number> {
+  const twin = hint?.deduction?.twin ?? null
+  return new Set(twin === null ? [] : cellsOf({ grid: game.grid, line: twin }))
+}
+
 export function isGiven({ puzzle, cell }: { puzzle: Puzzle; cell: number }) {
   return tileAt({ grid: puzzle.givens, cell }) !== TILE.EMPTY
 }

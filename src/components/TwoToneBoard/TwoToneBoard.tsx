@@ -15,6 +15,7 @@ export function TwoToneBoard({
   broken,
   hintLine,
   hintTargets,
+  hintTwin,
   onTile,
 }: {
   size: number
@@ -24,6 +25,7 @@ export function TwoToneBoard({
   broken: Set<number>
   hintLine: Set<number>
   hintTargets: Set<number>
+  hintTwin: Set<number>
   onTile: (cell: number) => void
 }) {
   return (
@@ -63,7 +65,9 @@ export function TwoToneBoard({
                 'border-b-tt-hint-line bg-tt-hint-line',
               hinted
                 ? 'ring-3 ring-tt-hint-target'
-                : broken.has(cell) && 'ring-3 ring-tt-broken',
+                : hintTwin.has(cell)
+                  ? 'ring-3 ring-tt-hint-target/50'
+                  : broken.has(cell) && 'ring-3 ring-tt-broken',
             )}
           >
             {given && showGivens && (

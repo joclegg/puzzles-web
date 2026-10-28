@@ -33,6 +33,7 @@ describe('nextDeduction', () => {
       TILE.RED,
       REASON.UNIQUE,
     ])
+    expect(deduction?.twin).toEqual({ isRow: true, index: 0 })
   })
 
   it('finds nothing in an empty grid', () => {
