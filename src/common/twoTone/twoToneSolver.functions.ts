@@ -69,6 +69,7 @@ function balance({ grid, line }: { grid: Grid; line: Line }) {
     tile: OTHER_TILE[full],
     reason: REASON.BALANCE,
     line,
+    twin: null,
   }
 }
 
@@ -108,6 +109,7 @@ function pairOrGap({ grid, line }: { grid: Grid; line: Line }) {
         tile: OTHER_TILE[filled],
         reason: target.reason,
         line,
+        twin: null,
       }
     }
   }
@@ -142,6 +144,7 @@ function unique({ grid, line }: { grid: Grid; line: Line }) {
         tile: OTHER_TILE[twinTiles[first] as Tile],
         reason: REASON.UNIQUE,
         line,
+        twin,
       }
     }
   }

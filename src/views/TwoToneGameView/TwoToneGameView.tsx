@@ -19,6 +19,7 @@ import {
   gameBrokenCells,
   hintMessage,
   hintTargets,
+  hintTwin,
   isSolved,
   newGame,
   paint,
@@ -276,6 +277,7 @@ export function TwoToneGameView({ id }: { id: number }) {
         broken={settings.markBrokenRules ? gameBrokenCells(game) : new Set()}
         hintLine={hintLine}
         hintTargets={hintTargets(hint)}
+        hintTwin={hintTwin({ game, hint })}
         onTile={onTile}
       />
       {settings.inputMode === INPUT_MODE.PICK_COLOUR && (

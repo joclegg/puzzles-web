@@ -15,6 +15,7 @@ export interface Deduction {
   tile: Tile
   reason: Reason
   line: Line
+  twin: Line | null
 }
 
 export interface Grid {
