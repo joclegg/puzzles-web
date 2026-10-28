@@ -23,7 +23,12 @@ function start({
   size: number
   now: number
 }) {
-  return startPuzzle({ games, ref: { id, size, puzzle: '' }, now })
+  return startPuzzle({
+    games,
+    id: `${id}-${now}`,
+    ref: { id, size, puzzle: '' },
+    now,
+  })
 }
 
 describe('startPuzzle', () => {
@@ -122,6 +127,7 @@ describe('dailyDate', () => {
 describe('revealPuzzle', () => {
   it('ends the puzzle without solving it', () => {
     const { games, game } = startPuzzle({
+      id: 'game-1',
       games: [],
       ref: { id: 'bank_1', size: 6, puzzle: 'p' },
       now: 1,

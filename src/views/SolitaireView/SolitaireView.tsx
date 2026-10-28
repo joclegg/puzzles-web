@@ -7,7 +7,7 @@ import { SolitaireStatsView } from '@/views/SolitaireStatsView/SolitaireStatsVie
 
 export function SolitaireView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
-    return <SolitaireGameView key={id} id={Number(id)} />
+    return <SolitaireGameView key={id} id={id} />
   }
   if (screen === SCREEN.STATS) {
     return <SolitaireStatsView />

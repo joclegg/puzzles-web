@@ -22,17 +22,20 @@ function start({ dealId, now }: { dealId: string; now: number }) {
 describe('startDeal', () => {
   it('abandons the random deal in progress and keeps the daily', () => {
     const daily = startDeal({
+      id: 'game-1',
       games: [],
       deal: start({ dealId: 'daily_2026-10-25', now: 1 }),
       now: 1,
     })
     const first = startDeal({
+      id: 'game-2',
       games: daily.games,
       deal: start({ dealId: 'deal_1', now: 2 }),
       now: 2,
     })
 
     const second = startDeal({
+      id: 'game-3',
       games: first.games,
       deal: start({ dealId: 'deal_2', now: 3 }),
       now: 3,
@@ -49,6 +52,7 @@ describe('startDeal', () => {
 describe('finishDeal and drawStats', () => {
   it('counts wins, losses and the fewest moves per draw mode', () => {
     const first = startDeal({
+      id: 'game-4',
       games: [],
       deal: start({ dealId: 'deal_1', now: 1 }),
       now: 1,
@@ -64,6 +68,7 @@ describe('finishDeal and drawStats', () => {
       now: 2,
     })
     const second = startDeal({
+      id: 'game-5',
       games: won.games,
       deal: start({ dealId: 'deal_2', now: 3 }),
       now: 3,
@@ -94,6 +99,7 @@ describe('finishDeal and drawStats', () => {
 describe('dealTitle', () => {
   it('names daily and reverse deals', () => {
     const { game } = startDeal({
+      id: 'game-6',
       games: [],
       deal: {
         ...start({ dealId: 'daily_2026-10-25', now: 1 }),

@@ -63,7 +63,7 @@ const TUTORIAL = [
   },
 ]
 
-export function FiveLettersGameView({ id }: { id: number }) {
+export function FiveLettersGameView({ id }: { id: string }) {
   const { games, setGames, startPractice } = useFiveLettersGames()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<FiveLettersSettings>({

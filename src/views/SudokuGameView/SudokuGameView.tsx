@@ -77,7 +77,7 @@ const TUTORIAL = [
   },
 ]
 
-export function SudokuGameView({ id }: { id: number }) {
+export function SudokuGameView({ id }: { id: string }) {
   const { games, saveProgress, finish } = useSudokuGames()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<SudokuSettings>({

@@ -29,7 +29,7 @@ export class SolitairePage {
       [...RANKS].map((rank) => `${rank}${suit}`).join(''),
     ).join('|')
     const game = {
-      id: 1,
+      id: 'nearly-won',
       dealId: 'deal_1',
       drawMode: 'drawOne',
       order: 'down',
@@ -47,7 +47,7 @@ export class SolitairePage {
       },
       JSON.stringify([game]),
     )
-    await this.page.goto('./#/solitaire/game/1')
+    await this.page.goto('./#/solitaire/game/nearly-won')
     await this.page.reload()
     await expect(this.card('King of clubs')).toBeVisible()
   }

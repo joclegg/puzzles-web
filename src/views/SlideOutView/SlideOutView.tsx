@@ -7,7 +7,7 @@ import { SlideOutStatsView } from '@/views/SlideOutStatsView/SlideOutStatsView'
 
 export function SlideOutView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
-    return <SlideOutGameView key={id} id={Number(id)} />
+    return <SlideOutGameView key={id} id={id} />
   }
   if (screen === SCREEN.STATS) {
     return <SlideOutStatsView />

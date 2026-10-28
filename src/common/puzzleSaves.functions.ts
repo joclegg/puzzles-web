@@ -42,7 +42,7 @@ export function revealPuzzle({
   now,
 }: {
   games: SavedPuzzle[]
-  id: number
+  id: string
   elapsedMs: number
   now: number
 }): SavedPuzzle[] {
@@ -90,7 +90,7 @@ export function solvePuzzle({
   now,
 }: {
   games: SavedPuzzle[]
-  id: number
+  id: string
   elapsedMs: number
   changes: string
   hints: number
@@ -125,10 +125,12 @@ export function solvePuzzle({
 
 export function startPuzzle({
   games,
+  id,
   ref,
   now,
 }: {
   games: SavedPuzzle[]
+  id: string
   ref: PuzzleRef
   now: number
 }): { games: SavedPuzzle[]; game: SavedPuzzle } {
@@ -140,7 +142,7 @@ export function startPuzzle({
       : game,
   )
   const game: SavedPuzzle = {
-    id: games.reduce((highest, it) => Math.max(highest, it.id), 0) + 1,
+    id,
     puzzleId: ref.id,
     size: ref.size,
     puzzle: ref.puzzle,
@@ -161,7 +163,7 @@ export function updatePuzzle({
   patch,
 }: {
   games: SavedPuzzle[]
-  id: number
+  id: string
   patch: Partial<SavedPuzzle>
 }): SavedPuzzle[] {
   return games.map((game) => (game.id === id ? { ...game, ...patch } : game))

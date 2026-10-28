@@ -9,7 +9,7 @@ export interface PuzzleRef {
 export type PuzzleStatus = (typeof PUZZLE_STATUS)[keyof typeof PUZZLE_STATUS]
 
 export interface SavedPuzzle {
-  id: number
+  id: string
   puzzleId: string
   size: number
   puzzle: string

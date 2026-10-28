@@ -65,7 +65,7 @@ const TUTORIAL = [
   },
 ]
 
-export function WordWheelGameView({ id }: { id: number }) {
+export function WordWheelGameView({ id }: { id: string }) {
   const { games, startRandom, saveProgress, finish, revealSaved } =
     useWordWheelGames()
   const saved = games.find((game) => game.id === id)

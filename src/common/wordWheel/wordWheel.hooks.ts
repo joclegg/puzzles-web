@@ -31,7 +31,12 @@ export function useWordWheelGames() {
   }
 
   function startAndOpen(ref: PuzzleRef) {
-    const created = startPuzzle({ games, ref, now: Date.now() })
+    const created = startPuzzle({
+      games,
+      id: crypto.randomUUID(),
+      ref,
+      now: Date.now(),
+    })
     setGames(() => created.games)
     openGame(created.game)
   }
@@ -62,7 +67,7 @@ export function useWordWheelGames() {
     id,
     patch,
   }: {
-    id: number
+    id: string
     patch: Partial<SavedPuzzle>
   }) {
     setGames((all) => updatePuzzle({ games: all, id, patch }))
@@ -74,7 +79,7 @@ export function useWordWheelGames() {
     changes,
     hints,
   }: {
-    id: number
+    id: string
     elapsedMs: number
     changes: string
     hints: number
@@ -91,7 +96,7 @@ export function useWordWheelGames() {
     return finished.newBest
   }
 
-  function revealSaved({ id, elapsedMs }: { id: number; elapsedMs: number }) {
+  function revealSaved({ id, elapsedMs }: { id: string; elapsedMs: number }) {
     setGames((all) =>
       revealPuzzle({ games: all, id, elapsedMs, now: Date.now() }),
     )

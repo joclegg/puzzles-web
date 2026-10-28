@@ -5,13 +5,23 @@ import {
   GAME_MODE_LABEL,
   GAME_MODES,
 } from '@/common/sudoku/sudoku.constants'
+import { useStoredState } from '@/common/storage.hooks'
 import { useSudokuGames } from '@/common/sudoku/sudoku.hooks'
+import {
+  DEFAULT_SETTINGS,
+  SETTINGS_KEY,
+} from '@/common/sudoku/sudokuSaves.constants'
 import { bestTimes } from '@/common/sudoku/sudokuSaves.functions'
+import type { SudokuSettings } from '@/common/sudoku/sudokuSaves.types'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
 export function SudokuStatsView() {
   const { games } = useSudokuGames()
-  const times = bestTimes(games)
+  const [settings] = useStoredState<SudokuSettings>({
+    key: SETTINGS_KEY,
+    fallback: DEFAULT_SETTINGS,
+  })
+  const times = bestTimes({ games, pastBests: settings.pastBests })
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">

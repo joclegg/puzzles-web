@@ -72,7 +72,7 @@ const TUTORIAL = [
   },
 ]
 
-export function SolitaireGameView({ id }: { id: number }) {
+export function SolitaireGameView({ id }: { id: string }) {
   const { games, startRandom, saveProgress, finish, checkWinnable } =
     useSolitaireGames()
   const saved = games.find((game) => game.id === id)

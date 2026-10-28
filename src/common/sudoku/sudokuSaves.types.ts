@@ -50,8 +50,14 @@ export interface ModeSettings {
   greyGivenCells: boolean
 }
 
+export interface PastBest {
+  mode: GameMode
+  difficulty: Difficulty
+  bestMs: number
+}
+
 export interface SavedSudoku {
-  id: number
+  id: string
   puzzleId: string
   mode: GameMode
   difficulty: Difficulty | null
@@ -80,6 +86,7 @@ export interface SudokuSettings extends Assists {
   inputMode: InputMode
   classic: ModeSettings
   killer: ModeSettings
+  pastBests: PastBest[]
 }
 
 export type SudokuStatus = (typeof SUDOKU_STATUS)[keyof typeof SUDOKU_STATUS]

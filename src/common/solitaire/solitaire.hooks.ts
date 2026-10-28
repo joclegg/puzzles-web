@@ -67,6 +67,7 @@ export function useSolitaireGames() {
       order,
     })
     const started = startDeal({
+      id: crypto.randomUUID(),
       games: readStored<SavedDeal[]>({ key: GAMES_KEY, fallback: [] }),
       deal: { dealId, drawMode: settings.drawMode, order, board: reply.board },
       now: Date.now(),
@@ -97,7 +98,7 @@ export function useSolitaireGames() {
     id,
     patch,
   }: {
-    id: number
+    id: string
     patch: Partial<SavedDeal>
   }) {
     setGames((all) =>
@@ -110,7 +111,7 @@ export function useSolitaireGames() {
     patch,
     won,
   }: {
-    id: number
+    id: string
     patch: Partial<SavedDeal>
     won: boolean
   }): boolean {

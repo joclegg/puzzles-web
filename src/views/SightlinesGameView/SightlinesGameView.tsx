@@ -69,7 +69,7 @@ const TUTORIAL = [
   },
 ]
 
-export function SightlinesGameView({ id }: { id: number }) {
+export function SightlinesGameView({ id }: { id: string }) {
   const { games, setGames, startRandom } = useSightlinesGames()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<SightlinesSettings>({

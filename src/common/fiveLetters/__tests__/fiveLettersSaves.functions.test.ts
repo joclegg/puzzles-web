@@ -18,7 +18,7 @@ function finished({
   won,
   guesses,
 }: {
-  id: number
+  id: string
   won: boolean
   guesses: number
 }): SavedGame {
@@ -29,20 +29,22 @@ function finished({
     guesses: Array.from({ length: guesses }, () => 'ADIEU'),
     hardMode: false,
     status: won ? GAME_STATUS.WON : GAME_STATUS.LOST,
-    startedAt: id,
-    finishedAt: id,
+    startedAt: Number(id),
+    finishedAt: Number(id),
   }
 }
 
 describe('startGame', () => {
   it('abandons the practice game in progress and keeps the daily', () => {
     const daily = startGame({
+      id: 'game-1',
       games: [],
       ref: { id: 'daily_2026-10-25', answer: 'SLATE' },
       hardMode: false,
       now: 1,
     })
     const first = startGame({
+      id: 'game-2',
       games: daily.games,
       ref: { id: 'practice_1', answer: 'CRANE' },
       hardMode: false,
@@ -50,6 +52,7 @@ describe('startGame', () => {
     })
 
     const second = startGame({
+      id: 'game-3',
       games: first.games,
       ref: { id: 'practice_2', answer: 'TRACE' },
       hardMode: false,
@@ -66,6 +69,7 @@ describe('startGame', () => {
 describe('finishGame', () => {
   it('marks the game won with its guesses', () => {
     const { games, game } = startGame({
+      id: 'game-4',
       games: [],
       ref: { id: 'practice_1', answer: 'CRANE' },
       hardMode: true,
@@ -87,10 +91,10 @@ describe('finishGame', () => {
 describe('statsOf', () => {
   it('counts wins, streaks and guesses per win', () => {
     const games = [
-      finished({ id: 1, won: true, guesses: 3 }),
-      finished({ id: 2, won: true, guesses: 4 }),
-      finished({ id: 3, won: false, guesses: 6 }),
-      finished({ id: 4, won: true, guesses: 3 }),
+      finished({ id: '1', won: true, guesses: 3 }),
+      finished({ id: '2', won: true, guesses: 4 }),
+      finished({ id: '3', won: false, guesses: 6 }),
+      finished({ id: '4', won: true, guesses: 3 }),
     ]
 
     const stats = statsOf(games)

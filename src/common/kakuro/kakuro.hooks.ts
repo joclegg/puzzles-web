@@ -29,7 +29,12 @@ export function useKakuroGames() {
   }
 
   function startAndOpen(ref: PuzzleRef) {
-    const created = startPuzzle({ games, ref, now: Date.now() })
+    const created = startPuzzle({
+      games,
+      id: crypto.randomUUID(),
+      ref,
+      now: Date.now(),
+    })
     setGames(() => created.games)
     openGame(created.game)
   }
@@ -56,7 +61,7 @@ export function useKakuroGames() {
     id,
     patch,
   }: {
-    id: number
+    id: string
     patch: Partial<SavedPuzzle>
   }) {
     setGames((all) => updatePuzzle({ games: all, id, patch }))
@@ -68,7 +73,7 @@ export function useKakuroGames() {
     changes,
     mistakes,
   }: {
-    id: number
+    id: string
     elapsedMs: number
     changes: string
     mistakes: number
@@ -86,7 +91,7 @@ export function useKakuroGames() {
     return finished.newBest
   }
 
-  function reveal({ id, elapsedMs }: { id: number; elapsedMs: number }) {
+  function reveal({ id, elapsedMs }: { id: string; elapsedMs: number }) {
     setGames((all) =>
       revealPuzzle({ games: all, id, elapsedMs, now: Date.now() }),
     )

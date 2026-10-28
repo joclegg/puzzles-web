@@ -1,5 +1,8 @@
+import { Fragment } from 'react'
+
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { useRoute } from '@/common/route.hooks'
+import { useSync } from '@/common/sync.hooks'
 import { FiveLettersView } from '@/views/FiveLettersView/FiveLettersView'
 import { KakuroView } from '@/views/KakuroView/KakuroView'
 import { LauncherView } from '@/views/LauncherView/LauncherView'
@@ -11,8 +14,38 @@ import { TwoToneView } from '@/views/TwoToneView/TwoToneView'
 import { WordWheelView } from '@/views/WordWheelView/WordWheelView'
 
 export function AppView() {
+  const { user, version, signIn, signOut } = useSync()
   const [game, screen = SCREEN.HOME, id = ''] = useRoute()
 
+  return (
+    <Fragment key={version}>
+      {routeView({
+        game,
+        screen,
+        id,
+        email: user?.email ?? null,
+        onSignIn: signIn,
+        onSignOut: signOut,
+      })}
+    </Fragment>
+  )
+}
+
+function routeView({
+  game,
+  screen,
+  id,
+  email,
+  onSignIn,
+  onSignOut,
+}: {
+  game: string | undefined
+  screen: string
+  id: string
+  email: string | null
+  onSignIn: () => void
+  onSignOut: () => void
+}) {
   if (game === GAME_ROUTE.FIVE_LETTERS) {
     return <FiveLettersView screen={screen} id={id} />
   }
@@ -37,5 +70,7 @@ export function AppView() {
   if (game === GAME_ROUTE.SUDOKU) {
     return <SudokuView screen={screen} id={id} />
   }
-  return <LauncherView />
+  return (
+    <LauncherView email={email} onSignIn={onSignIn} onSignOut={onSignOut} />
+  )
 }
