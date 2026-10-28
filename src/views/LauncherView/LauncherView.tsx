@@ -1,5 +1,6 @@
 import { GAME_ROUTE } from '@/common/route.constants'
 import { routeHash } from '@/common/route.functions'
+import { AccountButton } from '@/components/AccountButton/AccountButton'
 import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
 import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
 import { SlideOutIcon } from '@/components/SlideOutIcon/SlideOutIcon'
@@ -11,11 +12,24 @@ import { SightlinesIcon } from '@/components/SightlinesIcon/SightlinesIcon'
 import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle'
 import { TwoToneIcon } from '@/components/TwoToneIcon/TwoToneIcon'
 
-export function LauncherView() {
+export function LauncherView({
+  email,
+  onSignIn,
+  onSignOut,
+}: {
+  email: string | null
+  onSignIn: () => void
+  onSignOut: () => void
+}) {
   return (
     <main className="mx-auto grid max-w-3xl gap-4 px-4 py-6 md:grid-cols-2">
-      <header className="flex items-center md:col-span-2">
+      <header className="flex items-center gap-2 md:col-span-2">
         <h1 className="flex-1 text-3xl font-semibold">Puzzles</h1>
+        <AccountButton
+          email={email}
+          onSignIn={onSignIn}
+          onSignOut={onSignOut}
+        />
         <ThemeToggle />
       </header>
       <GameCard

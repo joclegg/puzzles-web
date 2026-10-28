@@ -7,7 +7,7 @@ import { TwoToneStatsView } from '@/views/TwoToneStatsView/TwoToneStatsView'
 
 export function TwoToneView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
-    return <TwoToneGameView key={id} id={Number(id)} />
+    return <TwoToneGameView key={id} id={id} />
   }
   if (screen === SCREEN.STATS) {
     return <TwoToneStatsView />

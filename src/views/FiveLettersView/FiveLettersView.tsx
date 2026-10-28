@@ -12,7 +12,7 @@ export function FiveLettersView({
   id: string
 }) {
   if (screen === SCREEN.GAME) {
-    return <FiveLettersGameView key={id} id={Number(id)} />
+    return <FiveLettersGameView key={id} id={id} />
   }
   if (screen === SCREEN.STATS) {
     return <FiveLettersStatsView />

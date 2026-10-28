@@ -73,6 +73,7 @@ export const DEFAULT_SETTINGS: SudokuSettings = {
   inputMode: INPUT_MODE.CELL_FIRST,
   classic: DEFAULT_MODE_SETTINGS,
   killer: { ...DEFAULT_MODE_SETTINGS, greyGivenCells: false },
+  pastBests: [],
 }
 
 export const TITLE = 'Sudoku'

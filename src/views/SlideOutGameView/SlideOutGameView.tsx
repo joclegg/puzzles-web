@@ -59,7 +59,7 @@ const TUTORIAL = [
   },
 ]
 
-export function SlideOutGameView({ id }: { id: number }) {
+export function SlideOutGameView({ id }: { id: string }) {
   const { games, startRandom, saveProgress, finish, reveal } =
     useSlideOutGames()
   const saved = games.find((game) => game.id === id)

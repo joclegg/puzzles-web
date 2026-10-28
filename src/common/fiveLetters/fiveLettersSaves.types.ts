@@ -9,7 +9,7 @@ export interface FiveLettersSettings extends Assists {
 export type GameStatus = (typeof GAME_STATUS)[keyof typeof GAME_STATUS]
 
 export interface SavedGame {
-  id: number
+  id: string
   wordId: string
   answer: string
   guesses: string[]

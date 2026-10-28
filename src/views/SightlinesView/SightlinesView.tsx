@@ -7,7 +7,7 @@ import { SightlinesStatsView } from '@/views/SightlinesStatsView/SightlinesStats
 
 export function SightlinesView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
-    return <SightlinesGameView key={id} id={Number(id)} />
+    return <SightlinesGameView key={id} id={id} />
   }
   if (screen === SCREEN.STATS) {
     return <SightlinesStatsView />

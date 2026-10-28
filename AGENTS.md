@@ -26,7 +26,8 @@ Puzzles for the web: eight offline puzzle games served at https://joclegg.github
 - `src/main.tsx`: entry point
 - `src/views/<View>/`: top-level views, one folder per view
 - `src/components/<Component>/`: every other component, one folder per component holding all of its files
-- `src/common/`: shared code (random numbers, dates, routing, storage)
+- `src/common/`: shared code (random numbers, dates, routing, storage, sync)
+- `src/common/sync.*`: optional Google sign-in and sync with the Supabase project in [joclegg/puzzles-backend](https://github.com/joclegg/puzzles-backend). `writeStored` stamps every change to a synced key and queues it in `sync.pending`; `useSync` in `AppView` pushes the queue to the `saved_games` and `game_settings` tables and pulls newer rows on sign-in, last write wins.
 - `src/common/<game>/`: every rule of one game as plain functions, with its types, constants and save logic, e.g. `src/common/fiveLetters/`
 - `puzzles-data/`: a git submodule ([joclegg/puzzles-data](https://github.com/joclegg/puzzles-data)) holding every puzzle bank and word list, shared with puzzles-android. Import its files with the `@data/` alias, e.g. `@data/slideout/easy.txt?raw`. Clone with `--recurse-submodules`, or run `git submodule update --init`. Change banks in that repository, then bump the submodule here.
 - `src/assets/`: data used only by tests, such as `sudoku-samples/`
@@ -61,8 +62,9 @@ Rules marked (lint) are enforced by `npm run lint`.
 
 ### Games
 
-- MUST keep every game playable offline: no analytics, accounts, ads or cloud sync. Every asset ships with the build. The only call to another site is the Five Letters **NY Times daily**, a separate game (id `nyt_<date>`) next to the Puzzles daily that fetches today's Wordle answer through the free `r.jina.ai` reader (which allows browser calls). It needs a connection and says so when the fetch fails; it never replaces the Puzzles daily. MUST NOT add any other.
-- MUST keep all player data in the browser, in `localStorage`, through `useStoredState` and `readStored`/`writeStored`, under keys prefixed with the game, e.g. `fiveLetters.games`.
+- MUST keep every game playable offline and signed out: no analytics or ads. Every asset ships with the build. Sign-in is optional and Google only; it only syncs saves and settings through `src/common/sync.*`. The only other call to another site is the Five Letters **NY Times daily**, a separate game (id `nyt_<date>`) next to the Puzzles daily that fetches today's Wordle answer through the free `r.jina.ai` reader (which allows browser calls). It needs a connection and says so when the fetch fails; it never replaces the Puzzles daily. MUST NOT add any other.
+- MUST keep all player data in the browser, in `localStorage`, through `useStoredState` and `readStored`/`writeStored`, under keys prefixed with the game, e.g. `fiveLetters.games`. `<game>.games` (an array of saves, each with a uuid `id` from `crypto.randomUUID()`) and `<game>.settings` sync when signed in; every other key stays local.
+- MUST give each new save a uuid `id`, passed into the game's start function, so saves from different devices never clash.
 - MUST put every game rule in `src/common/<game>/` as a pure function on that game's state. Views only wire state to those functions.
 - MUST NOT import one game's `src/common/<game>/` code from another game.
 - MUST draw every random number from `createRandom` in `src/common/random.functions.ts` (XorWow), never `Math.random`, so seeded puzzles are reproducible.
@@ -96,7 +98,7 @@ Rules marked (lint) are enforced by `npm run lint`.
 - MUST define components and functions with `function` declarations. (lint) Function declarations are hoisted, so files can be ordered top-down, with the main export first and helpers below. `const` functions must be defined before they are used.
 - MUST NOT assign arrow functions or function expressions to `const`, except as inline callbacks. (lint)
 - MUST keep state local to the component that owns it, in `useState` or `useRef`.
-- MUST NOT use global state, including module-level mutable values and context used as a store. (lint)
+- MUST NOT use global state, including module-level mutable values and context used as a store. (lint) The Supabase client lives in `useSync`'s state, not at module level.
 - MUST derive values during render instead of storing them in state.
 - MUST minimise `useEffect`, using it only to sync with something outside React.
 - MUST NOT use `useEffect` to derive data or to respond to user events.

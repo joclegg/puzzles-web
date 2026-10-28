@@ -29,6 +29,7 @@ function playAndFinish({
   elapsedMs?: number
 }) {
   const started = startSudoku({
+    id: `game-${finishedAt}`,
     games,
     ref: ref(patch),
     mistakeCheck: MISTAKE_CHECK.SHOW_WRONG,
@@ -57,18 +58,21 @@ function ref(patch: Partial<SudokuRef>): SudokuRef {
 describe('startSudoku', () => {
   it('abandons the game of the same level and keeps the daily and custom ones', () => {
     const daily = startSudoku({
+      id: 'game-2',
       games: [],
       ref: ref({ puzzleId: 'daily_classic:2026-10-25' }),
       mistakeCheck: MISTAKE_CHECK.OFF,
       now: 1,
     })
     const custom = startSudoku({
+      id: 'game-3',
       games: daily.games,
       ref: ref({ puzzleId: 'custom', custom: true }),
       mistakeCheck: MISTAKE_CHECK.OFF,
       now: 2,
     })
     const first = startSudoku({
+      id: 'game-4',
       games: custom.games,
       ref: ref({}),
       mistakeCheck: MISTAKE_CHECK.OFF,
@@ -76,6 +80,7 @@ describe('startSudoku', () => {
     })
 
     const second = startSudoku({
+      id: 'game-5',
       games: first.games,
       ref: ref({ puzzleId: 'classic_easy:2' }),
       mistakeCheck: MISTAKE_CHECK.OFF,
@@ -106,7 +111,7 @@ describe('bestTimes', () => {
       elapsedMs: 1000,
     })
 
-    const easy = bestTimes(custom.games).find(
+    const easy = bestTimes({ games: custom.games, pastBests: [] }).find(
       (it) =>
         it.mode === GAME_MODE.CLASSIC && it.difficulty === DIFFICULTY.EASY,
     )
@@ -170,5 +175,37 @@ describe('sudokuTitle', () => {
     [ref({ custom: true, difficulty: null }), 'Classic · Custom'],
   ])('names the game', (game, title) => {
     expect(sudokuTitle(game)).toBe(title)
+  })
+
+  it('counts past bests without counting them as solved', () => {
+    const first = playAndFinish({
+      games: [],
+      patch: {},
+      finishedAt: 10,
+      elapsedMs: 5000,
+    })
+
+    const times = bestTimes({
+      games: first.games,
+      pastBests: [
+        { mode: GAME_MODE.CLASSIC, difficulty: DIFFICULTY.EASY, bestMs: 2000 },
+        { mode: GAME_MODE.KILLER, difficulty: DIFFICULTY.EXPERT, bestMs: 9000 },
+      ],
+    })
+
+    expect(
+      [
+        [GAME_MODE.CLASSIC, DIFFICULTY.EASY],
+        [GAME_MODE.KILLER, DIFFICULTY.EXPERT],
+      ].map(([mode, difficulty]) => {
+        const it = times.find(
+          (time) => time.mode === mode && time.difficulty === difficulty,
+        )
+        return [it?.bestMs, it?.completed]
+      }),
+    ).toEqual([
+      [2000, 1],
+      [9000, 0],
+    ])
   })
 })

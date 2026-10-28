@@ -9,7 +9,7 @@ import { SudokuStatsView } from '@/views/SudokuStatsView/SudokuStatsView'
 
 export function SudokuView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
-    return <SudokuGameView key={id} id={Number(id)} />
+    return <SudokuGameView key={id} id={id} />
   }
   if (screen === SCREEN.STATS) {
     return <SudokuStatsView />

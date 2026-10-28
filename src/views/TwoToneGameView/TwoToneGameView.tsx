@@ -67,7 +67,7 @@ const TUTORIAL = [
   },
 ]
 
-export function TwoToneGameView({ id }: { id: number }) {
+export function TwoToneGameView({ id }: { id: string }) {
   const { games, setGames, startRandom } = useTwoToneGames()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<TwoToneSettings>({

@@ -21,7 +21,12 @@ export function useSightlinesGames() {
   }
 
   function startAndOpen(ref: PuzzleRef) {
-    const created = startPuzzle({ games, ref, now: Date.now() })
+    const created = startPuzzle({
+      games,
+      id: crypto.randomUUID(),
+      ref,
+      now: Date.now(),
+    })
     setGames(() => created.games)
     openGame(created.game)
   }

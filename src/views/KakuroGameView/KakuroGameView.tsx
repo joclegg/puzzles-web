@@ -79,7 +79,7 @@ const TUTORIAL = [
   },
 ]
 
-export function KakuroGameView({ id }: { id: number }) {
+export function KakuroGameView({ id }: { id: string }) {
   const {
     games,
     startRandom,

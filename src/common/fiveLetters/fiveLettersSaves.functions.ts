@@ -24,7 +24,7 @@ export function finishGame({
   now,
 }: {
   games: SavedGame[]
-  id: number
+  id: string
   guesses: string[]
   won: boolean
   now: number
@@ -62,7 +62,7 @@ export function saveGuesses({
   guesses,
 }: {
   games: SavedGame[]
-  id: number
+  id: string
   guesses: string[]
 }): SavedGame[] {
   return games.map((game) => (game.id === id ? { ...game, guesses } : game))
@@ -74,11 +74,13 @@ export function slotOf(wordId: string): string {
 
 export function startGame({
   games,
+  id,
   ref,
   hardMode,
   now,
 }: {
   games: SavedGame[]
+  id: string
   ref: WordRef
   hardMode: boolean
   now: number
@@ -89,7 +91,6 @@ export function startGame({
       ? { ...game, status: GAME_STATUS.ABANDONED }
       : game,
   )
-  const id = games.reduce((highest, game) => Math.max(highest, game.id), 0) + 1
   const game: SavedGame = {
     id,
     wordId: ref.id,

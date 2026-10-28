@@ -18,7 +18,7 @@ export interface DrawStats {
 }
 
 export interface SavedDeal {
-  id: number
+  id: string
   dealId: string
   drawMode: DrawMode
   order: BuildOrder

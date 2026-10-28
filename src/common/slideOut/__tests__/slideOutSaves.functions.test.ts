@@ -19,6 +19,7 @@ describe('slideOutTitle', () => {
 describe('levelStats', () => {
   it('counts puzzles solved at par', () => {
     const started = startPuzzle({
+      id: 'game-1',
       games: [],
       ref: { id: 'bank_beginner_0', size: 0, puzzle: '1;242H' },
       now: 1,

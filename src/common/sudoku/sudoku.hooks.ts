@@ -44,6 +44,7 @@ export function useSudokuGames() {
       fallback: DEFAULT_SETTINGS,
     })
     const created = startSudoku({
+      id: crypto.randomUUID(),
       games: readStored<SavedSudoku[]>({ key: GAMES_KEY, fallback: [] }),
       ref,
       mistakeCheck: settings[ref.mode].mistakeCheck,
@@ -102,7 +103,7 @@ export function useSudokuGames() {
     id,
     patch,
   }: {
-    id: number
+    id: string
     patch: Partial<SavedSudoku>
   }) {
     setGames((all) =>
@@ -115,7 +116,7 @@ export function useSudokuGames() {
     status,
     patch,
   }: {
-    id: number
+    id: string
     status: SudokuStatus
     patch: Partial<SavedSudoku>
   }): boolean {

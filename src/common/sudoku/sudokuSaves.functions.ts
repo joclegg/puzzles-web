@@ -15,6 +15,7 @@ import {
   SUDOKU_STATUS,
 } from '@/common/sudoku/sudokuSaves.constants'
 import type {
+  PastBest,
   BestTime,
   DailyDay,
   DailyStatus,
@@ -23,7 +24,13 @@ import type {
   SudokuStatus,
 } from '@/common/sudoku/sudokuSaves.types'
 
-export function bestTimes(games: SavedSudoku[]): BestTime[] {
+export function bestTimes({
+  games,
+  pastBests,
+}: {
+  games: SavedSudoku[]
+  pastBests: PastBest[]
+}): BestTime[] {
   return GAME_MODES.flatMap((mode) =>
     LEVELS[mode].map((difficulty) => {
       const times = games
@@ -35,10 +42,16 @@ export function bestTimes(games: SavedSudoku[]): BestTime[] {
             game.status === SUDOKU_STATUS.COMPLETED,
         )
         .map((game) => game.elapsedMs)
+      const bests = [
+        ...times,
+        ...pastBests
+          .filter((it) => it.mode === mode && it.difficulty === difficulty)
+          .map((it) => it.bestMs),
+      ]
       return {
         mode,
         difficulty,
-        bestMs: times.length > 0 ? Math.min(...times) : null,
+        bestMs: bests.length > 0 ? Math.min(...bests) : null,
         averageMs:
           times.length > 0
             ? Math.floor(times.reduce((sum, ms) => sum + ms, 0) / times.length)
@@ -109,7 +122,7 @@ export function finishSudoku({
   now,
 }: {
   games: SavedSudoku[]
-  id: number
+  id: string
   status: SudokuStatus
   patch: Partial<SavedSudoku>
   now: number
@@ -157,11 +170,13 @@ export function playedIds({
 
 export function startSudoku({
   games,
+  id,
   ref,
   mistakeCheck,
   now,
 }: {
   games: SavedSudoku[]
+  id: string
   ref: SudokuRef
   mistakeCheck: MistakeCheck
   now: number
@@ -175,7 +190,7 @@ export function startSudoku({
   const givens = decodePuzzle(ref.puzzle).givens
   const game: SavedSudoku = {
     ...ref,
-    id: games.reduce((highest, it) => Math.max(highest, it.id), 0) + 1,
+    id,
     values: givens.join(''),
     notes: givens.map(() => 0),
     moves: '',

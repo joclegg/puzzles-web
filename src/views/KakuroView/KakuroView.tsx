@@ -7,7 +7,7 @@ import { KakuroStatsView } from '@/views/KakuroStatsView/KakuroStatsView'
 
 export function KakuroView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
-    return <KakuroGameView key={id} id={Number(id)} />
+    return <KakuroGameView key={id} id={id} />
   }
   if (screen === SCREEN.STATS) {
     return <KakuroStatsView />

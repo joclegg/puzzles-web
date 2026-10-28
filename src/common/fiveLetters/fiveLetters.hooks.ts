@@ -40,6 +40,7 @@ export function useFiveLettersGames() {
       fallback: DEFAULT_SETTINGS,
     })
     const created = startGame({
+      id: crypto.randomUUID(),
       games: readStored<SavedGame[]>({ key: GAMES_KEY, fallback: [] }),
       ref,
       hardMode,

@@ -57,7 +57,7 @@ export function finishDeal({
   now,
 }: {
   games: SavedDeal[]
-  id: number
+  id: string
   won: boolean
   now: number
 }): { games: SavedDeal[]; newBest: boolean } {
@@ -88,10 +88,12 @@ export function isDailyDeal(dealId: string): boolean {
 
 export function startDeal({
   games,
+  id,
   deal,
   now,
 }: {
   games: SavedDeal[]
+  id: string
   deal: Pick<SavedDeal, 'dealId' | 'drawMode' | 'order' | 'board'>
   now: number
 }): { games: SavedDeal[]; game: SavedDeal } {
@@ -103,7 +105,7 @@ export function startDeal({
   )
   const game: SavedDeal = {
     ...deal,
-    id: games.reduce((highest, it) => Math.max(highest, it.id), 0) + 1,
+    id,
     moves: '',
     moveCount: 0,
     elapsedMs: 0,
