@@ -5,5 +5,5 @@ test('suggests a move', async ({ solitairePage, assistsPage }) => {
 
   await assistsPage.hint()
 
-  await assistsPage.expectStatus(/^(Move the .+|Draw from the stock)\.$/)
+  await assistsPage.expectStatus(/^(Move the .+|.*draw from the stock)\.$/)
 })

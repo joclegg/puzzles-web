@@ -322,6 +322,23 @@ describe('cycledStock', () => {
     ])
   })
 
+  it('in draw three waits for a whole pass after the stock turns over', () => {
+    const game = {
+      ...state({ text: '/KH|/;2C3C4C5CQS7C6C;;|||' }),
+      drawMode: DRAW_MODE.DRAW_THREE,
+    }
+    const played = dropCards({
+      game: drawn({ game, draws: 1 }),
+      from: { kind: PILE_KIND.WASTE, index: 0 },
+      index: 2,
+      to: column(0),
+    })
+
+    expect(
+      [3, 4, 5].map((draws) => cycledStock(drawn({ game: played, draws }))),
+    ).toEqual([false, false, true])
+  })
+
   it('is true when there is nothing left to draw', () => {
     expect(cycledStock(state({ text: '/KH|/QS;;;|||' }))).toBe(true)
   })
