@@ -6,6 +6,8 @@ import {
   mergeGames,
   mergeSettings,
   parseStampKey,
+  pulledUpTo,
+  pullSince,
   recordChanges,
   settingsStampKey,
   syncedKey,
@@ -161,3 +163,27 @@ function row({
     deleted,
   }
 }
+
+describe('pulledUpTo', () => {
+  it('keeps the latest synced time seen', () => {
+    expect(
+      pulledUpTo({
+        cursor: '2026-10-29T10:00:00.000Z',
+        rows: [
+          { synced_at: '2026-10-29T12:00:00.000Z' },
+          { synced_at: '2026-10-29T11:00:00.000Z' },
+        ],
+      }),
+    ).toBe('2026-10-29T12:00:00.000Z')
+    expect(pulledUpTo({ cursor: null, rows: [] })).toBeNull()
+  })
+})
+
+describe('pullSince', () => {
+  it('pulls everything the first time and overlaps a minute after that', () => {
+    expect(pullSince(null)).toBe('1970-01-01T00:00:00.000Z')
+    expect(pullSince('2026-10-29T12:00:00.000Z')).toBe(
+      '2026-10-29T11:59:00.000Z',
+    )
+  })
+})

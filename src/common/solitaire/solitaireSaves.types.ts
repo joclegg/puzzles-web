@@ -49,9 +49,6 @@ export interface SolverReply {
 
 export interface SolverRequest {
   id: number
-  kind: string
-  seed: string
-  winnable: boolean
   board: string
   drawMode: DrawMode
   order: BuildOrder

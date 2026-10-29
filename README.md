@@ -25,4 +25,4 @@ npm run dev
 
 ## Credits
 
-Word Wheel's word lists come from 12dicts by Alan Beale (public domain), with frequency data derived from AGID, Copyright 2000 by Kevin Atkinson. See `src/assets/wordwheel/NOTICE.md`.
+Word Wheel's word lists come from 12dicts by Alan Beale (public domain), with frequency data derived from AGID, Copyright 2000 by Kevin Atkinson. See `puzzles-data/wordwheel/NOTICE.md`.

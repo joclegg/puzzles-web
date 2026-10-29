@@ -1,6 +1,11 @@
 import type { KakuroGame, KakuroHint, Run } from '@/common/kakuro/kakuro.types'
 import { bit, digitsOf, masksFor } from '@/common/kakuro/kakuroPuzzle.functions'
 
+const ALL_DIGITS = Array.from({ length: 9 }, (_, i) => bit(i + 1)).reduce(
+  (a, b) => a | b,
+  0,
+)
+
 export function findHint(game: KakuroGame): KakuroHint | null {
   const { puzzle, values } = game
   const wrong = values.findIndex(
@@ -16,26 +21,24 @@ export function findHint(game: KakuroGame): KakuroHint | null {
   const empty = [...puzzle.runsOf.keys()]
     .filter((cell) => values[cell] === 0)
     .sort((a, b) => a - b)
-  const candidates = new Map(
-    empty.map((cell) => [
-      cell,
-      (puzzle.runsOf.get(cell) ?? []).reduce(
-        (mask, run) => mask & runCandidates({ game, run }),
-        ALL_DIGITS,
-      ),
-    ]),
-  )
+  if (empty.length === 0) {
+    return null
+  }
+  const candidates = narrowedCandidates({ game, empty })
   const single = empty.find(
     (cell) => digitsOf(candidates.get(cell) ?? 0).length === 1,
   )
   if (single !== undefined) {
     const digit = digitsOf(candidates.get(single) ?? 0)[0]
-    return { cell: single, digit, message: `Only ${digit} fits here.` }
+    return {
+      cell: single,
+      digit,
+      message: `Only ${digit} fits here: ${runNames({ game, cell: single })} leave no other digit.`,
+    }
   }
   for (const run of puzzle.runs) {
     const open = run.cells.filter((cell) => values[cell] === 0)
-    const needed = neededDigits({ game, run })
-    for (const digit of digitsOf(needed)) {
+    for (const digit of digitsOf(neededDigits({ game, run }))) {
       const places = open.filter(
         (cell) => ((candidates.get(cell) ?? 0) & bit(digit)) !== 0,
       )
@@ -43,31 +46,93 @@ export function findHint(game: KakuroGame): KakuroHint | null {
         return {
           cell: places[0],
           digit,
-          message: `${digit} must be in this run, and only fits here.`,
+          message: `Every way to make ${runName(run)} uses a ${digit}, and this is the only cell in it where ${digit} fits.`,
         }
       }
     }
   }
-  if (empty.length === 0) {
-    return null
-  }
   return {
     cell: empty[0],
     digit: puzzle.solution[empty[0]],
-    message: 'Try this cell next.',
+    message: 'No cell can be worked out yet, so here is the first empty one.',
   }
 }
 
-const ALL_DIGITS = Array.from({ length: 9 }, (_, i) => bit(i + 1)).reduce(
-  (a, b) => a | b,
-  0,
-)
+function assignable({
+  cells,
+  candidates,
+  remaining,
+  onFound,
+  chosen = [],
+}: {
+  cells: number[]
+  candidates: Map<number, number>
+  remaining: number
+  onFound: (digits: number[]) => void
+  chosen?: number[]
+}) {
+  if (chosen.length === cells.length) {
+    onFound(chosen)
+    return
+  }
+  const cell = cells[chosen.length]
+  for (const digit of digitsOf((candidates.get(cell) ?? 0) & remaining)) {
+    assignable({
+      cells,
+      candidates,
+      remaining: remaining & ~bit(digit),
+      onFound,
+      chosen: [...chosen, digit],
+    })
+  }
+}
 
 function fittingMasks({ game, run }: { game: KakuroGame; run: Run }) {
   const placed = placedMask({ game, run })
   return masksFor({ length: run.cells.length, sum: run.sum }).filter(
     (mask) => (mask & placed) === placed,
   )
+}
+
+function narrowedCandidates({
+  game,
+  empty,
+}: {
+  game: KakuroGame
+  empty: number[]
+}): Map<number, number> {
+  const candidates = new Map(empty.map((cell) => [cell, ALL_DIGITS]))
+  for (let changed = true; changed;) {
+    changed = false
+    for (const run of game.puzzle.runs) {
+      const open = run.cells.filter((cell) => game.values[cell] === 0)
+      if (open.length === 0) continue
+      const supported = new Map(open.map((cell) => [cell, 0]))
+      const placed = placedMask({ game, run })
+      for (const mask of fittingMasks({ game, run })) {
+        assignable({
+          cells: open,
+          candidates,
+          remaining: mask & ~placed,
+          onFound: (digits) =>
+            digits.forEach((digit, i) =>
+              supported.set(
+                open[i],
+                (supported.get(open[i]) ?? 0) | bit(digit),
+              ),
+            ),
+        })
+      }
+      for (const cell of open) {
+        const next = (candidates.get(cell) ?? 0) & (supported.get(cell) ?? 0)
+        if (next !== candidates.get(cell)) {
+          candidates.set(cell, next)
+          changed = true
+        }
+      }
+    }
+  }
+  return candidates
 }
 
 function neededDigits({ game, run }: { game: KakuroGame; run: Run }) {
@@ -82,9 +147,12 @@ function placedMask({ game, run }: { game: KakuroGame; run: Run }) {
     .reduce((mask, cell) => mask | bit(game.values[cell]), 0)
 }
 
-function runCandidates({ game, run }: { game: KakuroGame; run: Run }) {
-  return (
-    fittingMasks({ game, run }).reduce((all, mask) => all | mask, 0) &
-    ~placedMask({ game, run })
-  )
+function runName(run: Run) {
+  return `${run.sum} in ${run.cells.length} ${run.isAcross ? 'across' : 'down'}`
+}
+
+function runNames({ game, cell }: { game: KakuroGame; cell: number }) {
+  return (game.puzzle.runsOf.get(cell) ?? [])
+    .map((run) => runName(run))
+    .join(' and ')
 }

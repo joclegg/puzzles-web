@@ -7,11 +7,7 @@ import { formatDuration } from '@/common/format.functions'
 import { useGameTimer } from '@/common/gameTimer.hooks'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
-import {
-  DECK,
-  PILE_KIND,
-  VERDICT,
-} from '@/common/solitaire/solitaire.constants'
+import { DECK, VERDICT } from '@/common/solitaire/solitaire.constants'
 import {
   autoFinish,
   boardOf,
@@ -48,7 +44,7 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
-import { cardName } from '@/components/PlayingCard/PlayingCard.functions'
+import { hintMessage } from '@/components/PlayingCard/PlayingCard.functions'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SolitaireTable } from '@/components/SolitaireTable/SolitaireTable'
@@ -150,7 +146,7 @@ export function SolitaireGameView({ id }: { id: string }) {
         update(tapStock)
         return
       }
-      setHint('Draw from the stock.')
+      setHint('Nothing on the table can move, so draw from the stock.')
       return
     }
     const cards = cardsIn({ board, pile: selection.pile })
@@ -162,11 +158,7 @@ export function SolitaireGameView({ id }: { id: string }) {
       return
     }
     setGame({ ...current, selection })
-    setHint(
-      `Move the ${cardName(cards[index])} to ${
-        to.kind === PILE_KIND.FOUNDATION ? 'its foundation' : 'another column'
-      }.`,
-    )
+    setHint(hintMessage({ board, selection, to }))
   }
 
   function update(change: (state: SolitaireGame) => SolitaireGame) {

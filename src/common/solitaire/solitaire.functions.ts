@@ -85,12 +85,28 @@ export function canAutoFinish(game: SolitaireGame): boolean {
 }
 
 export function cycledStock(game: SolitaireGame): boolean {
-  const board = boardOf(game)
-  const cards = board.stock.length + board.waste.length
   const lastPlay = game.moves.findLastIndex((move) => !move.draw)
-  const draws = game.moves.length - 1 - lastPlay
+  let board = boardOf({ ...game, moves: game.moves.slice(0, lastPlay + 1) })
+  const cards = board.stock.length + board.waste.length
+  if (cards === 0) {
+    return true
+  }
+  const perDraw = DRAW_CARDS[game.drawMode]
+  if (perDraw === 1) {
+    return game.moves.length - 1 - lastPlay >= cards + 1
+  }
+  let drawsSinceTurnOver: number | null = null
+  for (let i = lastPlay + 1; i < game.moves.length; i++) {
+    if (drawsSinceTurnOver !== null) {
+      drawsSinceTurnOver++
+    } else if (board.stock.length === 0) {
+      drawsSinceTurnOver = 0
+    }
+    board = draw({ board, drawMode: game.drawMode })
+  }
   return (
-    cards === 0 || draws >= Math.ceil(cards / DRAW_CARDS[game.drawMode]) + 1
+    drawsSinceTurnOver !== null &&
+    drawsSinceTurnOver >= Math.ceil(cards / perDraw)
   )
 }
 

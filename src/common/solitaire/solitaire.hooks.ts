@@ -8,6 +8,13 @@ import {
   BUILD_ORDER,
   DAILY_SEED_SPREAD,
 } from '@/common/solitaire/solitaire.constants'
+import { WINNABLE_SEEDS_TEXT } from '@/common/solitaire/solitaireBank.constants'
+import {
+  dailyWinnableSeed,
+  parseSeeds,
+  randomWinnableSeed,
+} from '@/common/solitaire/solitaireBank.functions'
+import { deal } from '@/common/solitaire/solitaireBoard.functions'
 import type {
   Board,
   BuildOrder,
@@ -44,12 +51,14 @@ export function useSolitaireGames() {
     navigate([GAME_ROUTE.SOLITAIRE, SCREEN.GAME, game.id])
   }
 
-  async function startAndOpen({
+  function startAndOpen({
     dealId,
     seed,
+    date,
   }: {
     dealId: string
     seed: bigint
+    date: string | null
   }) {
     const settings = readStored<SolitaireSettings>({
       key: SETTINGS_KEY,
@@ -58,27 +67,31 @@ export function useSolitaireGames() {
     const order: BuildOrder = settings.reverse
       ? BUILD_ORDER.UP
       : BUILD_ORDER.DOWN
-    const reply = await ask({
-      kind: 'deal',
-      seed: String(seed),
-      winnable: settings.winnableOnly,
-      board: '',
-      drawMode: settings.drawMode,
-      order,
-    })
+    const seeds = parseSeeds(WINNABLE_SEEDS_TEXT[settings.drawMode][order])
+    const dealSeed = !settings.winnableOnly
+      ? seed
+      : date === null
+        ? randomWinnableSeed({ seeds, seed })
+        : dailyWinnableSeed({ seeds, date })
     const started = startDeal({
       id: crypto.randomUUID(),
       games: readStored<SavedDeal[]>({ key: GAMES_KEY, fallback: [] }),
-      deal: { dealId, drawMode: settings.drawMode, order, board: reply.board },
+      deal: {
+        dealId,
+        drawMode: settings.drawMode,
+        order,
+        board: encodeBoard(deal(dealSeed)),
+      },
       now: Date.now(),
     })
     setGames(() => started.games)
     openGame(started.game)
+    return Promise.resolve()
   }
 
   function startRandom() {
     const seed = newSeed()
-    return startAndOpen({ dealId: `deal_${seed}`, seed })
+    return startAndOpen({ dealId: `deal_${seed}`, seed, date: null })
   }
 
   function openDaily(date: string) {
@@ -91,6 +104,7 @@ export function useSolitaireGames() {
     return startAndOpen({
       dealId,
       seed: BigInt(epochDay(date)) * DAILY_SEED_SPREAD,
+      date,
     })
   }
 
@@ -137,9 +151,6 @@ export function useSolitaireGames() {
     order: BuildOrder
   }) {
     return ask({
-      kind: 'check',
-      seed: '0',
-      winnable: false,
       board: encodeBoard(board),
       drawMode,
       order,

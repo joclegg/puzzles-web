@@ -176,6 +176,26 @@ describe('dailyWord', () => {
     expect(dailyWord({ words: REAL_WORDS, date: '2026-10-22' })).toBe('AGENT')
   })
 
+  it('keeps every daily word when an answer is appended', () => {
+    const appended = createWords({
+      answers: [...answersText.split('\n'), 'zesty'],
+      guesses: guessesText.split('\n'),
+    })
+    const dates = Array.from({ length: 944 }, (_, i) =>
+      addDays({ date: '2026-10-25', days: i }),
+    )
+
+    expect(dates.map((date) => dailyWord({ words: appended, date }))).toEqual(
+      dates.map((date) => dailyWord({ words: REAL_WORDS, date })),
+    )
+    expect(
+      dailyWord({
+        words: appended,
+        date: addDays({ date: '2026-10-25', days: 944 }),
+      }),
+    ).toBe('ZESTY')
+  })
+
   it('numbers the days from the first daily word', () => {
     expect(dayNumber('2026-11-01')).toBe(8)
   })

@@ -1,6 +1,7 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { readStored, writeStored } from '@/common/storage.functions'
+import { SYNCED_EVENT } from '@/common/sync.constants'
 
 export function useStoredState<T>({
   key,
@@ -11,6 +12,18 @@ export function useStoredState<T>({
 }): [T, (update: (current: T) => T) => void] {
   const [value, setValue] = useState<T>(() => readStored({ key, fallback }))
   const latestRef = useRef(value)
+  const fallbackRef = useRef(fallback)
+
+  useEffect(() => {
+    function onSynced(event: Event) {
+      if (!(event as CustomEvent<string[]>).detail.includes(key)) return
+      const next = readStored({ key, fallback: fallbackRef.current })
+      latestRef.current = next
+      setValue(next)
+    }
+    window.addEventListener(SYNCED_EVENT, onSynced)
+    return () => window.removeEventListener(SYNCED_EVENT, onSynced)
+  }, [key])
 
   const update = useCallback(
     (change: (current: T) => T) => {

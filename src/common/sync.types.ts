@@ -23,4 +23,8 @@ export interface SyncedKey {
   kind: SyncKind
 }
 
+export interface SyncedRow {
+  synced_at: string
+}
+
 export type SyncKind = (typeof SYNC_KIND)[keyof typeof SYNC_KIND]
