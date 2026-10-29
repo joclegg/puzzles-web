@@ -1,5 +1,6 @@
 import { GAME_ROUTE } from '@/common/route.constants'
 import { routeHash } from '@/common/route.functions'
+import type { SignInProvider } from '@/common/sync.types'
 import { AccountButton } from '@/components/AccountButton/AccountButton'
 import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
 import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
@@ -18,7 +19,7 @@ export function LauncherView({
   onSignOut,
 }: {
   email: string | null
-  onSignIn: () => void
+  onSignIn: (provider: SignInProvider) => void
   onSignOut: () => void
 }) {
   return (

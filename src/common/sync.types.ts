@@ -1,4 +1,4 @@
-import type { SYNC_KIND } from '@/common/sync.constants'
+import type { SIGN_IN_PROVIDER, SYNC_KIND } from '@/common/sync.constants'
 
 export interface SavedGameRow {
   game: string
@@ -13,6 +13,9 @@ export interface SettingsRow {
   data: unknown
   updated_at: string
 }
+
+export type SignInProvider =
+  (typeof SIGN_IN_PROVIDER)[keyof typeof SIGN_IN_PROVIDER]
 
 export interface SyncedEntry {
   id: string

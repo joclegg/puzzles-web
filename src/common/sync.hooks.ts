@@ -9,6 +9,7 @@ import {
   PULLED_KEY,
   PUSH_DELAY_MS,
   RETRY_MS,
+  SIGN_IN_PROVIDER,
   STAMPS_KEY,
   STORED_EVENT,
   SUPABASE_KEY,
@@ -29,6 +30,7 @@ import {
 import type {
   SavedGameRow,
   SettingsRow,
+  SignInProvider,
   SyncedEntry,
   SyncedRow,
 } from '@/common/sync.types'
@@ -91,17 +93,27 @@ export function useSync() {
     }
   }, [client, userId])
 
-  const signIn = useCallback(() => {
-    void client.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + window.location.pathname,
-      },
-    })
-  }, [client])
+  const signIn = useCallback(
+    (provider: SignInProvider) => {
+      void client.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: window.location.origin + window.location.pathname,
+          scopes: provider === SIGN_IN_PROVIDER.MICROSOFT ? 'email' : undefined,
+        },
+      })
+    },
+    [client],
+  )
 
   const signOut = useCallback(() => {
     replaceStored({ key: PULLED_KEY, value: null })
+    replaceStored({
+      key: PENDING_KEY,
+      value: Object.keys(
+        readStored<Record<string, number>>({ key: STAMPS_KEY, fallback: {} }),
+      ),
+    })
     void client.auth.signOut()
   }, [client])
 

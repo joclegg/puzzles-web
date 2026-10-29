@@ -11,3 +11,9 @@ test('opens a game and comes back', async ({ launcherPage }) => {
 
   await expect(launcherPage.heading).toBeVisible()
 })
+
+test('offers Google and Microsoft to sign in', async ({ launcherPage }) => {
+  await launcherPage.openSignIn()
+
+  await launcherPage.expectSignInChoices()
+})

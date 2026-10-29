@@ -1,5 +1,6 @@
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { useRoute } from '@/common/route.hooks'
+import type { SignInProvider } from '@/common/sync.types'
 import { useSync } from '@/common/sync.hooks'
 import { FiveLettersView } from '@/views/FiveLettersView/FiveLettersView'
 import { KakuroView } from '@/views/KakuroView/KakuroView'
@@ -37,7 +38,7 @@ function routeView({
   screen: string
   id: string
   email: string | null
-  onSignIn: () => void
+  onSignIn: (provider: SignInProvider) => void
   onSignOut: () => void
 }) {
   if (game === GAME_ROUTE.FIVE_LETTERS) {

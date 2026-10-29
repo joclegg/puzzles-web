@@ -10,6 +10,11 @@ export const SUPABASE_KEY = 'sb_publishable_gQgbll0ElIbV41OtkvuXlQ_yUegn2hH'
 export const SUPABASE_URL = 'https://nrlmaucpuesfmvqhtupe.supabase.co'
 export const PUSH_DELAY_MS = 1000
 
+export const SIGN_IN_PROVIDER = {
+  GOOGLE: 'google',
+  MICROSOFT: 'azure',
+} as const
+
 export const SYNCED_GAMES = [
   'fiveLetters',
   'kakuro',
