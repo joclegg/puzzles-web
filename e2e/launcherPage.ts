@@ -22,6 +22,18 @@ export class LauncherPage {
     await this.gameLink(name).click()
   }
 
+  async openSignIn() {
+    await this.page.getByRole('button', { name: 'Sign in to sync' }).click()
+  }
+
+  async expectSignInChoices() {
+    const dialog = this.page.getByRole('dialog', { name: 'Sign in to sync' })
+    await expect(dialog.getByRole('button', { name: 'Google' })).toBeVisible()
+    await expect(
+      dialog.getByRole('button', { name: 'Microsoft' }),
+    ).toBeVisible()
+  }
+
   async back() {
     await this.page.getByRole('button', { name: 'Back' }).click()
   }
