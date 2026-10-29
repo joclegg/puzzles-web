@@ -1,9 +1,14 @@
-import { SYNC_KIND, SYNCED_GAMES } from '@/common/sync.constants'
+import {
+  PULL_OVERLAP_MS,
+  SYNC_KIND,
+  SYNCED_GAMES,
+} from '@/common/sync.constants'
 import type {
   SavedGameRow,
   SettingsRow,
   SyncedEntry,
   SyncedKey,
+  SyncedRow,
 } from '@/common/sync.types'
 
 export function changedEntryIds({
@@ -110,6 +115,28 @@ export function parseStampKey(key: string): SyncedKey & { id: string | null } {
     kind: kind === SYNC_KIND.GAMES ? SYNC_KIND.GAMES : SYNC_KIND.SETTINGS,
     id,
   }
+}
+
+export function pulledUpTo({
+  cursor,
+  rows,
+}: {
+  cursor: string | null
+  rows: SyncedRow[]
+}): string | null {
+  return rows.reduce<string | null>(
+    (latest, row) =>
+      latest === null || Date.parse(row.synced_at) > Date.parse(latest)
+        ? row.synced_at
+        : latest,
+    cursor,
+  )
+}
+
+export function pullSince(cursor: string | null): string {
+  return cursor === null
+    ? new Date(0).toISOString()
+    : new Date(Date.parse(cursor) - PULL_OVERLAP_MS).toISOString()
 }
 
 export function recordChanges({

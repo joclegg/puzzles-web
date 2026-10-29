@@ -1,5 +1,3 @@
-import { Fragment } from 'react'
-
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { useRoute } from '@/common/route.hooks'
 import { useSync } from '@/common/sync.hooks'
@@ -14,21 +12,17 @@ import { TwoToneView } from '@/views/TwoToneView/TwoToneView'
 import { WordWheelView } from '@/views/WordWheelView/WordWheelView'
 
 export function AppView() {
-  const { user, version, signIn, signOut } = useSync()
+  const { user, signIn, signOut } = useSync()
   const [game, screen = SCREEN.HOME, id = ''] = useRoute()
 
-  return (
-    <Fragment key={version}>
-      {routeView({
-        game,
-        screen,
-        id,
-        email: user?.email ?? null,
-        onSignIn: signIn,
-        onSignOut: signOut,
-      })}
-    </Fragment>
-  )
+  return routeView({
+    game,
+    screen,
+    id,
+    email: user?.email ?? null,
+    onSignIn: signIn,
+    onSignOut: signOut,
+  })
 }
 
 function routeView({

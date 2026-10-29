@@ -4,13 +4,17 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { readStored, replaceStored } from '@/common/storage.functions'
 import {
+  PAGE_SIZE,
   PENDING_KEY,
+  PULLED_KEY,
   PUSH_DELAY_MS,
+  RETRY_MS,
   STAMPS_KEY,
   STORED_EVENT,
   SUPABASE_KEY,
   SUPABASE_URL,
   SYNC_KIND,
+  SYNCED_EVENT,
   SYNCED_GAMES,
 } from '@/common/sync.constants'
 import {
@@ -18,12 +22,15 @@ import {
   mergeGames,
   mergeSettings,
   parseStampKey,
+  pulledUpTo,
+  pullSince,
   settingsStampKey,
 } from '@/common/sync.functions'
 import type {
   SavedGameRow,
   SettingsRow,
   SyncedEntry,
+  SyncedRow,
 } from '@/common/sync.types'
 
 export function useSync() {
@@ -33,8 +40,9 @@ export function useSync() {
     }),
   )
   const [user, setUser] = useState<User | null>(null)
-  const [version, setVersion] = useState(0)
   const timerRef = useRef<number | undefined>(undefined)
+  const runningRef = useRef<Promise<void>>(Promise.resolve())
+  const userId = user?.id ?? null
 
   useEffect(() => {
     const { data } = client.auth.onAuthStateChange((_event, session) => {
@@ -51,28 +59,37 @@ export function useSync() {
   }, [client])
 
   useEffect(() => {
-    if (user === null) return
+    if (userId === null) return
     let active = true
-    function schedulePush() {
+    function schedule(delayMs: number) {
       window.clearTimeout(timerRef.current)
-      timerRef.current = window.setTimeout(() => {
-        void push(client)
-      }, PUSH_DELAY_MS)
+      timerRef.current = window.setTimeout(run, delayMs)
     }
-    void pull(client).then((changed) => {
-      if (!active) return
-      if (changed) setVersion((current) => current + 1)
-      void push(client)
-    })
-    window.addEventListener(STORED_EVENT, schedulePush)
-    window.addEventListener('online', schedulePush)
+    function run() {
+      runningRef.current = runningRef.current.then(async () => {
+        if (!active) return
+        const synced = await syncOnce(client)
+        if (!synced && active) schedule(RETRY_MS)
+      })
+    }
+    function onStored() {
+      schedule(PUSH_DELAY_MS)
+    }
+    function onVisible() {
+      if (!document.hidden) run()
+    }
+    run()
+    window.addEventListener(STORED_EVENT, onStored)
+    window.addEventListener('online', run)
+    document.addEventListener('visibilitychange', onVisible)
     return () => {
       active = false
       window.clearTimeout(timerRef.current)
-      window.removeEventListener(STORED_EVENT, schedulePush)
-      window.removeEventListener('online', schedulePush)
+      window.removeEventListener(STORED_EVENT, onStored)
+      window.removeEventListener('online', run)
+      document.removeEventListener('visibilitychange', onVisible)
     }
-  }, [client, user])
+  }, [client, userId])
 
   const signIn = useCallback(() => {
     void client.auth.signInWithOAuth({
@@ -84,20 +101,57 @@ export function useSync() {
   }, [client])
 
   const signOut = useCallback(() => {
+    replaceStored({ key: PULLED_KEY, value: null })
     void client.auth.signOut()
   }, [client])
 
-  return { user, version, signIn, signOut }
+  return { user, signIn, signOut }
+}
+
+async function fetchChanged<T>({
+  client,
+  table,
+  columns,
+  since,
+}: {
+  client: SupabaseClient
+  table: string
+  columns: string
+  since: string
+}): Promise<(T & SyncedRow)[] | null> {
+  const rows: (T & SyncedRow)[] = []
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const page = await client
+      .from(table)
+      .select(`${columns}, synced_at`)
+      .gt('synced_at', since)
+      .order('synced_at')
+      .range(from, from + PAGE_SIZE - 1)
+    if (page.error !== null) return null
+    const data = page.data as unknown as (T & SyncedRow)[]
+    rows.push(...data)
+    if (data.length < PAGE_SIZE) return rows
+  }
 }
 
 async function pull(client: SupabaseClient) {
-  const [saved, settings] = await Promise.all([
-    client.from('saved_games').select('game, id, data, updated_at, deleted'),
-    client.from('game_settings').select('game, data, updated_at'),
+  const cursor = readStored<string | null>({ key: PULLED_KEY, fallback: null })
+  const since = pullSince(cursor)
+  const [rows, settingsRows] = await Promise.all([
+    fetchChanged<SavedGameRow>({
+      client,
+      table: 'saved_games',
+      columns: 'game, id, data, updated_at, deleted',
+      since,
+    }),
+    fetchChanged<SettingsRow>({
+      client,
+      table: 'game_settings',
+      columns: 'game, data, updated_at',
+      since,
+    }),
   ])
-  if (saved.error !== null || settings.error !== null) return false
-  const rows = saved.data as SavedGameRow[]
-  const settingsRows = settings.data as SettingsRow[]
+  if (rows === null || settingsRows === null) return false
   let stamps = readStored<Record<string, number>>({
     key: STAMPS_KEY,
     fallback: {},
@@ -105,7 +159,7 @@ async function pull(client: SupabaseClient) {
   const pending = new Set(
     readStored<string[]>({ key: PENDING_KEY, fallback: [] }),
   )
-  let changed = false
+  const changedKeys: string[] = []
   for (const game of SYNCED_GAMES) {
     const gamesKey = `${game}.${SYNC_KIND.GAMES}`
     const mergedGames = mergeGames({
@@ -122,7 +176,7 @@ async function pull(client: SupabaseClient) {
     }
     if (mergedGames.changed) {
       replaceStored({ key: gamesKey, value: mergedGames.games })
-      changed = true
+      changedKeys.push(gamesKey)
     }
     const settingsKey = `${game}.${SYNC_KIND.SETTINGS}`
     const mergedSettings = mergeSettings({
@@ -139,17 +193,24 @@ async function pull(client: SupabaseClient) {
     }
     if (mergedSettings.changed) {
       replaceStored({ key: settingsKey, value: mergedSettings.settings })
-      changed = true
+      changedKeys.push(settingsKey)
     }
   }
   replaceStored({ key: STAMPS_KEY, value: stamps })
   replaceStored({ key: PENDING_KEY, value: [...pending] })
-  return changed
+  replaceStored({
+    key: PULLED_KEY,
+    value: pulledUpTo({ cursor, rows: [...rows, ...settingsRows] }),
+  })
+  if (changedKeys.length > 0) {
+    window.dispatchEvent(new CustomEvent(SYNCED_EVENT, { detail: changedKeys }))
+  }
+  return true
 }
 
 async function push(client: SupabaseClient) {
   const pending = readStored<string[]>({ key: PENDING_KEY, fallback: [] })
-  if (pending.length === 0) return
+  if (pending.length === 0) return true
   const stamps = readStored<Record<string, number>>({
     key: STAMPS_KEY,
     fallback: {},
@@ -190,7 +251,7 @@ async function push(client: SupabaseClient) {
       ? client.from('game_settings').upsert(settingsRows)
       : Promise.resolve({ error: null }),
   ])
-  if (saved.error !== null || settings.error !== null) return
+  if (saved.error !== null || settings.error !== null) return false
   const latest = readStored<Record<string, number>>({
     key: STAMPS_KEY,
     fallback: {},
@@ -201,4 +262,12 @@ async function push(client: SupabaseClient) {
       (key) => !pending.includes(key) || latest[key] !== stamps[key],
     ),
   })
+  return true
+}
+
+async function syncOnce(client: SupabaseClient) {
+  const pushed = await push(client)
+  const pulled = await pull(client)
+  const pushedNew = pulled ? await push(client) : false
+  return pushed && pulled && pushedNew
 }

@@ -7,6 +7,7 @@ import {
   MARK_RANK,
   MAX_GUESSES,
   REJECTION,
+  SHUFFLED_ANSWER_COUNT,
   WORD_LENGTH,
 } from '@/common/fiveLetters/fiveLetters.constants'
 import type {
@@ -33,10 +34,13 @@ export function createWords({
     ...guesses.map((word) => word.trim().toUpperCase()),
     ...cleanAnswers,
   ])
-  const dailyOrder = shuffled({
-    items: cleanAnswers,
-    random: createRandom(DAILY_ORDER_SEED),
-  })
+  const dailyOrder = [
+    ...shuffled({
+      items: cleanAnswers.slice(0, SHUFFLED_ANSWER_COUNT),
+      random: createRandom(DAILY_ORDER_SEED),
+    }),
+    ...cleanAnswers.slice(SHUFFLED_ANSWER_COUNT),
+  ]
   return { answers: cleanAnswers, allowed, dailyOrder }
 }
 

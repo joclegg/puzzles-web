@@ -8,6 +8,8 @@ export const FIRST_DAY = '2026-10-25'
 
 export const DAILY_ORDER_SEED = 5
 
+export const SHUFFLED_ANSWER_COUNT = 944
+
 export const MARK = {
   CORRECT: 'correct',
   PRESENT: 'present',
