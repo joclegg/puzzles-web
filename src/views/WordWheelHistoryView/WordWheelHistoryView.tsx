@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-import { cn } from '@/common/utils.functions'
 import { GAME_ROUTE } from '@/common/route.constants'
 import { LEVEL_LETTERS, LEVELS } from '@/common/wordWheel/wordWheel.constants'
 import { useWordWheelGames } from '@/common/wordWheel/wordWheel.hooks'
@@ -10,6 +9,9 @@ import {
   wordWheelTitle,
 } from '@/common/wordWheel/wordWheelSaves.functions'
 import { PuzzleHistoryList } from '@/components/PuzzleHistoryList/PuzzleHistoryList'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { FilterChip } from '@/components/FilterChip/FilterChip'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
 export function WordWheelHistoryView() {
@@ -20,25 +22,19 @@ export function WordWheelHistoryView() {
     .sort((a, b) => b.startedAt - a.startedAt)
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.WORD_WHEEL}>
       <ScreenHeader title="History" back={[GAME_ROUTE.WORD_WHEEL]} />
       <div className="flex flex-wrap gap-2" role="group" aria-label="Level">
         {[null, ...LEVELS].map((level) => (
-          <button
+          <FilterChip
             key={level ?? 'all'}
-            type="button"
-            aria-pressed={filter === level}
+            label={level === null ? 'All' : String(LEVEL_LETTERS[level])}
+            selected={filter === level}
             onClick={() => setFilter(level)}
-            className={cn(
-              'rounded-full px-3 py-1 text-sm ring-1 ring-border',
-              filter === level && 'bg-primary text-primary-foreground',
-            )}
-          >
-            {level === null ? 'All' : LEVEL_LETTERS[level]}
-          </button>
+          />
         ))}
       </div>
       <PuzzleHistoryList games={shown} title={wordWheelTitle} />
-    </main>
+    </MenuScreen>
   )
 }

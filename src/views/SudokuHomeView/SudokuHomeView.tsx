@@ -1,8 +1,15 @@
-import { BarChart3, CalendarDays, History, Settings } from 'lucide-react'
+import {
+  BarChart3,
+  CalendarCheck,
+  CalendarDays,
+  History,
+  PenLine,
+  Settings,
+} from 'lucide-react'
 import { useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
-import { formatDuration } from '@/common/format.functions'
+import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { useStoredState } from '@/common/storage.hooks'
@@ -30,7 +37,15 @@ import {
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
 import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
+import { ContinueCard } from '@/components/ContinueCard/ContinueCard'
+import { GameHero } from '@/components/GameHero/GameHero'
+import { LevelDots } from '@/components/LevelDots/LevelDots'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { MenuSection } from '@/components/MenuSection/MenuSection'
+import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SudokuIcon } from '@/components/SudokuIcon/SudokuIcon'
 
 export function SudokuHomeView() {
   const { games, openGame, startLevel, openDaily } = useSudokuGames()
@@ -70,7 +85,7 @@ export function SudokuHomeView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.SUDOKU}>
       <ScreenHeader title={TITLE} back={[]}>
         <Button
           size={BUTTON_SIZE.ICON}
@@ -94,17 +109,15 @@ export function SudokuHomeView() {
           <Settings className="size-5" />
         </Button>
       </ScreenHeader>
+      <GameHero
+        icon={<SudokuIcon />}
+        tagline="Classic and killer, from 6x6 to evil"
+      />
       {latest && (
-        <button
-          type="button"
+        <ContinueCard
+          detail={`${sudokuTitle(latest)} · ${formatDuration(latest.elapsedMs)}`}
           onClick={() => openGame(latest)}
-          className="rounded-xl bg-card p-4 text-left ring-1 ring-border hover:bg-muted"
-        >
-          <span className="block font-semibold">Continue</span>
-          <span className="block text-sm text-muted-foreground">
-            {sudokuTitle(latest)} · {formatDuration(latest.elapsedMs)}
-          </span>
-        </button>
+        />
       )}
       <OptionGroup
         label="Mode"
@@ -113,59 +126,58 @@ export function SudokuHomeView() {
         labels={GAME_MODE_LABEL}
         onChange={(next) => setMode(() => next)}
       />
-      <div className="flex gap-2">
-        <Button
-          variant={BUTTON_VARIANT.OUTLINE}
-          className="h-12 flex-1 text-base"
-          disabled={loading}
-          onClick={() => load(() => openDaily({ mode, date: today }))}
-        >
-          Daily puzzle ·{' '}
-          {DIFFICULTY_LABEL[dailyPick({ mode, date: today }).difficulty]}
-          {dailyDone ? ' ✓' : ''}
-        </Button>
-        <Button
-          variant={BUTTON_VARIANT.OUTLINE}
-          size={BUTTON_SIZE.ICON}
-          className="size-12"
-          aria-label="Daily calendar"
-          onClick={() => navigate([GAME_ROUTE.SUDOKU, SCREEN.DAILY])}
-        >
-          <CalendarDays className="size-5" />
-        </Button>
-      </div>
-      <div className="flex flex-col gap-2">
-        {LEVELS[mode].map((difficulty) => {
-          const saved = savedFor(difficulty)
-          return (
-            <Button
-              key={difficulty}
-              variant={BUTTON_VARIANT.OUTLINE}
-              className="h-auto flex-col py-3"
+      <MenuSection title="Today" aside={formatDayMonth(today)}>
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <MenuTile
+              label={`Daily puzzle · ${DIFFICULTY_LABEL[dailyPick({ mode, date: today }).difficulty]}`}
+              icon={<CalendarCheck className="size-5" />}
+              done={dailyDone}
               disabled={loading}
-              onClick={() =>
-                saved
-                  ? setResumeChoice(saved)
-                  : load(() => startLevel({ mode, difficulty }))
-              }
-            >
-              <span className="text-base">{DIFFICULTY_LABEL[difficulty]}</span>
-              {saved && (
-                <span className="text-xs text-muted-foreground">
-                  In progress · {formatDuration(saved.elapsedMs)}
-                </span>
-              )}
-            </Button>
-          )
-        })}
-      </div>
-      <Button
-        variant={BUTTON_VARIANT.OUTLINE}
-        className="h-11"
-        onClick={() => navigate([GAME_ROUTE.SUDOKU, SCREEN.ENTRY])}
-      >
-        Enter puzzle
-      </Button>
+              onClick={() => load(() => openDaily({ mode, date: today }))}
+            />
+          </div>
+          <button
+            type="button"
+            aria-label="Daily calendar"
+            onClick={() => navigate([GAME_ROUTE.SUDOKU, SCREEN.DAILY])}
+            className="flex w-16 shrink-0 items-center justify-center rounded-xl bg-card text-game ring-1 ring-border transition hover:bg-muted hover:ring-game/40 active:scale-[0.97]"
+          >
+            <CalendarDays className="size-6" />
+          </button>
+        </div>
+      </MenuSection>
+      <MenuSection title="New game">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {LEVELS[mode].map((difficulty, rank) => {
+            const saved = savedFor(difficulty)
+            return (
+              <MenuTile
+                key={difficulty}
+                label={DIFFICULTY_LABEL[difficulty]}
+                meter={<LevelDots rank={rank} count={LEVELS[mode].length} />}
+                detail={
+                  saved
+                    ? `In progress · ${formatDuration(saved.elapsedMs)}`
+                    : undefined
+                }
+                active={saved !== undefined}
+                disabled={loading}
+                onClick={() =>
+                  saved
+                    ? setResumeChoice(saved)
+                    : load(() => startLevel({ mode, difficulty }))
+                }
+              />
+            )
+          })}
+        </div>
+        <MenuTile
+          label="Enter puzzle"
+          icon={<PenLine className="size-5" />}
+          onClick={() => navigate([GAME_ROUTE.SUDOKU, SCREEN.ENTRY])}
+        />
+      </MenuSection>
       <AppDialog
         open={resumeChoice !== null}
         title={resumeChoice ? sudokuTitle(resumeChoice) : ''}
@@ -203,6 +215,6 @@ export function SudokuHomeView() {
           {formatDuration(resumeChoice?.elapsedMs ?? 0)}).
         </p>
       </AppDialog>
-    </main>
+    </MenuScreen>
   )
 }

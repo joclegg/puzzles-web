@@ -1,3 +1,4 @@
+import { EmptyState } from '@/components/EmptyState/EmptyState'
 import { formatDateTime, formatDuration } from '@/common/format.functions'
 import { PUZZLE_STATUS_LABEL } from '@/common/puzzleSaves.constants'
 import type { SavedPuzzle } from '@/common/puzzleSaves.types'
@@ -10,10 +11,10 @@ export function PuzzleHistoryList({
   title: (game: SavedPuzzle) => string
 }) {
   if (games.length === 0) {
-    return <p className="text-muted-foreground">No games yet.</p>
+    return <EmptyState message="No games yet." />
   }
   return (
-    <ul className="flex flex-col divide-y">
+    <ul className="flex flex-col divide-y rounded-2xl bg-card px-4 ring-1 ring-border">
       {games.map((game) => (
         <li key={game.id} className="flex items-center gap-2 py-3">
           <span className="flex-1">

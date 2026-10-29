@@ -26,6 +26,8 @@ Puzzles for the web: eight offline puzzle games served at https://joclegg.github
 - `src/main.tsx`: entry point
 - `src/views/<View>/`: top-level views, one folder per view
 - `src/components/<Component>/`: every other component, one folder per component holding all of its files
+- `MenuScreen`, `GameHero`, `ContinueCard`, `MenuSection`, `MenuTile`, `DailyTile`, `LevelDots`, `Panel`, `FilterChip` and `EmptyState` in `src/components/`: the shared pieces of every game's Home, Stats and History screens. `MenuScreen` sets the game's accent (`--game`, from the `--<prefix>-accent` tokens in `src/index.css`), which the others use as `bg-game`, `ring-game` and `text-game`
+- `public/`: the favicon (`favicon.svg`, `favicon.ico`), `apple-touch-icon.png` and `manifest.webmanifest` with its icons, drawn from the Android launcher icon
 - `src/common/`: shared code (random numbers, dates, routing, storage, sync)
 - `src/common/sync.*`: optional Google sign-in and sync with the Supabase project in [joclegg/puzzles-backend](https://github.com/joclegg/puzzles-backend). `writeStored` stamps every change to a synced key and queues it in `sync.pending`; `useSync` in `AppView` pushes the queue to the `saved_games` and `game_settings` tables, then pulls rows stored since the last pull (by the server's `synced_at`, a page at a time), last write wins. It syncs on sign-in, after each change, when the tab becomes visible and when the browser comes online, and retries after a failure. Pulled changes fire `puzzles:synced` with the changed keys, and `useStoredState` re-reads only those keys, so a sync never reloads the page.
 - `src/common/<game>/`: every rule of one game as plain functions, with its types, constants and save logic, e.g. `src/common/fiveLetters/`

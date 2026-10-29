@@ -2,7 +2,7 @@ import { BarChart3, History, Settings } from 'lucide-react'
 import { useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
-import { formatDuration } from '@/common/format.functions'
+import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import {
   dailyPuzzleId,
   inProgressPuzzles,
@@ -22,7 +22,16 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
+import { ContinueCard } from '@/components/ContinueCard/ContinueCard'
+import { DailyTile } from '@/components/DailyTile/DailyTile'
+import { GameHero } from '@/components/GameHero/GameHero'
+import { LevelDots } from '@/components/LevelDots/LevelDots'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { MenuSection } from '@/components/MenuSection/MenuSection'
+import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
 
 export function KakuroHomeView() {
   const { games, openGame, startRandom, openDaily } = useKakuroGames()
@@ -43,7 +52,7 @@ export function KakuroHomeView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.KAKURO}>
       <ScreenHeader title={TITLE} back={[]}>
         <Button
           size={BUTTON_SIZE.ICON}
@@ -67,56 +76,52 @@ export function KakuroHomeView() {
           <Settings className="size-5" />
         </Button>
       </ScreenHeader>
+      <GameHero
+        icon={<KakuroIcon />}
+        tagline="Cross sums: runs of different digits that add up"
+      />
       {latest && (
-        <button
-          type="button"
+        <ContinueCard
+          detail={`${puzzleTitle(latest)} · ${formatDuration(latest.elapsedMs)}`}
           onClick={() => openGame(latest)}
-          className="rounded-xl bg-card p-4 text-left ring-1 ring-border hover:bg-muted"
-        >
-          <span className="block font-semibold">Continue</span>
-          <span className="block text-sm text-muted-foreground">
-            {puzzleTitle(latest)} · {formatDuration(latest.elapsedMs)}
-          </span>
-        </button>
+        />
       )}
-      <div className="grid grid-cols-2 gap-2">
-        {SIZES.map((size) => {
-          const saved = savedFor(size)
-          return (
-            <Button
+      <MenuSection title="Today" aside={formatDayMonth(today)}>
+        <div className="grid grid-cols-5 gap-2">
+          {SIZES.map((size) => (
+            <DailyTile
               key={size}
-              variant={BUTTON_VARIANT.OUTLINE}
-              className="h-auto flex-col py-3"
-              onClick={() =>
-                saved ? setResumeChoice(saved) : startRandom(size)
-              }
-            >
-              <span className="text-base">{sizeLabel(size)}</span>
-              {saved && (
-                <span className="text-xs text-muted-foreground">
-                  In progress · {formatDuration(saved.elapsedMs)}
-                </span>
-              )}
-            </Button>
-          )
-        })}
-      </div>
-      <h2 className="font-semibold">Today's puzzles</h2>
-      <div className="flex gap-2">
-        {SIZES.map((size) => (
-          <Button
-            key={size}
-            variant={BUTTON_VARIANT.OUTLINE}
-            className="h-11 flex-1"
-            aria-label={`Daily ${sizeLabel(size)}`}
-            onClick={() => openDaily({ date: today, size })}
-          >
-            {dailySolved.has(dailyPuzzleId({ date: today, size }))
-              ? `${size} ✓`
-              : size}
-          </Button>
-        ))}
-      </div>
+              label={sizeLabel(size)}
+              ariaLabel={`Daily ${sizeLabel(size)}`}
+              done={dailySolved.has(dailyPuzzleId({ date: today, size }))}
+              onClick={() => openDaily({ date: today, size })}
+            />
+          ))}
+        </div>
+      </MenuSection>
+      <MenuSection title="New puzzle">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {SIZES.map((size, rank) => {
+            const saved = savedFor(size)
+            return (
+              <MenuTile
+                key={size}
+                label={sizeLabel(size)}
+                meter={<LevelDots rank={rank} count={SIZES.length} />}
+                detail={
+                  saved
+                    ? `In progress · ${formatDuration(saved.elapsedMs)}`
+                    : undefined
+                }
+                active={saved !== undefined}
+                onClick={() =>
+                  saved ? setResumeChoice(saved) : startRandom(size)
+                }
+              />
+            )
+          })}
+        </div>
+      </MenuSection>
       <AppDialog
         open={resumeChoice !== null}
         title={resumeChoice ? puzzleTitle(resumeChoice) : ''}
@@ -148,6 +153,6 @@ export function KakuroHomeView() {
           {formatDuration(resumeChoice?.elapsedMs ?? 0)}).
         </p>
       </AppDialog>
-    </main>
+    </MenuScreen>
   )
 }

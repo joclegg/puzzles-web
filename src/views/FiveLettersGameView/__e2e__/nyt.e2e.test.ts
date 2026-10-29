@@ -11,7 +11,7 @@ test('plays the New York Times word as its own daily', async ({
   await expect(fiveLettersPage.dialog).toContainText('Got it in 1!')
   await fiveLettersPage.closeDialog()
   await fiveLettersPage.back()
-  await expect(fiveLettersPage.nytButton).toContainText('Solved ✓')
+  await expect(fiveLettersPage.nytButton).toContainText('Solved')
   await expect(fiveLettersPage.dailyButton).not.toContainText('Solved')
   await fiveLettersPage.expectScreenshot('nyt-solved')
 })

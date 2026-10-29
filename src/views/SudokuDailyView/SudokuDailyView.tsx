@@ -21,6 +21,8 @@ import {
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
 import { MedalBadge } from '@/components/MedalBadge/MedalBadge'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
 export function SudokuDailyView() {
@@ -36,7 +38,7 @@ export function SudokuDailyView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.SUDOKU}>
       <ScreenHeader title="Daily puzzles" back={[GAME_ROUTE.SUDOKU]} />
       <div className="flex items-center">
         <Button
@@ -139,6 +141,6 @@ export function SudokuDailyView() {
       >
         <p>Play this day's classic or killer puzzle.</p>
       </AppDialog>
-    </main>
+    </MenuScreen>
   )
 }

@@ -13,6 +13,9 @@ import {
 } from '@/common/sudoku/sudokuSaves.constants'
 import { bestTimes } from '@/common/sudoku/sudokuSaves.functions'
 import type { SudokuSettings } from '@/common/sudoku/sudokuSaves.types'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { Panel } from '@/components/Panel/Panel'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
 export function SudokuStatsView() {
@@ -24,11 +27,10 @@ export function SudokuStatsView() {
   const times = bestTimes({ games, pastBests: settings.pastBests })
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.SUDOKU}>
       <ScreenHeader title="Best times" back={[GAME_ROUTE.SUDOKU]} />
       {GAME_MODES.map((mode) => (
-        <section key={mode} aria-label={GAME_MODE_LABEL[mode]}>
-          <h2 className="pb-1 font-semibold">{GAME_MODE_LABEL[mode]}</h2>
+        <Panel key={mode} title={GAME_MODE_LABEL[mode]}>
           <table className="w-full text-sm">
             <thead className="text-left text-muted-foreground">
               <tr>
@@ -59,11 +61,11 @@ export function SudokuStatsView() {
                 ))}
             </tbody>
           </table>
-        </section>
+        </Panel>
       ))}
       <p className="text-sm text-muted-foreground">
         Custom puzzles show in History but don't count towards best times.
       </p>
-    </main>
+    </MenuScreen>
   )
 }

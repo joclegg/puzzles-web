@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-import { cn } from '@/common/utils.functions'
 import { formatDateTime, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE } from '@/common/route.constants'
 import {
@@ -11,6 +10,10 @@ import type { DrawMode } from '@/common/solitaire/solitaire.types'
 import { useSolitaireGames } from '@/common/solitaire/solitaire.hooks'
 import { DEAL_STATUS_LABEL } from '@/common/solitaire/solitaireSaves.constants'
 import { dealTitle } from '@/common/solitaire/solitaireSaves.functions'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { FilterChip } from '@/components/FilterChip/FilterChip'
+import { EmptyState } from '@/components/EmptyState/EmptyState'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
 export function SolitaireHistoryView() {
@@ -21,28 +24,22 @@ export function SolitaireHistoryView() {
     .sort((a, b) => b.startedAt - a.startedAt)
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.SOLITAIRE}>
       <ScreenHeader title="History" back={[GAME_ROUTE.SOLITAIRE]} />
       <div className="flex flex-wrap gap-2" role="group" aria-label="Draw mode">
         {[null, ...Object.values(DRAW_MODE)].map((mode) => (
-          <button
+          <FilterChip
             key={mode ?? 'all'}
-            type="button"
-            aria-pressed={filter === mode}
+            label={mode === null ? 'All' : DRAW_MODE_LABEL[mode]}
+            selected={filter === mode}
             onClick={() => setFilter(mode)}
-            className={cn(
-              'rounded-full px-3 py-1 text-sm ring-1 ring-border',
-              filter === mode && 'bg-primary text-primary-foreground',
-            )}
-          >
-            {mode === null ? 'All' : DRAW_MODE_LABEL[mode]}
-          </button>
+          />
         ))}
       </div>
       {shown.length === 0 ? (
-        <p className="text-muted-foreground">No games yet.</p>
+        <EmptyState message="No games yet." />
       ) : (
-        <ul className="flex flex-col divide-y">
+        <ul className="flex flex-col divide-y rounded-2xl bg-card px-4 ring-1 ring-border">
           {shown.map((game) => (
             <li key={game.id} className="flex items-center gap-2 py-3">
               <span className="flex-1">
@@ -61,6 +58,6 @@ export function SolitaireHistoryView() {
           ))}
         </ul>
       )}
-    </main>
+    </MenuScreen>
   )
 }

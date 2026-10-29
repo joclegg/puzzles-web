@@ -1,6 +1,5 @@
 import { useState } from 'react'
 
-import { cn } from '@/common/utils.functions'
 import { formatDateTime, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE } from '@/common/route.constants'
 import { GAME_MODE_LABEL, GAME_MODES } from '@/common/sudoku/sudoku.constants'
@@ -8,6 +7,10 @@ import { useSudokuGames } from '@/common/sudoku/sudoku.hooks'
 import type { GameMode } from '@/common/sudoku/sudoku.types'
 import { SUDOKU_STATUS_LABEL } from '@/common/sudoku/sudokuSaves.constants'
 import { sudokuTitle } from '@/common/sudoku/sudokuSaves.functions'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { FilterChip } from '@/components/FilterChip/FilterChip'
+import { EmptyState } from '@/components/EmptyState/EmptyState'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
 export function SudokuHistoryView() {
@@ -18,28 +21,22 @@ export function SudokuHistoryView() {
     .sort((a, b) => b.startedAt - a.startedAt)
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.SUDOKU}>
       <ScreenHeader title="History" back={[GAME_ROUTE.SUDOKU]} />
       <div className="flex flex-wrap gap-2" role="group" aria-label="Mode">
         {[null, ...GAME_MODES].map((mode) => (
-          <button
+          <FilterChip
             key={mode ?? 'all'}
-            type="button"
-            aria-pressed={filter === mode}
+            label={mode === null ? 'All' : GAME_MODE_LABEL[mode]}
+            selected={filter === mode}
             onClick={() => setFilter(mode)}
-            className={cn(
-              'rounded-full px-3 py-1 text-sm ring-1 ring-border',
-              filter === mode && 'bg-primary text-primary-foreground',
-            )}
-          >
-            {mode === null ? 'All' : GAME_MODE_LABEL[mode]}
-          </button>
+          />
         ))}
       </div>
       {shown.length === 0 ? (
-        <p className="text-muted-foreground">No games yet.</p>
+        <EmptyState message="No games yet." />
       ) : (
-        <ul className="flex flex-col divide-y">
+        <ul className="flex flex-col divide-y rounded-2xl bg-card px-4 ring-1 ring-border">
           {shown.map((game) => (
             <li key={game.id} className="flex items-center gap-2 py-3">
               <span className="flex-1">
@@ -58,6 +55,6 @@ export function SudokuHistoryView() {
           ))}
         </ul>
       )}
-    </main>
+    </MenuScreen>
   )
 }
