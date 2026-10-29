@@ -1,8 +1,16 @@
 import { useFiveLettersGames } from '@/common/fiveLetters/fiveLetters.hooks'
-import { BarChart3, Settings } from 'lucide-react'
+import {
+  BarChart3,
+  CalendarCheck,
+  Dumbbell,
+  Newspaper,
+  RotateCcw,
+  Settings,
+} from 'lucide-react'
 import { useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
+import { formatDayMonth } from '@/common/format.functions'
 import {
   dailyWord,
   dayNumber,
@@ -18,10 +26,13 @@ import { WORDS } from '@/common/fiveLetters/fiveLettersWords.constants'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { Button } from '@/components/Button/Button'
-import {
-  BUTTON_SIZE,
-  BUTTON_VARIANT,
-} from '@/components/Button/Button.constants'
+import { BUTTON_SIZE } from '@/components/Button/Button.constants'
+import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
+import { GameHero } from '@/components/GameHero/GameHero'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { MenuSection } from '@/components/MenuSection/MenuSection'
+import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { DAILY_RESULT_LABEL } from '@/views/FiveLettersHomeView/FiveLettersHomeView.constants'
 
@@ -57,7 +68,7 @@ export function FiveLettersHomeView() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.FIVE_LETTERS} className="min-h-dvh">
       <ScreenHeader title="Five Letters" back={[]}>
         <Button
           size={BUTTON_SIZE.ICON}
@@ -74,62 +85,67 @@ export function FiveLettersHomeView() {
           <Settings className="size-5" />
         </Button>
       </ScreenHeader>
-      <Button
-        variant={BUTTON_VARIANT.OUTLINE}
-        className="h-auto flex-col py-4 text-base"
-        onClick={() =>
-          daily
-            ? openGame(daily)
-            : startAndOpen({
-                id: dailyId(today),
-                answer: dailyWord({ words: WORDS, date: today }),
-              })
-        }
-      >
-        <span>Today's word · #{dayNumber(today)}</span>
-        {dailyResult && (
-          <span className="text-xs text-muted-foreground">{dailyResult}</span>
+      <GameHero
+        icon={<FiveLettersIcon />}
+        tagline="Guess the word in six tries, a new one every day"
+      />
+      <MenuSection title="Today" aside={formatDayMonth(today)}>
+        <MenuTile
+          label={`Today's word · #${dayNumber(today)}`}
+          icon={<CalendarCheck className="size-5" />}
+          detail={dailyResult ?? undefined}
+          done={daily?.status === GAME_STATUS.WON}
+          active={daily?.status === GAME_STATUS.IN_PROGRESS}
+          onClick={() =>
+            daily
+              ? openGame(daily)
+              : startAndOpen({
+                  id: dailyId(today),
+                  answer: dailyWord({ words: WORDS, date: today }),
+                })
+          }
+        />
+        <MenuTile
+          label="NY Times daily"
+          icon={<Newspaper className="size-5" />}
+          detail={nytResult ?? undefined}
+          done={nyt?.status === GAME_STATUS.WON}
+          active={nyt?.status === GAME_STATUS.IN_PROGRESS}
+          disabled={fetching}
+          onClick={() => void openNyt()}
+        />
+        {nytUnavailable && (
+          <p role="alert" className="px-1 text-sm text-destructive">
+            Couldn't reach the New York Times. Check your connection and try
+            again.
+          </p>
         )}
-      </Button>
-      <Button
-        variant={BUTTON_VARIANT.OUTLINE}
-        className="h-auto flex-col py-4 text-base"
-        disabled={fetching}
-        onClick={() => void openNyt()}
-      >
-        <span>NY Times daily</span>
-        {nytResult && (
-          <span className="text-xs text-muted-foreground">{nytResult}</span>
-        )}
-      </Button>
-      {nytUnavailable && (
-        <p role="alert" className="text-sm text-destructive">
-          Couldn't reach the New York Times. Check your connection and try
-          again.
-        </p>
-      )}
-      <div className="flex gap-2">
-        <Button
-          variant={BUTTON_VARIANT.OUTLINE}
-          className="h-12 flex-1"
-          onClick={() => (practice ? openGame(practice) : startPractice())}
-        >
-          {practice ? 'Continue practice' : 'Practice'}
-        </Button>
-        {practice && (
-          <Button
-            variant={BUTTON_VARIANT.OUTLINE}
-            className="h-12 flex-1"
-            onClick={startPractice}
-          >
-            New practice
-          </Button>
-        )}
-      </div>
-      <p className="text-sm text-muted-foreground">
+      </MenuSection>
+      <MenuSection title="Practice">
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <MenuTile
+              label={practice ? 'Continue practice' : 'Practice'}
+              icon={<Dumbbell className="size-5" />}
+              active={practice !== undefined}
+              onClick={() => (practice ? openGame(practice) : startPractice())}
+            />
+          </div>
+          {practice && (
+            <div className="flex-1">
+              <MenuTile
+                label="New practice"
+                icon={<RotateCcw className="size-5" />}
+                onClick={startPractice}
+              />
+            </div>
+          )}
+        </div>
+      </MenuSection>
+      <p className="px-1 text-sm text-muted-foreground">
         Everyone with Puzzles gets the same word each day, so you can compare
         grids.
       </p>
-    </main>
+    </MenuScreen>
   )
 }

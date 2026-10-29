@@ -2,7 +2,7 @@ import { BarChart3, History, Settings } from 'lucide-react'
 import { useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
-import { formatDuration } from '@/common/format.functions'
+import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import { DAILY_PREFIX, PUZZLE_STATUS } from '@/common/puzzleSaves.constants'
 import {
   inProgressPuzzles,
@@ -24,7 +24,16 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
+import { ContinueCard } from '@/components/ContinueCard/ContinueCard'
+import { DailyTile } from '@/components/DailyTile/DailyTile'
+import { GameHero } from '@/components/GameHero/GameHero'
+import { LevelDots } from '@/components/LevelDots/LevelDots'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { MenuSection } from '@/components/MenuSection/MenuSection'
+import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SlideOutIcon } from '@/components/SlideOutIcon/SlideOutIcon'
 
 export function SlideOutHomeView() {
   const { games, openGame, startRandom, openDaily } = useSlideOutGames()
@@ -39,7 +48,7 @@ export function SlideOutHomeView() {
   )
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.SLIDE_OUT}>
       <ScreenHeader title={TITLE} back={[]}>
         <Button
           size={BUTTON_SIZE.ICON}
@@ -63,57 +72,55 @@ export function SlideOutHomeView() {
           <Settings className="size-5" />
         </Button>
       </ScreenHeader>
+      <GameHero
+        icon={<SlideOutIcon />}
+        tagline="Slide the blocks to free the red one"
+      />
       {latest && (
-        <button
-          type="button"
+        <ContinueCard
+          detail={`${slideOutTitle(latest)} · ${formatDuration(latest.elapsedMs)}`}
           onClick={() => openGame(latest)}
-          className="rounded-xl bg-card p-4 text-left ring-1 ring-border hover:bg-muted"
-        >
-          <span className="block font-semibold">Continue</span>
-          <span className="block text-sm text-muted-foreground">
-            {slideOutTitle(latest)} · {formatDuration(latest.elapsedMs)}
-          </span>
-        </button>
+        />
       )}
-      <div className="flex flex-col gap-2">
-        {LEVELS.map((level) => {
-          const saved = inProgress.find(
-            (game) => levelOf(game) === level && !isDailyPuzzle(game.puzzleId),
-          )
-          return (
-            <Button
+      <MenuSection title="Today" aside={formatDayMonth(today)}>
+        <div className="grid grid-cols-3 gap-2">
+          {LEVELS.map((level) => (
+            <DailyTile
               key={level}
-              variant={BUTTON_VARIANT.OUTLINE}
-              className="h-auto flex-col py-3"
-              onClick={() =>
-                saved ? setResumeChoice(saved) : startRandom(level)
-              }
-            >
-              <span className="text-base">{LEVEL_LABEL[level]}</span>
-              {saved && (
-                <span className="text-xs text-muted-foreground">
-                  In progress · {formatDuration(saved.elapsedMs)}
-                </span>
-              )}
-            </Button>
-          )
-        })}
-      </div>
-      <h2 className="font-semibold">Today's puzzles</h2>
-      <div className="flex gap-2">
-        {LEVELS.map((level) => (
-          <Button
-            key={level}
-            variant={BUTTON_VARIANT.OUTLINE}
-            className="h-11 flex-1"
-            aria-label={`Daily ${LEVEL_LABEL[level]}`}
-            onClick={() => openDaily({ date: today, level })}
-          >
-            {LEVEL_LABEL[level][0]}
-            {solvedIds.has(`${DAILY_PREFIX}${today}_${level}`) ? ' ✓' : ''}
-          </Button>
-        ))}
-      </div>
+              label={LEVEL_LABEL[level]}
+              ariaLabel={`Daily ${LEVEL_LABEL[level]}`}
+              done={solvedIds.has(`${DAILY_PREFIX}${today}_${level}`)}
+              onClick={() => openDaily({ date: today, level })}
+            />
+          ))}
+        </div>
+      </MenuSection>
+      <MenuSection title="New puzzle">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {LEVELS.map((level, rank) => {
+            const saved = inProgress.find(
+              (game) =>
+                levelOf(game) === level && !isDailyPuzzle(game.puzzleId),
+            )
+            return (
+              <MenuTile
+                key={level}
+                label={LEVEL_LABEL[level]}
+                meter={<LevelDots rank={rank} count={LEVELS.length} />}
+                detail={
+                  saved
+                    ? `In progress · ${formatDuration(saved.elapsedMs)}`
+                    : undefined
+                }
+                active={saved !== undefined}
+                onClick={() =>
+                  saved ? setResumeChoice(saved) : startRandom(level)
+                }
+              />
+            )
+          })}
+        </div>
+      </MenuSection>
       <AppDialog
         open={resumeChoice !== null}
         title={resumeChoice ? slideOutTitle(resumeChoice) : ''}
@@ -145,6 +152,6 @@ export function SlideOutHomeView() {
           {formatDuration(resumeChoice?.elapsedMs ?? 0)}).
         </p>
       </AppDialog>
-    </main>
+    </MenuScreen>
   )
 }

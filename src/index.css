@@ -86,6 +86,7 @@
   --color-fl-empty-border: var(--fl-empty-border);
   --color-fl-typed-border: var(--fl-typed-border);
   --color-fl-key: var(--fl-key);
+  --color-game: var(--game);
   --font-heading: var(--font-sans);
   --font-sans: 'Geist Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
@@ -209,6 +210,15 @@
   --fl-empty-border: #d5d8dd;
   --fl-typed-border: #7a808a;
   --fl-key: #e2e5ea;
+  --sd-accent: #1565d8;
+  --sol-accent: #2e8b57;
+  --tt-accent: #e0603f;
+  --sl-accent: #2a93b3;
+  --fl-accent: #4f9a53;
+  --kk-accent: #7c5cd6;
+  --so-accent: #c27a2c;
+  --ww-accent: #4f5bd5;
+  --game: var(--foreground);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -324,6 +334,14 @@
   --fl-empty-border: #3a3f47;
   --fl-typed-border: #7a808a;
   --fl-key: #555e6c;
+  --sd-accent: #7db5ff;
+  --sol-accent: #5cc58a;
+  --tt-accent: #ec7f62;
+  --sl-accent: #52bddc;
+  --fl-accent: #72bf6d;
+  --kk-accent: #a993f2;
+  --so-accent: #e3a85c;
+  --ww-accent: #939bff;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

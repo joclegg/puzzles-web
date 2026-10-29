@@ -1,8 +1,14 @@
-import { BarChart3, History, Settings } from 'lucide-react'
+import {
+  BarChart3,
+  CalendarCheck,
+  History,
+  Layers,
+  Settings,
+} from 'lucide-react'
 import { useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
-import { formatDuration } from '@/common/format.functions'
+import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { useSolitaireGames } from '@/common/solitaire/solitaire.hooks'
@@ -22,7 +28,14 @@ import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
+import { ContinueCard } from '@/components/ContinueCard/ContinueCard'
+import { GameHero } from '@/components/GameHero/GameHero'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { MenuSection } from '@/components/MenuSection/MenuSection'
+import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SolitaireIcon } from '@/components/SolitaireIcon/SolitaireIcon'
 
 export function SolitaireHomeView() {
   const { games, openGame, startRandom, openDaily } = useSolitaireGames()
@@ -47,7 +60,7 @@ export function SolitaireHomeView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.SOLITAIRE}>
       <ScreenHeader title={TITLE} back={[]}>
         <Button
           size={BUTTON_SIZE.ICON}
@@ -71,42 +84,40 @@ export function SolitaireHomeView() {
           <Settings className="size-5" />
         </Button>
       </ScreenHeader>
+      <GameHero
+        icon={<SolitaireIcon />}
+        tagline="Klondike, draw 1 or 3, or reverse"
+      />
       {latest && (
-        <button
-          type="button"
+        <ContinueCard
+          detail={`${dealTitle(latest)} · ${formatDuration(latest.elapsedMs)} · ${latest.moveCount} moves`}
           onClick={() => openGame(latest)}
-          className="rounded-xl bg-card p-4 text-left ring-1 ring-border hover:bg-muted"
-        >
-          <span className="block font-semibold">Continue</span>
-          <span className="block text-sm text-muted-foreground">
-            {dealTitle(latest)} · {formatDuration(latest.elapsedMs)} ·{' '}
-            {latest.moveCount} moves
-          </span>
-        </button>
+        />
       )}
-      <Button
-        variant={BUTTON_VARIANT.OUTLINE}
-        className="h-auto flex-col py-4 text-base"
-        disabled={dealing}
-        onClick={() => (random ? setResumeChoice(random) : deal(startRandom))}
-      >
-        <span>{dealing ? 'Dealing…' : 'New game'}</span>
-        {random && (
-          <span className="text-xs text-muted-foreground">
-            In progress · {formatDuration(random.elapsedMs)}
-          </span>
-        )}
-      </Button>
-      <Button
-        variant={BUTTON_VARIANT.OUTLINE}
-        className="h-12 text-base"
-        disabled={dealing}
-        onClick={() => deal(() => openDaily(today))}
-      >
-        {daily?.status === DEAL_STATUS.WON
-          ? 'Daily deal · Won ✓'
-          : 'Daily deal'}
-      </Button>
+      <MenuSection title="Today" aside={formatDayMonth(today)}>
+        <MenuTile
+          label="Daily deal"
+          icon={<CalendarCheck className="size-5" />}
+          detail={daily?.status === DEAL_STATUS.WON ? 'Won' : undefined}
+          done={daily?.status === DEAL_STATUS.WON}
+          disabled={dealing}
+          onClick={() => deal(() => openDaily(today))}
+        />
+      </MenuSection>
+      <MenuSection title="New game">
+        <MenuTile
+          label={dealing ? 'Dealing…' : 'New game'}
+          icon={<Layers className="size-5" />}
+          detail={
+            random
+              ? `In progress · ${formatDuration(random.elapsedMs)}`
+              : undefined
+          }
+          active={random !== undefined}
+          disabled={dealing}
+          onClick={() => (random ? setResumeChoice(random) : deal(startRandom))}
+        />
+      </MenuSection>
       <AppDialog
         open={resumeChoice !== null}
         title={resumeChoice ? dealTitle(resumeChoice) : ''}
@@ -138,6 +149,6 @@ export function SolitaireHomeView() {
           {formatDuration(resumeChoice?.elapsedMs ?? 0)}).
         </p>
       </AppDialog>
-    </main>
+    </MenuScreen>
   )
 }

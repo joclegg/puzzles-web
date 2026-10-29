@@ -6,6 +6,9 @@ import {
 } from '@/common/solitaire/solitaire.constants'
 import { useSolitaireGames } from '@/common/solitaire/solitaire.hooks'
 import { drawStats } from '@/common/solitaire/solitaireSaves.functions'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { Panel } from '@/components/Panel/Panel'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
 export function SolitaireStatsView() {
@@ -13,17 +16,10 @@ export function SolitaireStatsView() {
   const stats = drawStats({ games, modes: Object.values(DRAW_MODE) })
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.SOLITAIRE}>
       <ScreenHeader title="Stats" back={[GAME_ROUTE.SOLITAIRE]} />
       {stats.map((mode) => (
-        <section
-          key={mode.drawMode}
-          aria-label={DRAW_MODE_LABEL[mode.drawMode]}
-          className="rounded-xl p-4 ring-1 ring-border"
-        >
-          <h2 className="pb-2 font-semibold">
-            {DRAW_MODE_LABEL[mode.drawMode]}
-          </h2>
+        <Panel key={mode.drawMode} title={DRAW_MODE_LABEL[mode.drawMode]}>
           <dl className="grid grid-cols-2 gap-y-1 text-sm">
             <dt>Played</dt>
             <dd className="text-right">{mode.played}</dd>
@@ -46,12 +42,12 @@ export function SolitaireStatsView() {
             <dt>Fewest moves</dt>
             <dd className="text-right">{mode.fewestMoves ?? '–'}</dd>
           </dl>
-        </section>
+        </Panel>
       ))}
       <p className="text-sm text-muted-foreground">
         Abandoned deals count as played. Daily deals count under the draw mode
         they were played with.
       </p>
-    </main>
+    </MenuScreen>
   )
 }

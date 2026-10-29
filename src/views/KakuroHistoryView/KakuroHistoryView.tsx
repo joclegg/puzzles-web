@@ -1,11 +1,13 @@
 import { useState } from 'react'
 
-import { cn } from '@/common/utils.functions'
 import { puzzleTitle } from '@/common/puzzleTitle.functions'
 import { GAME_ROUTE } from '@/common/route.constants'
 import { SIZES } from '@/common/kakuro/kakuro.constants'
 import { useKakuroGames } from '@/common/kakuro/kakuro.hooks'
 import { PuzzleHistoryList } from '@/components/PuzzleHistoryList/PuzzleHistoryList'
+import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
+import { FilterChip } from '@/components/FilterChip/FilterChip'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 
 export function KakuroHistoryView() {
@@ -16,25 +18,19 @@ export function KakuroHistoryView() {
     .sort((a, b) => b.startedAt - a.startedAt)
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-4 px-4 pb-8">
+    <MenuScreen accent={MENU_ACCENT.KAKURO}>
       <ScreenHeader title="History" back={[GAME_ROUTE.KAKURO]} />
       <div className="flex flex-wrap gap-2" role="group" aria-label="Size">
         {[null, ...SIZES].map((size) => (
-          <button
+          <FilterChip
             key={size ?? 'all'}
-            type="button"
-            aria-pressed={filter === size}
+            label={String(size ?? 'All')}
+            selected={filter === size}
             onClick={() => setFilter(size)}
-            className={cn(
-              'rounded-full px-3 py-1 text-sm ring-1 ring-border',
-              filter === size && 'bg-primary text-primary-foreground',
-            )}
-          >
-            {size ?? 'All'}
-          </button>
+          />
         ))}
       </div>
       <PuzzleHistoryList games={shown} title={puzzleTitle} />
-    </main>
+    </MenuScreen>
   )
 }

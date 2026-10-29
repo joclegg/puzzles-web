@@ -1,0 +1,20 @@
+{
+  "name": "Puzzles",
+  "short_name": "Puzzles",
+  "description": "Eight offline puzzle games: Sudoku, Solitaire, Two Tone, Sightlines, Five Letters, Kakuro, Slide Out and Word Wheel.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#263040",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
