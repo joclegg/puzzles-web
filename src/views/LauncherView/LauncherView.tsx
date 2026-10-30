@@ -1,4 +1,14 @@
-import { GAME_ROUTE } from '@/common/route.constants'
+import { Settings } from 'lucide-react'
+
+import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
+import { cn } from '@/common/utils.functions'
+import {
+  BUTTON_BASE_CLASS,
+  BUTTON_SIZE,
+  BUTTON_SIZE_CLASS,
+  BUTTON_VARIANT,
+  BUTTON_VARIANT_CLASS,
+} from '@/components/Button/Button.constants'
 import { routeHash } from '@/common/route.functions'
 import type { SignInProvider } from '@/common/sync.types'
 import { AccountButton } from '@/components/AccountButton/AccountButton'
@@ -42,6 +52,17 @@ export function LauncherView({
           onSignOut={onSignOut}
         />
         <ThemeToggle />
+        <a
+          href={routeHash([GAME_ROUTE.SUDOKU, SCREEN.SETTINGS])}
+          aria-label="Settings"
+          className={cn(
+            BUTTON_BASE_CLASS,
+            BUTTON_VARIANT_CLASS[BUTTON_VARIANT.OUTLINE],
+            BUTTON_SIZE_CLASS[BUTTON_SIZE.ICON],
+          )}
+        >
+          <Settings />
+        </a>
       </header>
       <GameCard
         title="Sudoku"
