@@ -20,11 +20,13 @@ import {
 } from '@/common/sync.constants'
 import {
   entryStampKey,
+  isSyncableId,
   mergeGames,
   mergeSettings,
   parseStampKey,
   pulledUpTo,
   pullSince,
+  repairIds,
   settingsStampKey,
 } from '@/common/sync.functions'
 import type {
@@ -285,7 +287,11 @@ async function push(client: SupabaseClient) {
       ? client.from('game_settings').upsert(settingsRows)
       : Promise.resolve({ error: null }),
   ])
-  if (saved.error !== null || settings.error !== null) return false
+  const uploaded = pending.filter((key) =>
+    parseStampKey(key).id === null
+      ? settings.error === null
+      : saved.error === null,
+  )
   const latest = readStored<Record<string, number>>({
     key: STAMPS_KEY,
     fallback: {},
@@ -293,13 +299,50 @@ async function push(client: SupabaseClient) {
   replaceStored({
     key: PENDING_KEY,
     value: readStored<string[]>({ key: PENDING_KEY, fallback: [] }).filter(
-      (key) => !pending.includes(key) || latest[key] !== stamps[key],
+      (key) => !uploaded.includes(key) || latest[key] !== stamps[key],
     ),
   })
-  return true
+  return saved.error === null && settings.error === null
+}
+
+function repairSavedIds() {
+  const changedKeys: string[] = []
+  for (const game of SYNCED_GAMES) {
+    const gamesKey = `${game}.${SYNC_KIND.GAMES}`
+    const repaired = repairIds({
+      games: readStored<SyncedEntry[]>({ key: gamesKey, fallback: [] }),
+      newId: () => crypto.randomUUID(),
+    })
+    if (repaired.changed) {
+      replaceStored({ key: gamesKey, value: repaired.games })
+      changedKeys.push(gamesKey)
+    }
+  }
+  const isValid = (key: string) => {
+    const { id } = parseStampKey(key)
+    return id === null || isSyncableId(id)
+  }
+  replaceStored({
+    key: PENDING_KEY,
+    value: readStored<string[]>({ key: PENDING_KEY, fallback: [] }).filter(
+      isValid,
+    ),
+  })
+  replaceStored({
+    key: STAMPS_KEY,
+    value: Object.fromEntries(
+      Object.entries(
+        readStored<Record<string, number>>({ key: STAMPS_KEY, fallback: {} }),
+      ).filter(([key]) => isValid(key)),
+    ),
+  })
+  if (changedKeys.length > 0) {
+    window.dispatchEvent(new CustomEvent(SYNCED_EVENT, { detail: changedKeys }))
+  }
 }
 
 async function syncOnce(client: SupabaseClient) {
+  repairSavedIds()
   const pushed = await push(client)
   const pulled = await pull(client)
   const pushedNew = pulled ? await push(client) : false

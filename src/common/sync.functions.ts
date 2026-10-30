@@ -44,6 +44,12 @@ export function isEmailAddress(input: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim())
 }
 
+export function isSyncableId(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    id,
+  )
+}
+
 export function isProgressOnly({
   before,
   after,
@@ -183,6 +189,24 @@ export function recordChanges({
   return {
     stamps: nextStamps,
     pending: [...new Set([...pending, ...keys])],
+  }
+}
+
+export function repairIds({
+  games,
+  newId,
+}: {
+  games: SyncedEntry[]
+  newId: () => string
+}): { games: SyncedEntry[]; changed: boolean } {
+  const changed = games.some((entry) => !isSyncableId(String(entry.id)))
+  return {
+    games: changed
+      ? games.map((entry) =>
+          isSyncableId(String(entry.id)) ? entry : { ...entry, id: newId() },
+        )
+      : games,
+    changed,
   }
 }
 

@@ -12,6 +12,7 @@ import {
   pulledUpTo,
   pullSince,
   recordChanges,
+  repairIds,
   settingsStampKey,
   syncedKey,
 } from '@/common/sync.functions'
@@ -222,5 +223,22 @@ describe('isProgressOnly', () => {
     ['a removed game', [playing], [], false],
   ])('given %s then returns %s', (_name, before, after, expected) => {
     expect(isProgressOnly({ before, after })).toBe(expected)
+  })
+})
+
+describe('repairIds', () => {
+  const valid = { id: '3f2b8c1e-6a4d-4e7b-9c10-2d5f8a7b1c3e' }
+
+  it('given an old numeric id then replaces only that id', () => {
+    expect(
+      repairIds({ games: [{ id: '1' }, valid], newId: () => 'new' }),
+    ).toEqual({ games: [{ id: 'new' }, valid], changed: true })
+  })
+
+  it('given only uuids then changes nothing', () => {
+    expect(repairIds({ games: [valid], newId: () => 'new' })).toEqual({
+      games: [valid],
+      changed: false,
+    })
   })
 })
