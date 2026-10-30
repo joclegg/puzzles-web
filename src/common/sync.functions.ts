@@ -1,4 +1,5 @@
 import {
+  EMAIL_CODE_LENGTH,
   PULL_OVERLAP_MS,
   SYNC_KIND,
   SYNCED_GAMES,
@@ -31,8 +32,16 @@ export function changedEntryIds({
   return [...changed, ...removed]
 }
 
+export function cleanEmailCode(input: string): string {
+  return input.replace(/\D/g, '').slice(0, EMAIL_CODE_LENGTH)
+}
+
 export function entryStampKey({ game, id }: { game: string; id: string }) {
   return `${game}.${SYNC_KIND.GAMES}/${id}`
+}
+
+export function isEmailAddress(input: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim())
 }
 
 export function mergeGames({
