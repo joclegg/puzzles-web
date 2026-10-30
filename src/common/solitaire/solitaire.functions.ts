@@ -1,10 +1,15 @@
-import { DRAW_CARDS, PILE_KIND } from '@/common/solitaire/solitaire.constants'
+import {
+  DRAW_CARDS,
+  PILE_KIND,
+  VERDICT,
+} from '@/common/solitaire/solitaire.constants'
 import type {
   Board,
   Move,
   Pile,
   Selection,
   SolitaireGame,
+  Verdict,
 } from '@/common/solitaire/solitaire.types'
 import {
   canDraw,
@@ -174,6 +179,29 @@ export function dropCards({
 
 export function gameWon(game: SolitaireGame): boolean {
   return isWon(boardOf(game))
+}
+
+export function lostMoveProbe(range: {
+  winnable: number
+  lost: number
+}): number | null {
+  return range.lost - range.winnable > 1
+    ? Math.floor((range.winnable + range.lost) / 2)
+    : null
+}
+
+export function narrowLostMove({
+  range,
+  probe,
+  verdict,
+}: {
+  range: { winnable: number; lost: number }
+  probe: number
+  verdict: Verdict | null
+}): { winnable: number; lost: number } {
+  return verdict === VERDICT.WINNABLE
+    ? { winnable: probe, lost: range.lost }
+    : { winnable: range.winnable, lost: probe }
 }
 
 export function restart(game: SolitaireGame): SolitaireGame {

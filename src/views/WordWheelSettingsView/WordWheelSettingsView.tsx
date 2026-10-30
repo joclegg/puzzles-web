@@ -6,7 +6,7 @@ import {
 } from '@/common/wordWheel/wordWheelSaves.constants'
 import type { WordWheelSettings } from '@/common/wordWheel/wordWheelSaves.types'
 import { useStoredState } from '@/common/storage.hooks'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
 export function WordWheelSettingsView() {
@@ -16,8 +16,7 @@ export function WordWheelSettingsView() {
   })
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
-      <ScreenHeader title="Settings" back={[GAME_ROUTE.WORD_WHEEL]} />
+    <SettingsScreen game={GAME_ROUTE.WORD_WHEEL}>
       <SettingRow
         label="Show the timer"
         checked={settings.showTimer}
@@ -38,6 +37,6 @@ export function WordWheelSettingsView() {
           setSettings((current) => ({ ...current, ...patch }))
         }
       />
-    </main>
+    </SettingsScreen>
   )
 }

@@ -24,7 +24,7 @@ export function OptionGroup<T extends string>({
           onClick={() => onChange(option)}
           className={cn(
             'flex-1 rounded-lg px-3 py-2 text-sm ring-1 ring-border',
-            value === option && 'bg-primary text-primary-foreground',
+            value === option && 'bg-game text-background ring-game',
           )}
         >
           {labels[option]}

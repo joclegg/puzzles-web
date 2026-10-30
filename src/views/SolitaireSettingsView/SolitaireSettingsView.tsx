@@ -11,7 +11,7 @@ import {
 import type { SolitaireSettings } from '@/common/solitaire/solitaireSaves.types'
 import { useStoredState } from '@/common/storage.hooks'
 import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
 export function SolitaireSettingsView() {
@@ -25,9 +25,8 @@ export function SolitaireSettingsView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
-      <ScreenHeader title="Settings" back={[GAME_ROUTE.SOLITAIRE]} />
-      <h2 className="pt-2 font-semibold">Play</h2>
+    <SettingsScreen game={GAME_ROUTE.SOLITAIRE}>
+      <h2 className="pt-2 font-semibold text-game">Play</h2>
       <OptionGroup
         label="Draw"
         options={Object.values(DRAW_MODE)}
@@ -78,6 +77,6 @@ export function SolitaireSettingsView() {
         reveal={false}
         onChange={set}
       />
-    </main>
+    </SettingsScreen>
   )
 }

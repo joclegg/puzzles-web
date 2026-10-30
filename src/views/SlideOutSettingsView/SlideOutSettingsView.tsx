@@ -6,7 +6,7 @@ import {
 } from '@/common/slideOut/slideOutSaves.constants'
 import type { SlideOutSettings } from '@/common/slideOut/slideOutSaves.types'
 import { useStoredState } from '@/common/storage.hooks'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
 export function SlideOutSettingsView() {
@@ -16,8 +16,7 @@ export function SlideOutSettingsView() {
   })
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
-      <ScreenHeader title="Settings" back={[GAME_ROUTE.SLIDE_OUT]} />
+    <SettingsScreen game={GAME_ROUTE.SLIDE_OUT}>
       <SettingRow
         label="Show the timer"
         checked={settings.showTimer}
@@ -39,6 +38,6 @@ export function SlideOutSettingsView() {
           setSettings((current) => ({ ...current, ...patch }))
         }
       />
-    </main>
+    </SettingsScreen>
   )
 }

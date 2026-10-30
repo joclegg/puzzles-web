@@ -13,7 +13,7 @@ import type { KakuroSettings } from '@/common/kakuro/kakuroSettings.types'
 import { GAME_ROUTE } from '@/common/route.constants'
 import { useStoredState } from '@/common/storage.hooks'
 import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
 export function KakuroSettingsView() {
@@ -27,9 +27,8 @@ export function KakuroSettingsView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
-      <ScreenHeader title="Settings" back={[GAME_ROUTE.KAKURO]} />
-      <h2 className="pt-2 font-semibold">Entering numbers</h2>
+    <SettingsScreen game={GAME_ROUTE.KAKURO}>
+      <h2 className="pt-2 font-semibold text-game">Entering numbers</h2>
       <OptionGroup
         label="Entering numbers"
         options={Object.values(INPUT_MODE)}
@@ -41,7 +40,7 @@ export function KakuroSettingsView() {
         Cell first: tap a cell, then a number. Number first: pick a number, then
         tap cells to fill them.
       </p>
-      <h2 className="pt-4 font-semibold">Mistakes</h2>
+      <h2 className="pt-4 font-semibold text-game">Mistakes</h2>
       <OptionGroup
         label="Mistakes"
         options={Object.values(MISTAKE_CHECK)}
@@ -89,6 +88,6 @@ export function KakuroSettingsView() {
         onChange={(greyUsedDigits) => set({ greyUsedDigits })}
       />
       <AssistSettings assists={settings} hintStyles onChange={set} />
-    </main>
+    </SettingsScreen>
   )
 }

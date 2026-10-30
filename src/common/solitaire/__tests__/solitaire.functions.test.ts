@@ -6,6 +6,7 @@ import {
   PILE_KIND,
   RANK_CODES,
   SUITS,
+  VERDICT,
 } from '@/common/solitaire/solitaire.constants'
 import {
   autoFinish,
@@ -15,6 +16,8 @@ import {
   cycledStock,
   dropCards,
   gameWon,
+  lostMoveProbe,
+  narrowLostMove,
   restart,
   tapCard,
   tapEmptyPile,
@@ -350,3 +353,35 @@ function drawn({ game, draws }: { game: SolitaireGame; draws: number }) {
     game,
   )
 }
+
+describe('lostMoveProbe', () => {
+  it.each([
+    [0, 40, 20],
+    [10, 13, 11],
+    [12, 13, null],
+  ])(
+    'given winnable at %i and lost at %i when probing then checks move %s',
+    (winnable, lost, probe) => {
+      expect(lostMoveProbe({ winnable, lost })).toBe(probe)
+    },
+  )
+})
+
+describe('narrowLostMove', () => {
+  it.each([
+    [VERDICT.WINNABLE, { winnable: 20, lost: 40 }],
+    [VERDICT.UNWINNABLE, { winnable: 0, lost: 20 }],
+    [null, { winnable: 0, lost: 20 }],
+  ])(
+    'given a %s verdict at the probe when narrowing then keeps a proven range',
+    (verdict, expected) => {
+      expect(
+        narrowLostMove({
+          range: { winnable: 0, lost: 40 },
+          probe: 20,
+          verdict,
+        }),
+      ).toEqual(expected)
+    },
+  )
+})

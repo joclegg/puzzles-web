@@ -8,7 +8,7 @@ import {
   SETTINGS_KEY,
 } from '@/common/twoTone/twoToneSettings.constants'
 import type { TwoToneSettings } from '@/common/twoTone/twoToneSettings.types'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 import { INPUT_MODE_LABEL } from '@/views/TwoToneSettingsView/TwoToneSettingsView.constants'
 
@@ -23,9 +23,8 @@ export function TwoToneSettingsView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
-      <ScreenHeader title="Settings" back={[GAME_ROUTE.TWO_TONE]} />
-      <h2 className="pt-2 font-semibold">Filling in</h2>
+    <SettingsScreen game={GAME_ROUTE.TWO_TONE}>
+      <h2 className="pt-2 font-semibold text-game">Filling in</h2>
       <div
         className="flex gap-2 py-3"
         role="radiogroup"
@@ -40,8 +39,7 @@ export function TwoToneSettingsView() {
             onClick={() => set({ inputMode: mode })}
             className={cn(
               'flex-1 rounded-lg px-3 py-2 text-sm ring-1 ring-border',
-              settings.inputMode === mode &&
-                'bg-primary text-primary-foreground',
+              settings.inputMode === mode && 'bg-game text-background',
             )}
           >
             {INPUT_MODE_LABEL[mode]}
@@ -69,6 +67,6 @@ export function TwoToneSettingsView() {
         onChange={(showProgress) => set({ showProgress })}
       />
       <AssistSettings assists={settings} onChange={set} />
-    </main>
+    </SettingsScreen>
   )
 }

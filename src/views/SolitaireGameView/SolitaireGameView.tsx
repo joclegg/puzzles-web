@@ -14,6 +14,8 @@ import {
   canAutoFinish,
   cycledStock,
   gameWon,
+  lostMoveProbe,
+  narrowLostMove,
   restart,
   dropCards,
   tapCard,
@@ -92,6 +94,7 @@ export function SolitaireGameView({ id }: { id: string }) {
   const [hint, setHint] = useState<string | null>(null)
   const [unwinnable, setUnwinnable] = useState(false)
   const [lastWinnable, setLastWinnable] = useState(0)
+  const [searching, setSearching] = useState(false)
   const won = game !== null && gameWon(game)
   const elapsedMs = useGameTimer({
     initialMs: saved?.elapsedMs ?? 0,
@@ -130,8 +133,41 @@ export function SolitaireGameView({ id }: { id: string }) {
         setLastWinnable(moves)
       } else if (reply.verdict === VERDICT.UNWINNABLE) {
         setUnwinnable(true)
+        void findLostMove({
+          game: next,
+          range: { winnable: Math.min(lastWinnable, moves), lost: moves },
+        })
       }
     })
+  }
+
+  async function findLostMove({
+    game: lostGame,
+    range,
+  }: {
+    game: SolitaireGame
+    range: { winnable: number; lost: number }
+  }) {
+    setSearching(true)
+    let narrowed = range
+    for (
+      let probe = lostMoveProbe(narrowed);
+      probe !== null;
+      probe = lostMoveProbe(narrowed)
+    ) {
+      const reply = await checkWinnable({
+        board: boardOf({ ...lostGame, moves: lostGame.moves.slice(0, probe) }),
+        drawMode: lostGame.drawMode,
+        order: lostGame.order,
+      })
+      narrowed = narrowLostMove({
+        range: narrowed,
+        probe,
+        verdict: reply.verdict,
+      })
+    }
+    setLastWinnable(narrowed.winnable)
+    setSearching(false)
   }
 
   function onHint() {
@@ -284,12 +320,8 @@ export function SolitaireGameView({ id }: { id: string }) {
         onClose={() => setUnwinnable(false)}
         actions={
           <>
-            <Button onClick={() => setUnwinnable(false)}>Keep playing</Button>
-            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={giveUp}>
-              Give up
-            </Button>
             <Button
-              variant={BUTTON_VARIANT.OUTLINE}
+              disabled={searching}
               onClick={() =>
                 update((state) => ({
                   ...state,
@@ -298,15 +330,34 @@ export function SolitaireGameView({ id }: { id: string }) {
                 }))
               }
             >
-              Undo to winnable
+              {searching
+                ? 'Finding where it went wrong…'
+                : lastWinnable === 0
+                  ? 'Start the deal again'
+                  : `Undo ${current.moves.length - lastWinnable} moves`}
+            </Button>
+            <Button
+              variant={BUTTON_VARIANT.OUTLINE}
+              onClick={() => setUnwinnable(false)}
+            >
+              Keep playing
+            </Button>
+            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={giveUp}>
+              Give up
             </Button>
           </>
         }
       >
         <p>
-          No sequence of moves from here wins. Undo back to the last position
-          that could still be won, or start a new deal.
+          You've been through the whole stock with nothing new to play, so the
+          solver checked every line from here: none of them wins.
         </p>
+        {!searching && lastWinnable > 0 && (
+          <p>
+            It could still be won up to move {lastWinnable}. Move{' '}
+            {lastWinnable + 1} is where it slipped away.
+          </p>
+        )}
       </AppDialog>
       <AppDialog
         open={result !== null}
