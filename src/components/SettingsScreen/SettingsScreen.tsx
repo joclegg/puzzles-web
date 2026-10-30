@@ -5,6 +5,7 @@ import { routeHash } from '@/common/route.functions'
 import { cn } from '@/common/utils.functions'
 import { MENU_ACCENT_CLASS } from '@/components/MenuScreen/MenuScreen.constants'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { ThemePicker } from '@/components/ThemePicker/ThemePicker'
 import { SETTINGS_TABS } from '@/components/SettingsScreen/SettingsScreen.constants'
 
 export function SettingsScreen({
@@ -24,6 +25,7 @@ export function SettingsScreen({
       )}
     >
       <ScreenHeader title="Settings" back={[game]} />
+      <ThemePicker />
       <nav
         aria-label="Games"
         className="sticky top-0 z-10 -mx-4 flex [scrollbar-width:none] gap-1 overflow-x-auto bg-background/90 px-4 py-2 backdrop-blur"

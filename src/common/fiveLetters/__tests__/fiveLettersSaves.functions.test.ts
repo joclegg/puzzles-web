@@ -124,7 +124,7 @@ describe('the NY Times daily', () => {
     expect(slotOf(nytId('2026-10-26'))).not.toBe(slotOf('daily_2026-10-26'))
   })
 
-  it('is labelled with its date', () => {
-    expect(nytLabel(nytId('2026-03-05'))).toBe('NY Times · 5 Mar')
+  it('is labelled with its Wordle number', () => {
+    expect(nytLabel(nytId('2026-03-05'))).toBe('Wordle 1,720')
   })
 })

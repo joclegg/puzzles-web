@@ -1,8 +1,9 @@
+import { daysBetween } from '@/common/date.functions'
 import { MAX_GUESSES } from '@/common/fiveLetters/fiveLetters.constants'
 import {
   DAILY_PREFIX,
   GAME_STATUS,
-  MONTHS,
+  NYT_FIRST_DAY,
   NYT_PREFIX,
   PRACTICE_SLOT,
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
@@ -52,8 +53,11 @@ export function nytId(date: string): string {
 }
 
 export function nytLabel(wordId: string): string {
-  const [, month, day] = wordId.slice(NYT_PREFIX.length).split('-')
-  return `NY Times · ${Number(day)} ${MONTHS[Number(month) - 1]}`
+  const days = daysBetween({
+    from: NYT_FIRST_DAY,
+    to: wordId.slice(NYT_PREFIX.length),
+  })
+  return `Wordle ${days.toLocaleString('en-US')}`
 }
 
 export function saveGuesses({
