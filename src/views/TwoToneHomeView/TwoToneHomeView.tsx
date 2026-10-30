@@ -1,5 +1,5 @@
 import { BarChart3, History, Settings } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth, formatDuration } from '@/common/format.functions'
@@ -12,7 +12,7 @@ import type { SavedPuzzle } from '@/common/puzzleSaves.types'
 import { puzzleTitle, sizeLabel } from '@/common/puzzleTitle.functions'
 import { PUZZLE_STATUS } from '@/common/puzzleSaves.constants'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
-import { navigate } from '@/common/route.hooks'
+import { navigate, replaceRoute } from '@/common/route.hooks'
 import { SIZES } from '@/common/twoTone/twoTone.constants'
 import { useTwoToneGames } from '@/common/twoTone/twoTone.hooks'
 import { TITLE } from '@/common/twoTone/twoToneSettings.constants'
@@ -33,7 +33,7 @@ import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { TwoToneIcon } from '@/components/TwoToneIcon/TwoToneIcon'
 
-export function TwoToneHomeView() {
+export function TwoToneHomeView({ play }: { play?: string }) {
   const { games, openGame, startRandom, openDaily } = useTwoToneGames()
   const [resumeChoice, setResumeChoice] = useState<SavedPuzzle | null>(null)
   const today = todayIso()
@@ -50,6 +50,15 @@ export function TwoToneHomeView() {
       (game) => game.size === size && !isDailyPuzzle(game.puzzleId),
     )
   }
+
+  const playedRef = useRef(false)
+
+  useEffect(() => {
+    if (play === undefined || playedRef.current) return
+    playedRef.current = true
+    replaceRoute([GAME_ROUTE.TWO_TONE])
+    void openDaily({ date: today, size: Number(play) })
+  }, [openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.TWO_TONE}>

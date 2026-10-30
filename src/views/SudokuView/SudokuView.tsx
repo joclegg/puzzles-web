@@ -26,5 +26,5 @@ export function SudokuView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.ENTRY) {
     return <SudokuEntryView />
   }
-  return <SudokuHomeView />
+  return <SudokuHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

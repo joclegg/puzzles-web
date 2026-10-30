@@ -18,5 +18,5 @@ export function TwoToneView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <TwoToneSettingsView />
   }
-  return <TwoToneHomeView />
+  return <TwoToneHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

@@ -18,5 +18,5 @@ export function KakuroView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <KakuroSettingsView />
   }
-  return <KakuroHomeView />
+  return <KakuroHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

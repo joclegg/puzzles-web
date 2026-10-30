@@ -25,6 +25,22 @@ export class SlideOutPage {
     await expect(this.board).toBeVisible()
   }
 
+  async openDailyLink(level: string) {
+    await this.page.goto(`./#/slide-out/play/${level}`)
+    await expect(this.board).toBeVisible()
+  }
+
+  async goBack() {
+    await this.page.goBack()
+  }
+
+  async expectHome() {
+    await expect(
+      this.page.getByRole('heading', { name: 'Slide Out' }),
+    ).toBeVisible()
+    await expect(this.board).toBeHidden()
+  }
+
   block(index: number) {
     return this.board.getByRole('button', {
       name: new RegExp(index === 0 ? '^Red block,' : `^Block ${index},`),

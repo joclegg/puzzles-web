@@ -18,5 +18,5 @@ export function SolitaireView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <SolitaireSettingsView />
   }
-  return <SolitaireHomeView />
+  return <SolitaireHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

@@ -26,13 +26,29 @@ const NONE: DailySaves = {
 }
 
 describe('dailiesLeft', () => {
-  it('given nothing played when counting then lists every game', () => {
+  it('given nothing played when listing then every game has its own puzzles', () => {
     expect(
-      dailiesLeft({ today: TODAY, saves: NONE }).map((daily) => daily.route),
-    ).toEqual(Object.values(GAME_ROUTE))
+      new Set(
+        dailiesLeft({ today: TODAY, saves: NONE }).map((daily) => daily.route),
+      ),
+    ).toEqual(new Set(Object.values(GAME_ROUTE)))
   })
 
-  it('given one Two Tone daily solved when counting then that size no longer counts', () => {
+  it('given nothing played when listing then each puzzle has its own label and link', () => {
+    const twoTone = dailiesLeft({ today: TODAY, saves: NONE }).filter(
+      (daily) => daily.route === GAME_ROUTE.TWO_TONE,
+    )
+
+    expect(twoTone.map((daily) => [daily.label, daily.play])).toEqual([
+      ['Two Tone 4×4', '4'],
+      ['Two Tone 6×6', '6'],
+      ['Two Tone 8×8', '8'],
+      ['Two Tone 10×10', '10'],
+      ['Two Tone 12×12', '12'],
+    ])
+  })
+
+  it('given one Two Tone daily solved when listing then that size is gone', () => {
     const left = dailiesLeft({
       today: TODAY,
       saves: {
@@ -47,11 +63,13 @@ describe('dailiesLeft', () => {
     })
 
     expect(
-      left.find((daily) => daily.route === GAME_ROUTE.TWO_TONE)?.left,
-    ).toBe(4)
+      left
+        .filter((daily) => daily.route === GAME_ROUTE.TWO_TONE)
+        .map((daily) => daily.play),
+    ).toEqual(['6', '8', '10', '12'])
   })
 
-  it('given the solitaire deal won and the word lost when counting then neither is left', () => {
+  it('given the solitaire deal won and the word lost when listing then neither is left', () => {
     const left = dailiesLeft({
       today: TODAY,
       saves: {

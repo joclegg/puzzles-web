@@ -19,6 +19,7 @@ import type {
   DailyLeft,
   DailySaves,
 } from '@/components/DailiesLeft/DailiesLeft.types'
+import { TODAY_PLAY } from '@/components/DailiesLeft/DailiesLeft.constants'
 import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 
 export function dailiesLeft({
@@ -33,113 +34,98 @@ export function dailiesLeft({
       .filter((game) => game.status === SUDOKU_STATUS.COMPLETED)
       .map((game) => game.puzzleId),
   )
-  const all: DailyLeft[] = [
-    {
+  const solitaireWon = saves.solitaire.some(
+    (game) =>
+      game.dealId === `${SOLITAIRE_DAILY_PREFIX}${today}` &&
+      game.status === DEAL_STATUS.WON,
+  )
+  const wordDone = saves.fiveLetters.some(
+    (game) =>
+      game.wordId === dailyId(today) &&
+      (game.status === GAME_STATUS.WON || game.status === GAME_STATUS.LOST),
+  )
+  return [
+    ...GAME_MODES.filter(
+      (mode) => !sudokuDone.has(dailySudokuId({ mode, date: today })),
+    ).map((mode) => ({
       route: GAME_ROUTE.SUDOKU,
-      label: 'Sudoku',
+      play: mode,
+      label: `Sudoku ${capitalise(mode)}`,
       accent: MENU_ACCENT.SUDOKU,
-      left: GAME_MODES.filter(
-        (mode) => !sudokuDone.has(dailySudokuId({ mode, date: today })),
-      ).length,
-    },
-    {
-      route: GAME_ROUTE.SOLITAIRE,
-      label: 'Solitaire',
-      accent: MENU_ACCENT.SOLITAIRE,
-      left: saves.solitaire.some(
-        (game) =>
-          game.dealId === `${SOLITAIRE_DAILY_PREFIX}${today}` &&
-          game.status === DEAL_STATUS.WON,
-      )
-        ? 0
-        : 1,
-    },
-    {
+    })),
+    ...(solitaireWon
+      ? []
+      : [
+          {
+            route: GAME_ROUTE.SOLITAIRE,
+            play: TODAY_PLAY,
+            label: 'Solitaire',
+            accent: MENU_ACCENT.SOLITAIRE,
+          },
+        ]),
+    ...unsolvedSizes({
+      games: saves.twoTone,
+      sizes: TWO_TONE_SIZES,
+      today,
+    }).map((size) => ({
       route: GAME_ROUTE.TWO_TONE,
-      label: 'Two Tone',
+      play: String(size),
+      label: `Two Tone ${size}×${size}`,
       accent: MENU_ACCENT.TWO_TONE,
-      left: sizedLeft({ games: saves.twoTone, sizes: TWO_TONE_SIZES, today }),
-    },
-    {
+    })),
+    ...unsolvedSizes({
+      games: saves.sightlines,
+      sizes: SIGHTLINES_SIZES,
+      today,
+    }).map((size) => ({
       route: GAME_ROUTE.SIGHTLINES,
-      label: 'Sightlines',
+      play: String(size),
+      label: `Sightlines ${size}×${size}`,
       accent: MENU_ACCENT.SIGHTLINES,
-      left: sizedLeft({
-        games: saves.sightlines,
-        sizes: SIGHTLINES_SIZES,
-        today,
+    })),
+    ...(wordDone
+      ? []
+      : [
+          {
+            route: GAME_ROUTE.FIVE_LETTERS,
+            play: TODAY_PLAY,
+            label: 'Five Letters',
+            accent: MENU_ACCENT.FIVE_LETTERS,
+          },
+        ]),
+    ...unsolvedSizes({ games: saves.kakuro, sizes: KAKURO_SIZES, today }).map(
+      (size) => ({
+        route: GAME_ROUTE.KAKURO,
+        play: String(size),
+        label: `Kakuro ${size}×${size}`,
+        accent: MENU_ACCENT.KAKURO,
       }),
-    },
-    {
-      route: GAME_ROUTE.FIVE_LETTERS,
-      label: 'Five Letters',
-      accent: MENU_ACCENT.FIVE_LETTERS,
-      left: saves.fiveLetters.some(
-        (game) =>
-          game.wordId === dailyId(today) &&
-          (game.status === GAME_STATUS.WON || game.status === GAME_STATUS.LOST),
-      )
-        ? 0
-        : 1,
-    },
-    {
-      route: GAME_ROUTE.KAKURO,
-      label: 'Kakuro',
-      accent: MENU_ACCENT.KAKURO,
-      left: sizedLeft({ games: saves.kakuro, sizes: KAKURO_SIZES, today }),
-    },
-    {
+    ),
+    ...unsolvedLevels({
+      games: saves.slideOut,
+      levels: SLIDE_OUT_LEVELS,
+      today,
+    }).map((level) => ({
       route: GAME_ROUTE.SLIDE_OUT,
-      label: 'Slide Out',
+      play: level,
+      label: `Slide Out ${capitalise(level)}`,
       accent: MENU_ACCENT.SLIDE_OUT,
-      left: levelledLeft({
-        games: saves.slideOut,
-        levels: SLIDE_OUT_LEVELS,
-        today,
-      }),
-    },
-    {
+    })),
+    ...unsolvedLevels({
+      games: saves.wordWheel,
+      levels: WORD_WHEEL_LEVELS,
+      today,
+    }).map((level) => ({
       route: GAME_ROUTE.WORD_WHEEL,
-      label: 'Word Wheel',
+      play: level,
+      label: `Word Wheel ${capitalise(level)} letters`,
       accent: MENU_ACCENT.WORD_WHEEL,
-      left: levelledLeft({
-        games: saves.wordWheel,
-        levels: WORD_WHEEL_LEVELS,
-        today,
-      }),
-    },
+    })),
   ]
-  return all.filter((daily) => daily.left > 0)
 }
 
-function levelledLeft({
-  games,
-  levels,
-  today,
-}: {
-  games: { puzzleId: string; status: string }[]
-  levels: readonly string[]
-  today: string
-}) {
-  const solved = solvedPuzzles(games)
-  return levels.filter(
-    (level) => !solved.has(`${DAILY_PREFIX}${today}_${level}`),
-  ).length
-}
-
-function sizedLeft({
-  games,
-  sizes,
-  today,
-}: {
-  games: { puzzleId: string; status: string }[]
-  sizes: readonly number[]
-  today: string
-}) {
-  const solved = solvedPuzzles(games)
-  return sizes.filter(
-    (size) => !solved.has(dailyPuzzleId({ date: today, size })),
-  ).length
+function capitalise(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
 function solvedPuzzles(games: { puzzleId: string; status: string }[]) {
@@ -147,5 +133,35 @@ function solvedPuzzles(games: { puzzleId: string; status: string }[]) {
     games
       .filter((game) => game.status === PUZZLE_STATUS.SOLVED)
       .map((game) => game.puzzleId),
+  )
+}
+
+function unsolvedLevels<T extends string>({
+  games,
+  levels,
+  today,
+}: {
+  games: { puzzleId: string; status: string }[]
+  levels: readonly T[]
+  today: string
+}): T[] {
+  const solved = solvedPuzzles(games)
+  return levels.filter(
+    (level) => !solved.has(`${DAILY_PREFIX}${today}_${level}`),
+  )
+}
+
+function unsolvedSizes({
+  games,
+  sizes,
+  today,
+}: {
+  games: { puzzleId: string; status: string }[]
+  sizes: readonly number[]
+  today: string
+}): number[] {
+  const solved = solvedPuzzles(games)
+  return sizes.filter(
+    (size) => !solved.has(dailyPuzzleId({ date: today, size })),
   )
 }

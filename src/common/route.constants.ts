@@ -16,5 +16,6 @@ export const SCREEN = {
   SETTINGS: 'settings',
   HISTORY: 'history',
   DAILY: 'daily',
+  PLAY: 'play',
   ENTRY: 'entry',
 } as const
