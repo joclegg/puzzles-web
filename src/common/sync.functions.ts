@@ -44,12 +44,6 @@ export function isEmailAddress(input: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim())
 }
 
-export function isSyncableId(id: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    id,
-  )
-}
-
 export function isProgressOnly({
   before,
   after,
@@ -65,6 +59,11 @@ export function isProgressOnly({
         previous.has(entry.id) && previous.get(entry.id) === entry.status,
     )
   )
+}
+
+export function isSyncableKey(key: string): boolean {
+  const { id } = parseStampKey(key)
+  return id === null || isSyncableId(id)
 }
 
 export function mergeGames({
@@ -192,24 +191,6 @@ export function recordChanges({
   }
 }
 
-export function repairIds({
-  games,
-  newId,
-}: {
-  games: SyncedEntry[]
-  newId: () => string
-}): { games: SyncedEntry[]; changed: boolean } {
-  const changed = games.some((entry) => !isSyncableId(String(entry.id)))
-  return {
-    games: changed
-      ? games.map((entry) =>
-          isSyncableId(String(entry.id)) ? entry : { ...entry, id: newId() },
-        )
-      : games,
-    changed,
-  }
-}
-
 export function settingsStampKey(game: string) {
   return `${game}.${SYNC_KIND.SETTINGS}`
 }
@@ -221,4 +202,10 @@ export function syncedKey(storageKey: string): SyncedKey | null {
   if (kind === SYNC_KIND.GAMES) return { game, kind: SYNC_KIND.GAMES }
   if (kind === SYNC_KIND.SETTINGS) return { game, kind: SYNC_KIND.SETTINGS }
   return null
+}
+
+function isSyncableId(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    id,
+  )
 }

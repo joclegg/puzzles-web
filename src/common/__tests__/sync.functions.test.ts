@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   changedEntryIds,
   isProgressOnly,
+  isSyncableKey,
   cleanEmailCode,
   entryStampKey,
   isEmailAddress,
@@ -12,7 +13,6 @@ import {
   pulledUpTo,
   pullSince,
   recordChanges,
-  repairIds,
   settingsStampKey,
   syncedKey,
 } from '@/common/sync.functions'
@@ -226,19 +226,12 @@ describe('isProgressOnly', () => {
   })
 })
 
-describe('repairIds', () => {
-  const valid = { id: '3f2b8c1e-6a4d-4e7b-9c10-2d5f8a7b1c3e' }
-
-  it('given an old numeric id then replaces only that id', () => {
-    expect(
-      repairIds({ games: [{ id: '1' }, valid], newId: () => 'new' }),
-    ).toEqual({ games: [{ id: 'new' }, valid], changed: true })
-  })
-
-  it('given only uuids then changes nothing', () => {
-    expect(repairIds({ games: [valid], newId: () => 'new' })).toEqual({
-      games: [valid],
-      changed: false,
-    })
+describe('isSyncableKey', () => {
+  it.each([
+    ['kakuro.games/1', false],
+    ['kakuro.games/3f2b8c1e-6a4d-4e7b-9c10-2d5f8a7b1c3e', true],
+    ['kakuro.settings', true],
+  ])('given %s then returns %s', (key, expected) => {
+    expect(isSyncableKey(key)).toBe(expected)
   })
 })
