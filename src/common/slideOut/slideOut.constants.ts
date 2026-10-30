@@ -12,7 +12,6 @@ export const LEVEL = {
   MEDIUM: 'medium',
   HARD: 'hard',
   EXPERT: 'expert',
-  EVIL: 'evil',
 } as const
 
 export const LEVELS: readonly Level[] = Object.values(LEVEL)
@@ -23,5 +22,4 @@ export const LEVEL_LABEL: Record<Level, string> = {
   [LEVEL.MEDIUM]: 'Medium',
   [LEVEL.HARD]: 'Hard',
   [LEVEL.EXPERT]: 'Expert',
-  [LEVEL.EVIL]: 'Evil',
 }

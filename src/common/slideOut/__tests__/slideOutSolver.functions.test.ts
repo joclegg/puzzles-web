@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 
 import beginner from '@data/slideout/beginner.txt?raw'
 import easy from '@data/slideout/easy.txt?raw'
-import evil from '@data/slideout/evil.txt?raw'
 import expert from '@data/slideout/expert.txt?raw'
 import hard from '@data/slideout/hard.txt?raw'
 import medium from '@data/slideout/medium.txt?raw'
@@ -17,7 +16,6 @@ describe('shortestPath', () => {
     ['medium', medium],
     ['hard', hard],
     ['expert', expert],
-    ['evil', evil],
   ])('solves the first %s puzzle in exactly par moves', (_, text) => {
     const puzzle = decodePuzzle(bankLines(text)[0])
 
