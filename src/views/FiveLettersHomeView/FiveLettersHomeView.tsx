@@ -78,10 +78,12 @@ export function FiveLettersHomeView({ play }: { play?: string }) {
     if (daily) {
       openGame(daily)
     } else {
-      startAndOpen({
-        id: dailyId(today),
-        answer: dailyWord({ words: WORDS, date: today }),
-      })
+      void loadWords().then((words) =>
+        startAndOpen({
+          id: dailyId(today),
+          answer: dailyWord({ words, date: today }),
+        }),
+      )
     }
   }, [daily, openGame, play, startAndOpen, today])
 
