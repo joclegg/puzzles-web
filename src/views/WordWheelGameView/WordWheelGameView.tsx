@@ -40,6 +40,8 @@ import {
 } from '@/common/wordWheel/wordWheelSaves.functions'
 import type { WordWheelSettings } from '@/common/wordWheel/wordWheelSaves.types'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
+import { WinDialog } from '@/components/WinDialog/WinDialog'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
 import {
   BUTTON_SIZE,
@@ -329,9 +331,15 @@ export function WordWheelGameView({ id }: { id: string }) {
       >
         <p>This ends the puzzle. It won't count towards best times.</p>
       </AppDialog>
-      <AppDialog
+      <WinDialog
         open={result !== null}
         title="Solved!"
+        accent={MENU_ACCENT.WORD_WHEEL}
+        newBest={result?.newBest ?? false}
+        stats={[
+          { label: 'Time', value: formatDuration(elapsedMs()) },
+          { label: 'Bonus words', value: game.bonus.length },
+        ]}
         onClose={() => setResult(null)}
         actions={
           <>
@@ -346,11 +354,7 @@ export function WordWheelGameView({ id }: { id: string }) {
             </Button>
           </>
         }
-      >
-        {result?.newBest && <p className="font-bold text-primary">New best!</p>}
-        <p>Time {formatDuration(elapsedMs())}</p>
-        <p>Bonus words {game.bonus.length}</p>
-      </AppDialog>
+      />
     </main>
   )
 }

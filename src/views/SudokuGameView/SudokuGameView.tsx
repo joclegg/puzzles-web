@@ -47,6 +47,8 @@ import {
 import { sudokuTitle } from '@/common/sudoku/sudokuSaves.functions'
 import type { SudokuSettings } from '@/common/sudoku/sudokuSaves.types'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
+import { WinDialog } from '@/components/WinDialog/WinDialog'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
 import {
   BUTTON_SIZE,
@@ -386,19 +388,20 @@ export function SudokuGameView({ id }: { id: string }) {
             : "This ends the game. It won't count towards best times or medals."}
         </p>
       </AppDialog>
-      <AppDialog
+      <WinDialog
         open={result !== null}
         title="Solved!"
+        accent={MENU_ACCENT.SUDOKU}
+        newBest={result?.newBest ?? false}
+        stats={[
+          { label: 'Time', value: formatDuration(elapsedMs()) },
+          { label: 'Mistakes', value: current.mistakes },
+        ]}
         onClose={() => setResult(null)}
         actions={
           <Button onClick={() => navigate([GAME_ROUTE.SUDOKU])}>Home</Button>
         }
-      >
-        <p>Great job</p>
-        {result?.newBest && <p className="font-bold text-primary">New best!</p>}
-        <p>Time {formatDuration(elapsedMs())}</p>
-        <p>Mistakes {current.mistakes}</p>
-      </AppDialog>
+      />
     </main>
   )
 }

@@ -1,6 +1,6 @@
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { Lightbulb, Undo2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useEffectEvent, useState } from 'react'
 
 import { HINT_STYLE } from '@/common/assists.constants'
 import { formatDuration } from '@/common/format.functions'
@@ -9,7 +9,7 @@ import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { DECK, VERDICT } from '@/common/solitaire/solitaire.constants'
 import {
-  autoFinish,
+  autoFinishMoves,
   boardOf,
   canAutoFinish,
   cycledStock,
@@ -24,7 +24,7 @@ import {
   undo,
 } from '@/common/solitaire/solitaire.functions'
 import { useSolitaireGames } from '@/common/solitaire/solitaire.hooks'
-import type { SolitaireGame } from '@/common/solitaire/solitaire.types'
+import type { Move, SolitaireGame } from '@/common/solitaire/solitaire.types'
 import { cardCount, cardsIn } from '@/common/solitaire/solitaireBoard.functions'
 import { findHint } from '@/common/solitaire/solitaireHint.functions'
 import {
@@ -41,6 +41,8 @@ import { dealTitle } from '@/common/solitaire/solitaireSaves.functions'
 import type { SolitaireSettings } from '@/common/solitaire/solitaireSaves.types'
 import { useStoredState } from '@/common/storage.hooks'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
+import { WinDialog } from '@/components/WinDialog/WinDialog'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
 import {
   BUTTON_SIZE,
@@ -50,6 +52,8 @@ import { hintMessage } from '@/components/PlayingCard/PlayingCard.functions'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SolitaireTable } from '@/components/SolitaireTable/SolitaireTable'
+
+const FINISH_STEP_MS = 110
 
 const TUTORIAL = [
   {
@@ -95,6 +99,24 @@ export function SolitaireGameView({ id }: { id: string }) {
   const [unwinnable, setUnwinnable] = useState(false)
   const [lastWinnable, setLastWinnable] = useState(0)
   const [searching, setSearching] = useState(false)
+  const [finishing, setFinishing] = useState<Move[]>([])
+  const finishStep = useEffectEvent(() => {
+    const [next, ...rest] = finishing
+    setFinishing(rest)
+    update((state) => ({
+      ...state,
+      moves: [...state.moves, next],
+      selection: null,
+    }))
+  })
+
+  useEffect(() => {
+    if (finishing.length === 0) {
+      return
+    }
+    const timer = setTimeout(finishStep, FINISH_STEP_MS)
+    return () => clearTimeout(timer)
+  }, [finishing])
   const won = game !== null && gameWon(game)
   const elapsedMs = useGameTimer({
     initialMs: saved?.elapsedMs ?? 0,
@@ -292,12 +314,17 @@ export function SolitaireGameView({ id }: { id: string }) {
         </ScreenHeader>
       </div>
       {canAutoFinish(current) && (
-        <Button className="w-full max-w-xl" onClick={() => update(autoFinish)}>
+        <Button
+          className="w-full max-w-xl"
+          disabled={finishing.length > 0}
+          onClick={() => setFinishing(autoFinishMoves(current))}
+        >
           Finish
         </Button>
       )}
       <SolitaireTable
         board={board}
+        finishing={finishing.length > 0}
         drawMode={current.drawMode}
         selection={current.selection}
         onStock={() => update(tapStock)}
@@ -359,9 +386,15 @@ export function SolitaireGameView({ id }: { id: string }) {
           </p>
         )}
       </AppDialog>
-      <AppDialog
+      <WinDialog
         open={result !== null}
         title="You won!"
+        accent={MENU_ACCENT.SOLITAIRE}
+        newBest={result?.newBest ?? false}
+        stats={[
+          { label: 'Time', value: formatDuration(elapsedMs()) },
+          { label: 'Moves', value: current.moves.length },
+        ]}
         onClose={() => setResult(null)}
         actions={
           <>
@@ -376,11 +409,7 @@ export function SolitaireGameView({ id }: { id: string }) {
             </Button>
           </>
         }
-      >
-        {result?.newBest && <p className="font-bold text-primary">New best!</p>}
-        <p>Time {formatDuration(elapsedMs())}</p>
-        <p>Moves {current.moves.length}</p>
-      </AppDialog>
+      />
     </main>
   )
 }

@@ -27,6 +27,8 @@ export function PlayingCard({
       aria-label={label}
       aria-pressed={selected}
       data-drag={dragId}
+      data-card={card === null ? undefined : `${card.rank}-${card.suit}`}
+      data-face-up={faceUp}
       onClick={onTap}
       className={cn(
         '@container relative block aspect-[5/7] w-full rounded-md border border-sol-card-edge text-left shadow-sm',
