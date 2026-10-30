@@ -7,7 +7,10 @@ export function ThemePicker() {
   const [theme, setTheme] = useTheme()
 
   return (
-    <section aria-label="Appearance" className="pt-1 [--game:var(--foreground)]">
+    <section
+      aria-label="Appearance"
+      className="pt-1 [--game:var(--foreground)]"
+    >
       <h2 className="font-semibold">Appearance</h2>
       <OptionGroup
         label="Theme"
