@@ -115,8 +115,6 @@ export const DAILY_SEED_STRIDE = 31n
 
 export const BANK_SIZE = 10_000
 
-export const BANK_CHUNK_SIZE = 250
-
 export const TECHNIQUES: readonly {
   name: string
   level: Difficulty

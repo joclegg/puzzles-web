@@ -29,5 +29,5 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 
-# Built from puzzles-data by scripts/sudokuChunks.mjs
-/public/sudoku/
+# Downloaded by scripts/fetchData.mjs for tests
+/puzzles-data/

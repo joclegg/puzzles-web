@@ -2,10 +2,10 @@ import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { readStored } from '@/common/storage.functions'
 import { useStoredState } from '@/common/storage.hooks'
+import { fetchBank } from '@/common/bank.hooks'
 import type { Difficulty, GameMode } from '@/common/sudoku/sudoku.types'
 import {
   bankFile,
-  chunkOf,
   dailyPick,
   dailySudokuId,
   nextUnplayedIndex,
@@ -137,10 +137,6 @@ export function useSudokuGames() {
 }
 
 async function fetchBankLine({ file, index }: { file: string; index: number }) {
-  const { chunk, line } = chunkOf(index)
-  const response = await fetch(
-    `${import.meta.env.BASE_URL}sudoku/${file}/${chunk}.txt`,
-  )
-  const text = await response.text()
-  return text.split('\n')[line]
+  const text = await fetchBank(`sudoku/${file}.txt`)
+  return text.split('\n')[index]
 }

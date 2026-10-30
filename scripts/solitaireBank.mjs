@@ -7,7 +7,7 @@ const count = Number(countText)
 const root = path.resolve(import.meta.dirname, '..')
 const file = path.join(
   root,
-  'puzzles-data',
+  process.env.PUZZLES_DATA ?? 'puzzles-data',
   'solitaire',
   `${drawMode}_${order}.txt`,
 )
