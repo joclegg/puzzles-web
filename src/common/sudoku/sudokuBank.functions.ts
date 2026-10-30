@@ -1,7 +1,6 @@
 import { epochDay } from '@/common/date.functions'
 import { createRandom, newSeed } from '@/common/random.functions'
 import {
-  BANK_CHUNK_SIZE,
   BANK_SIZE,
   DAILY_SEED_STRIDE,
   GAME_MODES,
@@ -17,13 +16,6 @@ export function bankFile({
   difficulty: Difficulty
 }) {
   return `${mode}_${difficulty}`
-}
-
-export function chunkOf(index: number): { chunk: number; line: number } {
-  return {
-    chunk: Math.floor(index / BANK_CHUNK_SIZE),
-    line: index % BANK_CHUNK_SIZE,
-  }
 }
 
 export function dailyPick({ mode, date }: { mode: GameMode; date: string }) {

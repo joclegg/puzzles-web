@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest'
 import { addDays } from '@/common/date.functions'
 import { DIFFICULTY, GAME_MODE } from '@/common/sudoku/sudoku.constants'
 import {
-  chunkOf,
   dailyPick,
   dailySudokuId,
   nextUnplayedIndex,
@@ -29,12 +28,6 @@ describe('dailyPick', () => {
       })
     },
   )
-})
-
-describe('chunkOf', () => {
-  it('finds the chunk and line of a bank index', () => {
-    expect(chunkOf(2962)).toEqual({ chunk: 11, line: 212 })
-  })
 })
 
 describe('nextUnplayedIndex', () => {
