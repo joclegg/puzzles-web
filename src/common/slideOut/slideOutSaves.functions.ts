@@ -11,14 +11,14 @@ import {
 import type { LevelStats } from '@/common/slideOut/slideOutSaves.types'
 
 export function levelOf(game: { size: number }): Level {
-  return LEVELS[game.size]
+  return LEVELS[Math.min(game.size, LEVELS.length - 1)]
 }
 
 export function levelStats(games: SavedPuzzle[]): LevelStats[] {
-  return LEVELS.map((level, index) => {
+  return LEVELS.map((level) => {
     const finished = games.filter(
       (game) =>
-        game.size === index && game.status !== PUZZLE_STATUS.IN_PROGRESS,
+        levelOf(game) === level && game.status !== PUZZLE_STATUS.IN_PROGRESS,
     )
     const solved = finished.filter(
       (game) => game.status === PUZZLE_STATUS.SOLVED,

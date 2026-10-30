@@ -11,6 +11,7 @@ describe('slideOutTitle', () => {
   it.each([
     ['bank_medium_3', 2, 'Medium'],
     ['daily_2026-10-25_expert', 4, 'Daily · 25 Oct · Expert'],
+    ['bank_evil_7', 5, 'Expert'],
   ])('names %s', (puzzleId, size, title) => {
     expect(slideOutTitle({ puzzleId, size })).toBe(title)
   })
