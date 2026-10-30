@@ -59,7 +59,8 @@ export function findHint(game: SudokuGame): SudokuHint | null {
     : {
         cell: empty,
         digit: solution[empty],
-        message: 'Try this cell next.',
+        message:
+          'No cell can be worked out yet, so here is the first empty one.',
       }
 }
 
