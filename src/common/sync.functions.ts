@@ -44,6 +44,28 @@ export function isEmailAddress(input: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim())
 }
 
+export function isProgressOnly({
+  before,
+  after,
+}: {
+  before: SyncedEntry[]
+  after: SyncedEntry[]
+}): boolean {
+  const previous = new Map(before.map((entry) => [entry.id, entry.status]))
+  return (
+    before.length === after.length &&
+    after.every(
+      (entry) =>
+        previous.has(entry.id) && previous.get(entry.id) === entry.status,
+    )
+  )
+}
+
+export function isSyncableKey(key: string): boolean {
+  const { id } = parseStampKey(key)
+  return id === null || isSyncableId(id)
+}
+
 export function mergeGames({
   game,
   games,
@@ -180,4 +202,10 @@ export function syncedKey(storageKey: string): SyncedKey | null {
   if (kind === SYNC_KIND.GAMES) return { game, kind: SYNC_KIND.GAMES }
   if (kind === SYNC_KIND.SETTINGS) return { game, kind: SYNC_KIND.SETTINGS }
   return null
+}
+
+function isSyncableId(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    id,
+  )
 }

@@ -20,6 +20,7 @@ import {
 } from '@/common/sync.constants'
 import {
   entryStampKey,
+  isSyncableKey,
   mergeGames,
   mergeSettings,
   parseStampKey,
@@ -77,19 +78,16 @@ export function useSync() {
     function onStored() {
       schedule(PUSH_DELAY_MS)
     }
-    function onVisible() {
-      if (!document.hidden) run()
-    }
     run()
     window.addEventListener(STORED_EVENT, onStored)
     window.addEventListener('online', run)
-    document.addEventListener('visibilitychange', onVisible)
+    document.addEventListener('visibilitychange', run)
     return () => {
       active = false
       window.clearTimeout(timerRef.current)
       window.removeEventListener(STORED_EVENT, onStored)
       window.removeEventListener('online', run)
-      document.removeEventListener('visibilitychange', onVisible)
+      document.removeEventListener('visibilitychange', run)
     }
   }, [client, userId])
 
@@ -143,6 +141,23 @@ export function useSync() {
   }, [client])
 
   return { user, signIn, sendEmailLink, verifyEmailCode, signOut }
+}
+
+function dropUnsyncableKeys() {
+  replaceStored({
+    key: PENDING_KEY,
+    value: readStored<string[]>({ key: PENDING_KEY, fallback: [] }).filter(
+      isSyncableKey,
+    ),
+  })
+  replaceStored({
+    key: STAMPS_KEY,
+    value: Object.fromEntries(
+      Object.entries(
+        readStored<Record<string, number>>({ key: STAMPS_KEY, fallback: {} }),
+      ).filter(([key]) => isSyncableKey(key)),
+    ),
+  })
 }
 
 async function fetchChanged<T>({
@@ -288,7 +303,11 @@ async function push(client: SupabaseClient) {
       ? client.from('game_settings').upsert(settingsRows)
       : Promise.resolve({ error: null }),
   ])
-  if (saved.error !== null || settings.error !== null) return false
+  const uploaded = pending.filter((key) =>
+    parseStampKey(key).id === null
+      ? settings.error === null
+      : saved.error === null,
+  )
   const latest = readStored<Record<string, number>>({
     key: STAMPS_KEY,
     fallback: {},
@@ -296,13 +315,14 @@ async function push(client: SupabaseClient) {
   replaceStored({
     key: PENDING_KEY,
     value: readStored<string[]>({ key: PENDING_KEY, fallback: [] }).filter(
-      (key) => !pending.includes(key) || latest[key] !== stamps[key],
+      (key) => !uploaded.includes(key) || latest[key] !== stamps[key],
     ),
   })
-  return true
+  return saved.error === null && settings.error === null
 }
 
 async function syncOnce(client: SupabaseClient) {
+  dropUnsyncableKeys()
   const pushed = await push(client)
   const pulled = await pull(client)
   const pushedNew = pulled ? await push(client) : false

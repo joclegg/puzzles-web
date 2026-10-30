@@ -7,6 +7,7 @@ import {
 import {
   changedEntryIds,
   entryStampKey,
+  isProgressOnly,
   recordChanges,
   settingsStampKey,
   syncedKey,
@@ -50,10 +51,11 @@ export function writeStored<T>({ key, value }: { key: string; value: T }) {
     replaceStored({ key, value })
     return
   }
+  const before = readStored<SyncedEntry[]>({ key, fallback: [] })
   const keys =
     synced.kind === SYNC_KIND.GAMES
       ? changedEntryIds({
-          before: readStored<SyncedEntry[]>({ key, fallback: [] }),
+          before,
           after: value as SyncedEntry[],
         }).map((id) => entryStampKey({ game: synced.game, id }))
       : [settingsStampKey(synced.game)]
@@ -69,7 +71,10 @@ export function writeStored<T>({ key, value }: { key: string; value: T }) {
   replaceStored({ key: STAMPS_KEY, value: recorded.stamps })
   replaceStored({ key: PENDING_KEY, value: recorded.pending })
   replaceStored({ key, value })
-  window.dispatchEvent(new Event(STORED_EVENT))
+  const moveOnly =
+    synced.kind === SYNC_KIND.GAMES &&
+    isProgressOnly({ before, after: value as SyncedEntry[] })
+  if (!moveOnly) window.dispatchEvent(new Event(STORED_EVENT))
 }
 
 function isPlainObject(value: unknown) {

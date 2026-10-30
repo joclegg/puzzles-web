@@ -25,6 +25,7 @@ export type SignInStep = (typeof SIGN_IN_STEP)[keyof typeof SIGN_IN_STEP]
 
 export interface SyncedEntry {
   id: string
+  status?: string
 }
 
 export interface SyncedKey {

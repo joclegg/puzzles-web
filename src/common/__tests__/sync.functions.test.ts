@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import {
   changedEntryIds,
+  isProgressOnly,
+  isSyncableKey,
   cleanEmailCode,
   entryStampKey,
   isEmailAddress,
@@ -208,5 +210,28 @@ describe('pullSince', () => {
     expect(pullSince('2026-10-29T12:00:00.000Z')).toBe(
       '2026-10-29T11:59:00.000Z',
     )
+  })
+})
+
+describe('isProgressOnly', () => {
+  const playing = { id: 'a', status: 'inProgress' }
+
+  it.each([
+    ['a save with the same status', [playing], [playing], true],
+    ['a finished game', [playing], [{ id: 'a', status: 'solved' }], false],
+    ['a new game', [], [playing], false],
+    ['a removed game', [playing], [], false],
+  ])('given %s then returns %s', (_name, before, after, expected) => {
+    expect(isProgressOnly({ before, after })).toBe(expected)
+  })
+})
+
+describe('isSyncableKey', () => {
+  it.each([
+    ['kakuro.games/1', false],
+    ['kakuro.games/3f2b8c1e-6a4d-4e7b-9c10-2d5f8a7b1c3e', true],
+    ['kakuro.settings', true],
+  ])('given %s then returns %s', (key, expected) => {
+    expect(isSyncableKey(key)).toBe(expected)
   })
 })
