@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   changedEntryIds,
+  isProgressOnly,
   cleanEmailCode,
   entryStampKey,
   isEmailAddress,
@@ -208,5 +209,18 @@ describe('pullSince', () => {
     expect(pullSince('2026-10-29T12:00:00.000Z')).toBe(
       '2026-10-29T11:59:00.000Z',
     )
+  })
+})
+
+describe('isProgressOnly', () => {
+  const playing = { id: 'a', status: 'inProgress' }
+
+  it.each([
+    ['a save with the same status', [playing], [playing], true],
+    ['a finished game', [playing], [{ id: 'a', status: 'solved' }], false],
+    ['a new game', [], [playing], false],
+    ['a removed game', [playing], [], false],
+  ])('given %s then returns %s', (_name, before, after, expected) => {
+    expect(isProgressOnly({ before, after })).toBe(expected)
   })
 })

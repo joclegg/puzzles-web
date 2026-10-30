@@ -44,6 +44,23 @@ export function isEmailAddress(input: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim())
 }
 
+export function isProgressOnly({
+  before,
+  after,
+}: {
+  before: SyncedEntry[]
+  after: SyncedEntry[]
+}): boolean {
+  const previous = new Map(before.map((entry) => [entry.id, entry.status]))
+  return (
+    before.length === after.length &&
+    after.every(
+      (entry) =>
+        previous.has(entry.id) && previous.get(entry.id) === entry.status,
+    )
+  )
+}
+
 export function mergeGames({
   game,
   games,

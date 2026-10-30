@@ -77,19 +77,16 @@ export function useSync() {
     function onStored() {
       schedule(PUSH_DELAY_MS)
     }
-    function onVisible() {
-      if (!document.hidden) run()
-    }
     run()
     window.addEventListener(STORED_EVENT, onStored)
     window.addEventListener('online', run)
-    document.addEventListener('visibilitychange', onVisible)
+    document.addEventListener('visibilitychange', run)
     return () => {
       active = false
       window.clearTimeout(timerRef.current)
       window.removeEventListener(STORED_EVENT, onStored)
       window.removeEventListener('online', run)
-      document.removeEventListener('visibilitychange', onVisible)
+      document.removeEventListener('visibilitychange', run)
     }
   }, [client, userId])
 
