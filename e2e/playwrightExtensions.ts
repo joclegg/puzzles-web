@@ -13,6 +13,8 @@ import { WordWheelPage } from '@e2e/wordWheelPage'
 
 const FIXED_NOW = new Date('2026-10-25T10:00:00')
 
+const DATA_URL = 'https://joclegg.github.io/puzzles-data/'
+
 export const test = base.extend<{
   assistsPage: AssistsPage
   launcherPage: LauncherPage
@@ -27,6 +29,13 @@ export const test = base.extend<{
 }>({
   page: async ({ page }, use) => {
     await page.clock.setFixedTime(FIXED_NOW)
+    await page.route(`${DATA_URL}**`, async (route) => {
+      const file = route.request().url().slice(DATA_URL.length)
+      await route.fulfill({
+        path: `puzzles-data/${file}`,
+        headers: { 'access-control-allow-origin': '*' },
+      })
+    })
     await use(page)
   },
   assistsPage: async ({ page }, use) => {

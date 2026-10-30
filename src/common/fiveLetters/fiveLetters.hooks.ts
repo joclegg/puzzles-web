@@ -1,7 +1,16 @@
+import { useMemo } from 'react'
+
+import { fetchBank, useBank } from '@/common/bank.hooks'
 import {
+  ANSWERS_PATH,
+  GUESSES_PATH,
+} from '@/common/fiveLetters/fiveLettersWords.constants'
+import {
+  createWords,
   nytSolution,
   randomWord,
 } from '@/common/fiveLetters/fiveLetters.functions'
+import type { Words } from '@/common/fiveLetters/fiveLetters.types'
 import {
   DEFAULT_SETTINGS,
   GAMES_KEY,
@@ -17,12 +26,22 @@ import type {
   SavedGame,
   WordRef,
 } from '@/common/fiveLetters/fiveLettersSaves.types'
-import { WORDS } from '@/common/fiveLetters/fiveLettersWords.constants'
 import { newSeed } from '@/common/random.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { readStored } from '@/common/storage.functions'
 import { useStoredState } from '@/common/storage.hooks'
+
+export async function loadWords(): Promise<Words> {
+  const [answers, guesses] = await Promise.all([
+    fetchBank(ANSWERS_PATH),
+    fetchBank(GUESSES_PATH),
+  ])
+  return createWords({
+    answers: answers.split('\n'),
+    guesses: guesses.split('\n'),
+  })
+}
 
 export function useFiveLettersGames() {
   const [games, setGames] = useStoredState<SavedGame[]>({
@@ -50,11 +69,11 @@ export function useFiveLettersGames() {
     openGame(created.game)
   }
 
-  function startPractice() {
+  async function startPractice() {
     const seed = newSeed()
     startAndOpen({
       id: `practice_${seed}`,
-      answer: randomWord({ words: WORDS, seed }),
+      answer: randomWord({ words: await loadWords(), seed }),
     })
   }
 
@@ -75,6 +94,21 @@ export function useFiveLettersGames() {
     startPractice,
     startNytDaily,
   }
+}
+
+export function useWords(): Words | null {
+  const answers = useBank(ANSWERS_PATH)
+  const guesses = useBank(GUESSES_PATH)
+  return useMemo(
+    () =>
+      answers === null || guesses === null
+        ? null
+        : createWords({
+            answers: answers.split('\n'),
+            guesses: guesses.split('\n'),
+          }),
+    [answers, guesses],
+  )
 }
 
 async function fetchNytWord(date: string): Promise<string | null> {

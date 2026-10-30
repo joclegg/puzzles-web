@@ -1,4 +1,4 @@
-import { BANK_TEXT } from '@/common/kakuro/kakuroBank.constants'
+import { fetchBank } from '@/common/bank.hooks'
 import {
   bankLines,
   dailyIndex,
@@ -39,20 +39,20 @@ export function useKakuroGames() {
     openGame(created.game)
   }
 
-  function startRandom(size: number) {
-    const lines = bankLines(BANK_TEXT[size])
+  async function startRandom(size: number) {
+    const lines = bankLines(await fetchBank(`kakuro/${size}.txt`))
     const index = randomIndex({ count: lines.length, seed: newSeed() })
     startAndOpen({ id: `bank_${size}_${index}`, size, puzzle: lines[index] })
   }
 
-  function openDaily({ date, size }: { date: string; size: number }) {
+  async function openDaily({ date, size }: { date: string; size: number }) {
     const id = dailyPuzzleId({ date, size })
     const existing = games.findLast((game) => game.puzzleId === id)
     if (existing) {
       openGame(existing)
       return
     }
-    const lines = bankLines(BANK_TEXT[size])
+    const lines = bankLines(await fetchBank(`kakuro/${size}.txt`))
     const index = dailyIndex({ count: lines.length, size, date })
     startAndOpen({ id, size, puzzle: lines[index] })
   }

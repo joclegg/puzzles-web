@@ -1,4 +1,7 @@
-import { useFiveLettersGames } from '@/common/fiveLetters/fiveLetters.hooks'
+import {
+  loadWords,
+  useFiveLettersGames,
+} from '@/common/fiveLetters/fiveLetters.hooks'
 import {
   BarChart3,
   CalendarCheck,
@@ -22,7 +25,6 @@ import {
   isNyt,
   nytId,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
-import { WORDS } from '@/common/fiveLetters/fiveLettersWords.constants'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate, replaceRoute } from '@/common/route.hooks'
 import { Button } from '@/components/Button/Button'
@@ -112,12 +114,12 @@ export function FiveLettersHomeView({ play }: { play?: string }) {
           detail={dailyResult ?? undefined}
           done={daily?.status === GAME_STATUS.WON}
           active={daily?.status === GAME_STATUS.IN_PROGRESS}
-          onClick={() =>
+          onClick={async () =>
             daily
               ? openGame(daily)
               : startAndOpen({
                   id: dailyId(today),
-                  answer: dailyWord({ words: WORDS, date: today }),
+                  answer: dailyWord({ words: await loadWords(), date: today }),
                 })
           }
         />
