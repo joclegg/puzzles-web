@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { DAILY_PREFIX } from '@/common/puzzleSaves.constants'
 import {
   revealPuzzle,
@@ -11,14 +13,21 @@ import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { LEVELS } from '@/common/wordWheel/wordWheel.constants'
 import type { Level } from '@/common/wordWheel/wordWheel.types'
-import { BANK_TEXT } from '@/common/wordWheel/wordWheelBank.constants'
+import { fetchBank, useBank } from '@/common/bank.hooks'
+import { VALID_WORDS_PATH } from '@/common/wordWheel/wordWheelBank.constants'
 import {
   bankLines,
   dailyIndex,
   randomIndex,
 } from '@/common/wordWheel/wordWheelBank.functions'
+import { validWords } from '@/common/wordWheel/wordWheel.functions'
 import { GAMES_KEY } from '@/common/wordWheel/wordWheelSaves.constants'
 import { useStoredState } from '@/common/storage.hooks'
+
+export function useValidWords(): Set<string> | null {
+  const text = useBank(VALID_WORDS_PATH)
+  return useMemo(() => (text === null ? null : validWords(text)), [text])
+}
 
 export function useWordWheelGames() {
   const [games, setGames] = useStoredState<SavedPuzzle[]>({
@@ -41,8 +50,8 @@ export function useWordWheelGames() {
     openGame(created.game)
   }
 
-  function startRandom(level: Level) {
-    const lines = bankLines(BANK_TEXT[level])
+  async function startRandom(level: Level) {
+    const lines = bankLines(await fetchBank(`wordwheel/${level}.txt`))
     const index = randomIndex({ count: lines.length, seed: newSeed() })
     startAndOpen({
       id: `bank_${level}_${index}`,
@@ -51,14 +60,14 @@ export function useWordWheelGames() {
     })
   }
 
-  function openDaily({ date, level }: { date: string; level: Level }) {
+  async function openDaily({ date, level }: { date: string; level: Level }) {
     const id = `${DAILY_PREFIX}${date}_${level}`
     const existing = games.findLast((game) => game.puzzleId === id)
     if (existing) {
       openGame(existing)
       return
     }
-    const lines = bankLines(BANK_TEXT[level])
+    const lines = bankLines(await fetchBank(`wordwheel/${level}.txt`))
     const index = dailyIndex({ count: lines.length, level, date })
     startAndOpen({ id, size: LEVELS.indexOf(level), puzzle: lines[index] })
   }

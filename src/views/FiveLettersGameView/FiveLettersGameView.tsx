@@ -1,5 +1,8 @@
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
-import { useFiveLettersGames } from '@/common/fiveLetters/fiveLetters.hooks'
+import {
+  useFiveLettersGames,
+  useWords,
+} from '@/common/fiveLetters/fiveLetters.hooks'
 import { Lightbulb, Share2 } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
 
@@ -33,7 +36,7 @@ import {
   saveGuesses,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
 import type { FiveLettersSettings } from '@/common/fiveLetters/fiveLettersSaves.types'
-import { TITLE, WORDS } from '@/common/fiveLetters/fiveLettersWords.constants'
+import { TITLE } from '@/common/fiveLetters/fiveLettersWords.constants'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { useStoredState } from '@/common/storage.hooks'
@@ -67,6 +70,7 @@ const TUTORIAL = [
 
 export function FiveLettersGameView({ id }: { id: string }) {
   const { games, setGames, startPractice } = useFiveLettersGames()
+  const words = useWords()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<FiveLettersSettings>({
     key: SETTINGS_KEY,
@@ -157,10 +161,10 @@ export function FiveLettersGameView({ id }: { id: string }) {
   }
 
   function enter() {
-    if (!game || !saved) {
+    if (!game || !saved || words === null) {
       return
     }
-    const after = submit({ game, words: WORDS })
+    const after = submit({ game, words })
     setGame(after)
     if (after.guesses.length === game.guesses.length) {
       return

@@ -23,9 +23,11 @@ import {
   shuffleWheel,
   submit,
 } from '@/common/wordWheel/wordWheel.functions'
-import { useWordWheelGames } from '@/common/wordWheel/wordWheel.hooks'
+import {
+  useValidWords,
+  useWordWheelGames,
+} from '@/common/wordWheel/wordWheel.hooks'
 import type { WordWheelGame } from '@/common/wordWheel/wordWheel.types'
-import { VALID_WORDS } from '@/common/wordWheel/wordWheelBank.constants'
 import { decodePuzzle } from '@/common/wordWheel/wordWheelCrossword.functions'
 import {
   DEFAULT_SETTINGS,
@@ -70,6 +72,7 @@ const TUTORIAL = [
 export function WordWheelGameView({ id }: { id: string }) {
   const { games, startRandom, saveProgress, finish, revealSaved } =
     useWordWheelGames()
+  const validWordList = useValidWords()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<WordWheelSettings>({
     key: SETTINGS_KEY,
@@ -176,7 +179,8 @@ export function WordWheelGameView({ id }: { id: string }) {
     }
     const word = chosen.map((index) => game.wheel[index]).join('')
     setChosen([])
-    update(submit({ game, word, valid: VALID_WORDS }))
+    if (validWordList === null) return
+    update(submit({ game, word, valid: validWordList }))
   }
 
   const word = chosen.map((index) => game.wheel[index]).join('')

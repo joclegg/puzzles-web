@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 
+import { fetchBank } from '@/common/bank.hooks'
 import { epochDay } from '@/common/date.functions'
 import { newSeed } from '@/common/random.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
@@ -8,7 +9,6 @@ import {
   BUILD_ORDER,
   DAILY_SEED_SPREAD,
 } from '@/common/solitaire/solitaire.constants'
-import { WINNABLE_SEEDS_TEXT } from '@/common/solitaire/solitaireBank.constants'
 import {
   dailyWinnableSeed,
   parseSeeds,
@@ -51,7 +51,7 @@ export function useSolitaireGames() {
     navigate([GAME_ROUTE.SOLITAIRE, SCREEN.GAME, game.id])
   }
 
-  function startAndOpen({
+  async function startAndOpen({
     dealId,
     seed,
     date,
@@ -67,7 +67,11 @@ export function useSolitaireGames() {
     const order: BuildOrder = settings.reverse
       ? BUILD_ORDER.UP
       : BUILD_ORDER.DOWN
-    const seeds = parseSeeds(WINNABLE_SEEDS_TEXT[settings.drawMode][order])
+    const seeds = settings.winnableOnly
+      ? parseSeeds(
+          await fetchBank(`solitaire/${settings.drawMode}_${order}.txt`),
+        )
+      : []
     const dealSeed = !settings.winnableOnly
       ? seed
       : date === null
@@ -86,7 +90,6 @@ export function useSolitaireGames() {
     })
     setGames(() => started.games)
     openGame(started.game)
-    return Promise.resolve()
   }
 
   function startRandom() {

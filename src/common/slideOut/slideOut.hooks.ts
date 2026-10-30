@@ -11,7 +11,7 @@ import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { LEVELS } from '@/common/slideOut/slideOut.constants'
 import type { Level } from '@/common/slideOut/slideOut.types'
-import { BANK_TEXT } from '@/common/slideOut/slideOutBank.constants'
+import { fetchBank } from '@/common/bank.hooks'
 import {
   bankLines,
   dailyIndex,
@@ -41,8 +41,8 @@ export function useSlideOutGames() {
     openGame(created.game)
   }
 
-  function startRandom(level: Level) {
-    const lines = bankLines(BANK_TEXT[level])
+  async function startRandom(level: Level) {
+    const lines = bankLines(await fetchBank(`slideout/${level}.txt`))
     const index = randomIndex({ count: lines.length, seed: newSeed() })
     startAndOpen({
       id: `bank_${level}_${index}`,
@@ -51,14 +51,14 @@ export function useSlideOutGames() {
     })
   }
 
-  function openDaily({ date, level }: { date: string; level: Level }) {
+  async function openDaily({ date, level }: { date: string; level: Level }) {
     const id = `${DAILY_PREFIX}${date}_${level}`
     const existing = games.findLast((game) => game.puzzleId === id)
     if (existing) {
       openGame(existing)
       return
     }
-    const lines = bankLines(BANK_TEXT[level])
+    const lines = bankLines(await fetchBank(`slideout/${level}.txt`))
     const index = dailyIndex({ count: lines.length, level, date })
     startAndOpen({ id, size: LEVELS.indexOf(level), puzzle: lines[index] })
   }
