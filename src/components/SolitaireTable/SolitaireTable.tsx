@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import type { PointerEvent } from 'react'
 
 import { cn } from '@/common/utils.functions'
@@ -12,8 +12,12 @@ import type {
 import { PlayingCard } from '@/components/PlayingCard/PlayingCard'
 import { cardName } from '@/components/PlayingCard/PlayingCard.functions'
 import {
+  CARD_EASING,
   FACE_DOWN_OFFSET_CLASS,
   FACE_UP_OFFSET_CLASS,
+  FINISH_FLIGHT_MS,
+  MOVE_MS,
+  SNAP_BACK_MS,
 } from '@/components/SolitaireTable/SolitaireTable.constants'
 import {
   dragKey,
@@ -23,6 +27,7 @@ import {
   pileKey,
 } from '@/components/SolitaireTable/SolitaireTable.functions'
 import { DRAW_CARDS } from '@/common/solitaire/solitaire.constants'
+import type { CardPlace } from '@/components/SolitaireTable/SolitaireTable.types'
 
 export function SolitaireTable({
   board,
@@ -32,10 +37,12 @@ export function SolitaireTable({
   onCard,
   onEmpty,
   onDrop,
+  finishing = false,
 }: {
   board: Board
   drawMode: DrawMode
   selection: Selection | null
+  finishing?: boolean
   onStock: () => void
   onCard: (target: { pile: Pile; index: number }) => void
   onEmpty: (pile: Pile) => void
@@ -49,6 +56,20 @@ export function SolitaireTable({
     moved: boolean
   } | null>(null)
   const justDraggedRef = useRef(false)
+  const tableRef = useRef<HTMLDivElement>(null)
+  const placesRef = useRef(new Map<string, CardPlace>())
+
+  useLayoutEffect(() => {
+    const table = tableRef.current
+    if (table === null) {
+      return
+    }
+    placesRef.current = animateCards({
+      table,
+      before: placesRef.current,
+      finishing,
+    })
+  })
   const shownWaste = board.waste.slice(-DRAW_CARDS[drawMode])
 
   function isSelected({ pile, index }: { pile: Pile; index: number }) {
@@ -117,19 +138,37 @@ export function SolitaireTable({
     if (drag === null) {
       return
     }
+    const target = drag.moved
+      ? document
+          .elementsFromPoint(event.clientX, event.clientY)
+          .map((element) => element.closest<HTMLElement>('[data-pile]'))
+          .find((element) => element?.dataset.pile !== undefined)?.dataset.pile
+      : undefined
+    const table = tableRef.current
     for (const element of drag.moving) {
+      if (drag.moved && table !== null) {
+        rememberDropPlace({ table, element, places: placesRef.current })
+      }
       element.style.transform = ''
       element.style.zIndex = ''
       element.style.pointerEvents = ''
+      if (drag.moved) {
+        element.animate(
+          [
+            {
+              transform: `translate(${event.clientX - drag.startX}px, ${event.clientY - drag.startY}px)`,
+              zIndex: 50,
+            },
+            { transform: 'none', zIndex: 50 },
+          ],
+          { duration: SNAP_BACK_MS, easing: CARD_EASING },
+        )
+      }
     }
     if (!drag.moved) {
       return
     }
     justDraggedRef.current = true
-    const target = document
-      .elementsFromPoint(event.clientX, event.clientY)
-      .map((element) => element.closest<HTMLElement>('[data-pile]'))
-      .find((element) => element?.dataset.pile !== undefined)?.dataset.pile
     if (target === undefined) {
       return
     }
@@ -154,11 +193,13 @@ export function SolitaireTable({
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
       onClickCapture={onClickCapture}
+      ref={tableRef}
       className="@container flex w-full max-w-xl flex-col gap-3 rounded-xl bg-sol-felt p-2 sm:p-3 lg:max-w-4xl"
     >
       <div className="grid grid-cols-7 gap-1 sm:gap-2">
         <button
           type="button"
+          data-stock
           aria-label={
             board.stock.length > 0
               ? `Stock, ${board.stock.length} cards`
@@ -293,6 +334,103 @@ export function SolitaireTable({
       </div>
     </div>
   )
+}
+
+function animateCards({
+  table,
+  before,
+  finishing,
+}: {
+  table: HTMLElement
+  before: Map<string, CardPlace>
+  finishing: boolean
+}): Map<string, CardPlace> {
+  const origin = table.getBoundingClientRect()
+  const stock = table.querySelector<HTMLElement>('[data-stock]')
+  const stockRect = stock?.getBoundingClientRect()
+  const after = new Map<string, CardPlace>()
+  for (const card of table.querySelectorAll<HTMLElement>('[data-card]')) {
+    const key = card.dataset.card ?? ''
+    const rect = card.getBoundingClientRect()
+    const place = {
+      x: rect.left - origin.left,
+      y: rect.top - origin.top,
+      faceUp: card.dataset.faceUp === 'true',
+    }
+    after.set(key, place)
+    const from =
+      before.get(key) ??
+      (stockRect === undefined ||
+      before.size === 0 ||
+      card.closest('[aria-label="Waste"]') === null
+        ? undefined
+        : {
+            x: stockRect.left - origin.left,
+            y: stockRect.top - origin.top,
+            faceUp: false,
+          })
+    if (from === undefined) {
+      continue
+    }
+    const dx = from.x - place.x
+    const dy = from.y - place.y
+    const flipped = !from.faceUp && place.faceUp
+    if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && !flipped) {
+      continue
+    }
+    for (const running of card.getAnimations()) {
+      running.cancel()
+    }
+    card.animate(
+      finishing
+        ? [
+            { transform: `translate(${dx}px, ${dy}px)`, zIndex: 40 },
+            {
+              transform: `translate(${dx / 2}px, ${dy / 2 - 40}px) scale(1.25) rotate(-12deg)`,
+              zIndex: 40,
+              offset: 0.5,
+            },
+            { transform: 'none', zIndex: 40 },
+          ]
+        : [
+            {
+              transform: `translate(${dx}px, ${dy}px)${flipped ? ' rotateY(90deg)' : ''}`,
+              zIndex: 40,
+            },
+            { transform: 'none', zIndex: 40 },
+          ],
+      {
+        duration: finishing ? FINISH_FLIGHT_MS : MOVE_MS,
+        easing: CARD_EASING,
+      },
+    )
+  }
+  return after
+}
+
+function rememberDropPlace({
+  table,
+  element,
+  places,
+}: {
+  table: HTMLElement
+  element: HTMLElement
+  places: Map<string, CardPlace>
+}) {
+  const card = element.matches('[data-card]')
+    ? element
+    : element.querySelector<HTMLElement>('[data-card]')
+  const key = card?.dataset.card
+  if (card === null || key === undefined) {
+    return
+  }
+  const origin = table.getBoundingClientRect()
+  const rect = card.getBoundingClientRect()
+  places.set(key, {
+    x: rect.left - origin.left,
+    y: rect.top - origin.top,
+    faceUp: true,
+  })
 }
 
 function siblingsFrom(card: HTMLElement): HTMLElement[] {

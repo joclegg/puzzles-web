@@ -22,7 +22,7 @@ export function SettingRow({
       <Switch.Root
         checked={checked}
         onCheckedChange={onChange}
-        className="relative h-6 w-11 shrink-0 rounded-full bg-muted ring-1 ring-border transition-colors data-checked:bg-primary"
+        className="relative h-6 w-11 shrink-0 rounded-full bg-muted ring-1 ring-border transition-colors data-checked:bg-game"
       >
         <Switch.Thumb className="block size-5 translate-x-0.5 rounded-full bg-background shadow transition-transform data-checked:translate-x-5.5" />
       </Switch.Root>

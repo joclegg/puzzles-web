@@ -35,6 +35,8 @@ import {
 import type { SlideOutSettings } from '@/common/slideOut/slideOutSaves.types'
 import { useStoredState } from '@/common/storage.hooks'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
+import { WinDialog } from '@/components/WinDialog/WinDialog'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
 import {
   BUTTON_SIZE,
@@ -251,9 +253,20 @@ export function SlideOutGameView({ id }: { id: string }) {
       >
         <p>This ends the puzzle. It won't count towards best times.</p>
       </AppDialog>
-      <AppDialog
+      <WinDialog
         open={result !== null}
         title="Solved!"
+        accent={MENU_ACCENT.SLIDE_OUT}
+        newBest={result?.newBest ?? false}
+        stats={[
+          {
+            label: 'Moves',
+            value:
+              moveCount <= par ? `${moveCount}, par!` : `${moveCount} / ${par}`,
+          },
+          { label: 'Time', value: formatDuration(elapsedMs()) },
+          ...(hints > 0 ? [{ label: 'Hints', value: hints }] : []),
+        ]}
         onClose={() => setResult(null)}
         actions={
           <>
@@ -271,16 +284,7 @@ export function SlideOutGameView({ id }: { id: string }) {
             </Button>
           </>
         }
-      >
-        {result?.newBest && <p className="font-bold text-primary">New best!</p>}
-        <p>
-          {moveCount <= par
-            ? `${moveCount} moves, par!`
-            : `${moveCount} moves, par is ${par}`}
-        </p>
-        <p>Time {formatDuration(elapsedMs())}</p>
-        {hints > 0 && <p>Hints {hints}</p>}
-      </AppDialog>
+      />
     </main>
   )
 }

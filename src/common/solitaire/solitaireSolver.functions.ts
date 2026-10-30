@@ -1,6 +1,7 @@
 import {
   DEAL_BUDGET,
   DEFAULT_BUDGET,
+  DRAW_CARDS,
   FOUNDATIONS,
   PILE_KIND,
   SUITS,
@@ -200,12 +201,16 @@ function movesFrom({
 
 function safeFoundationMove({
   board,
+  drawMode,
   order,
 }: {
   board: Board
+  drawMode: DrawMode
   order: BuildOrder
 }) {
-  for (const from of [WASTE, ...columnsOf(board)]) {
+  const tops =
+    DRAW_CARDS[drawMode] === 1 ? [WASTE, ...columnsOf(board)] : columnsOf(board)
+  for (const from of tops) {
     const card = cardsIn({ board, pile: from }).at(-1)
     if (card === undefined) {
       continue
@@ -243,7 +248,7 @@ function search({
   shouldStop: () => boolean
 }): Verdict {
   const seen = new Set<string>()
-  const stack = [settle({ start, order })]
+  const stack = [settle({ start, drawMode, order })]
   let explored = 0
   while (stack.length > 0) {
     const board = stack.pop()!
@@ -261,16 +266,24 @@ function search({
     }
     const next = movesFrom({ board, drawMode, order, thorough })
     for (let i = next.length - 1; i >= 0; i--) {
-      stack.push(settle({ start: next[i], order }))
+      stack.push(settle({ start: next[i], drawMode, order }))
     }
   }
   return VERDICT.UNWINNABLE
 }
 
-function settle({ start, order }: { start: Board; order: BuildOrder }): Board {
+function settle({
+  start,
+  drawMode,
+  order,
+}: {
+  start: Board
+  drawMode: DrawMode
+  order: BuildOrder
+}): Board {
   let board = start
   for (;;) {
-    const safe = safeFoundationMove({ board, order })
+    const safe = safeFoundationMove({ board, drawMode, order })
     if (safe === null) {
       return board
     }

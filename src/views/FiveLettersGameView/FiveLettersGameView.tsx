@@ -38,6 +38,8 @@ import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { useStoredState } from '@/common/storage.hooks'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
+import { WinDialog } from '@/components/WinDialog/WinDialog'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
 import {
   BUTTON_SIZE,
@@ -280,12 +282,21 @@ export function FiveLettersGameView({ id }: { id: string }) {
       >
         <p>This ends the game and counts as a loss.</p>
       </AppDialog>
-      <AppDialog
+      <WinDialog
         open={over && !resultClosed}
         title={
           isWon(game)
             ? `Got it in ${game.guesses.length}!`
             : `The word was ${game.answer}`
+        }
+        accent={MENU_ACCENT.FIVE_LETTERS}
+        newBest={false}
+        lost={isLost(game)}
+        stats={[]}
+        message={
+          daily
+            ? 'A new word comes tomorrow. Share your grid without giving the word away.'
+            : 'Play another practice word, or share your grid.'
         }
         onClose={() => setResultClosed(true)}
         actions={
@@ -301,14 +312,7 @@ export function FiveLettersGameView({ id }: { id: string }) {
             )}
           </>
         }
-      >
-        <p>
-          {daily
-            ? 'A new word comes tomorrow. Share your grid without giving the word away.'
-            : 'Play another practice word, or share your grid.'}
-        </p>
-        {isLost(game) && <p className="sr-only">Lost</p>}
-      </AppDialog>
+      />
     </main>
   )
 }

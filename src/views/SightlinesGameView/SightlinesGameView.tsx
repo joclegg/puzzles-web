@@ -1,6 +1,6 @@
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { formatDuration } from '@/common/format.functions'
-import { Lightbulb, Undo2 } from 'lucide-react'
+import { Lightbulb, Palette, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { useGameTimer } from '@/common/gameTimer.hooks'
@@ -43,6 +43,8 @@ import {
 } from '@/common/sightlines/sightlinesSettings.constants'
 import type { SightlinesSettings } from '@/common/sightlines/sightlinesSettings.types'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
+import { WinDialog } from '@/components/WinDialog/WinDialog'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
 import {
   BUTTON_SIZE,
@@ -72,7 +74,7 @@ const TUTORIAL = [
 export function SightlinesGameView({ id }: { id: string }) {
   const { games, setGames, startRandom } = useSightlinesGames()
   const saved = games.find((game) => game.id === id)
-  const [settings] = useStoredState<SightlinesSettings>({
+  const [settings, setSettings] = useStoredState<SightlinesSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
@@ -211,6 +213,27 @@ export function SightlinesGameView({ id }: { id: string }) {
           >
             <Undo2 className="size-5" />
           </Button>
+          <Button
+            size={BUTTON_SIZE.ICON}
+            aria-label="Pick a colour"
+            aria-pressed={settings.inputMode === INPUT_MODE.PICK_COLOUR}
+            className={
+              settings.inputMode === INPUT_MODE.PICK_COLOUR
+                ? 'bg-muted'
+                : undefined
+            }
+            onClick={() =>
+              setSettings((current) => ({
+                ...current,
+                inputMode:
+                  current.inputMode === INPUT_MODE.PICK_COLOUR
+                    ? INPUT_MODE.TAP_TO_CYCLE
+                    : INPUT_MODE.PICK_COLOUR,
+              }))
+            }
+          >
+            <Palette className="size-5" />
+          </Button>
           {settings.showHints && (
             <Button
               size={BUTTON_SIZE.ICON}
@@ -309,9 +332,15 @@ export function SightlinesGameView({ id }: { id: string }) {
       >
         <p>This ends the puzzle. It won't count towards best times.</p>
       </AppDialog>
-      <AppDialog
+      <WinDialog
         open={result !== null}
         title="Solved!"
+        accent={MENU_ACCENT.SIGHTLINES}
+        newBest={result?.newBest ?? false}
+        stats={[
+          { label: 'Time', value: formatDuration(elapsedMs()) },
+          ...(hints > 0 ? [{ label: 'Hints', value: hints }] : []),
+        ]}
         onClose={() => setResult(null)}
         actions={
           <>
@@ -326,11 +355,7 @@ export function SightlinesGameView({ id }: { id: string }) {
             </Button>
           </>
         }
-      >
-        {result?.newBest && <p className="font-bold text-primary">New best!</p>}
-        <p>Time {formatDuration(elapsedMs())}</p>
-        {hints > 0 && <p>Hints {hints}</p>}
-      </AppDialog>
+      />
     </main>
   )
 }

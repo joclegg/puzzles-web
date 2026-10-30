@@ -17,7 +17,7 @@ export function AssistSettings({
 }) {
   return (
     <section aria-label="Help">
-      <h2 className="pt-4 text-sm font-semibold text-muted-foreground">Help</h2>
+      <h2 className="pt-4 font-semibold text-game">Help</h2>
       <SettingRow
         label="Hints"
         detail="Show the hint button."

@@ -24,7 +24,7 @@ import type {
 } from '@/common/sudoku/sudokuSaves.types'
 import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
 export function SudokuSettingsView() {
@@ -43,9 +43,8 @@ export function SudokuSettingsView() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
-      <ScreenHeader title="Settings" back={[GAME_ROUTE.SUDOKU]} />
-      <h2 className="pt-2 font-semibold">Entering numbers</h2>
+    <SettingsScreen game={GAME_ROUTE.SUDOKU}>
+      <h2 className="pt-2 font-semibold text-game">Entering numbers</h2>
       <OptionGroup
         label="Entering numbers"
         options={Object.values(INPUT_MODE)}
@@ -65,7 +64,7 @@ export function SudokuSettingsView() {
         labels={GAME_MODE_LABEL}
         onChange={(next) => setMode(() => next)}
       />
-      <h2 className="pt-2 font-semibold">Mistakes</h2>
+      <h2 className="pt-2 font-semibold text-game">Mistakes</h2>
       <OptionGroup
         label="Mistakes"
         options={Object.values(MISTAKE_CHECK)}
@@ -82,7 +81,7 @@ export function SudokuSettingsView() {
         checked={current.showMistakeCount}
         onChange={(showMistakeCount) => set({ showMistakeCount })}
       />
-      <h2 className="pt-4 font-semibold">Highlighting</h2>
+      <h2 className="pt-4 font-semibold text-game">Highlighting</h2>
       <SettingRow
         label="Row, column and box"
         detail="Around the selected cell"
@@ -122,7 +121,7 @@ export function SudokuSettingsView() {
         checked={current.highlightLastPlaced}
         onChange={(highlightLastPlaced) => set({ highlightLastPlaced })}
       />
-      <h2 className="pt-4 font-semibold">Look</h2>
+      <h2 className="pt-4 font-semibold text-game">Look</h2>
       <SettingRow
         label="Grey starting cells"
         checked={current.greyGivenCells}
@@ -134,7 +133,7 @@ export function SudokuSettingsView() {
         checked={current.boldPlacedDigits}
         onChange={(boldPlacedDigits) => set({ boldPlacedDigits })}
       />
-      <h2 className="pt-4 font-semibold">Playing</h2>
+      <h2 className="pt-4 font-semibold text-game">Playing</h2>
       <SettingRow
         label="Clear pencil marks automatically"
         detail="When you place a number"
@@ -170,6 +169,6 @@ export function SudokuSettingsView() {
         hintStyles
         onChange={(patch) => setSettings((all) => ({ ...all, ...patch }))}
       />
-    </main>
+    </SettingsScreen>
   )
 }

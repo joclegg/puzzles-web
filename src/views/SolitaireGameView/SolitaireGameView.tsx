@@ -1,6 +1,6 @@
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { Lightbulb, Undo2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useEffectEvent, useState } from 'react'
 
 import { HINT_STYLE } from '@/common/assists.constants'
 import { formatDuration } from '@/common/format.functions'
@@ -9,11 +9,13 @@ import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { DECK, VERDICT } from '@/common/solitaire/solitaire.constants'
 import {
-  autoFinish,
+  autoFinishMoves,
   boardOf,
   canAutoFinish,
   cycledStock,
   gameWon,
+  lostMoveProbe,
+  narrowLostMove,
   restart,
   dropCards,
   tapCard,
@@ -22,7 +24,7 @@ import {
   undo,
 } from '@/common/solitaire/solitaire.functions'
 import { useSolitaireGames } from '@/common/solitaire/solitaire.hooks'
-import type { SolitaireGame } from '@/common/solitaire/solitaire.types'
+import type { Move, SolitaireGame } from '@/common/solitaire/solitaire.types'
 import { cardCount, cardsIn } from '@/common/solitaire/solitaireBoard.functions'
 import { findHint } from '@/common/solitaire/solitaireHint.functions'
 import {
@@ -39,6 +41,8 @@ import { dealTitle } from '@/common/solitaire/solitaireSaves.functions'
 import type { SolitaireSettings } from '@/common/solitaire/solitaireSaves.types'
 import { useStoredState } from '@/common/storage.hooks'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
+import { WinDialog } from '@/components/WinDialog/WinDialog'
+import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
 import {
   BUTTON_SIZE,
@@ -48,6 +52,8 @@ import { hintMessage } from '@/components/PlayingCard/PlayingCard.functions'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SolitaireTable } from '@/components/SolitaireTable/SolitaireTable'
+
+const FINISH_STEP_MS = 110
 
 const TUTORIAL = [
   {
@@ -92,6 +98,25 @@ export function SolitaireGameView({ id }: { id: string }) {
   const [hint, setHint] = useState<string | null>(null)
   const [unwinnable, setUnwinnable] = useState(false)
   const [lastWinnable, setLastWinnable] = useState(0)
+  const [searching, setSearching] = useState(false)
+  const [finishing, setFinishing] = useState<Move[]>([])
+  const finishStep = useEffectEvent(() => {
+    const [next, ...rest] = finishing
+    setFinishing(rest)
+    update((state) => ({
+      ...state,
+      moves: [...state.moves, next],
+      selection: null,
+    }))
+  })
+
+  useEffect(() => {
+    if (finishing.length === 0) {
+      return
+    }
+    const timer = setTimeout(finishStep, FINISH_STEP_MS)
+    return () => clearTimeout(timer)
+  }, [finishing])
   const won = game !== null && gameWon(game)
   const elapsedMs = useGameTimer({
     initialMs: saved?.elapsedMs ?? 0,
@@ -130,8 +155,41 @@ export function SolitaireGameView({ id }: { id: string }) {
         setLastWinnable(moves)
       } else if (reply.verdict === VERDICT.UNWINNABLE) {
         setUnwinnable(true)
+        void findLostMove({
+          game: next,
+          range: { winnable: Math.min(lastWinnable, moves), lost: moves },
+        })
       }
     })
+  }
+
+  async function findLostMove({
+    game: lostGame,
+    range,
+  }: {
+    game: SolitaireGame
+    range: { winnable: number; lost: number }
+  }) {
+    setSearching(true)
+    let narrowed = range
+    for (
+      let probe = lostMoveProbe(narrowed);
+      probe !== null;
+      probe = lostMoveProbe(narrowed)
+    ) {
+      const reply = await checkWinnable({
+        board: boardOf({ ...lostGame, moves: lostGame.moves.slice(0, probe) }),
+        drawMode: lostGame.drawMode,
+        order: lostGame.order,
+      })
+      narrowed = narrowLostMove({
+        range: narrowed,
+        probe,
+        verdict: reply.verdict,
+      })
+    }
+    setLastWinnable(narrowed.winnable)
+    setSearching(false)
   }
 
   function onHint() {
@@ -256,12 +314,17 @@ export function SolitaireGameView({ id }: { id: string }) {
         </ScreenHeader>
       </div>
       {canAutoFinish(current) && (
-        <Button className="w-full max-w-xl" onClick={() => update(autoFinish)}>
+        <Button
+          className="w-full max-w-xl"
+          disabled={finishing.length > 0}
+          onClick={() => setFinishing(autoFinishMoves(current))}
+        >
           Finish
         </Button>
       )}
       <SolitaireTable
         board={board}
+        finishing={finishing.length > 0}
         drawMode={current.drawMode}
         selection={current.selection}
         onStock={() => update(tapStock)}
@@ -284,12 +347,8 @@ export function SolitaireGameView({ id }: { id: string }) {
         onClose={() => setUnwinnable(false)}
         actions={
           <>
-            <Button onClick={() => setUnwinnable(false)}>Keep playing</Button>
-            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={giveUp}>
-              Give up
-            </Button>
             <Button
-              variant={BUTTON_VARIANT.OUTLINE}
+              disabled={searching}
               onClick={() =>
                 update((state) => ({
                   ...state,
@@ -298,19 +357,44 @@ export function SolitaireGameView({ id }: { id: string }) {
                 }))
               }
             >
-              Undo to winnable
+              {searching
+                ? 'Finding where it went wrong…'
+                : lastWinnable === 0
+                  ? 'Start the deal again'
+                  : `Undo ${current.moves.length - lastWinnable} moves`}
+            </Button>
+            <Button
+              variant={BUTTON_VARIANT.OUTLINE}
+              onClick={() => setUnwinnable(false)}
+            >
+              Keep playing
+            </Button>
+            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={giveUp}>
+              Give up
             </Button>
           </>
         }
       >
         <p>
-          No sequence of moves from here wins. Undo back to the last position
-          that could still be won, or start a new deal.
+          You've been through the whole stock with nothing new to play, so the
+          solver checked every line from here: none of them wins.
         </p>
+        {!searching && lastWinnable > 0 && (
+          <p>
+            It could still be won up to move {lastWinnable}. Move{' '}
+            {lastWinnable + 1} is where it slipped away.
+          </p>
+        )}
       </AppDialog>
-      <AppDialog
+      <WinDialog
         open={result !== null}
         title="You won!"
+        accent={MENU_ACCENT.SOLITAIRE}
+        newBest={result?.newBest ?? false}
+        stats={[
+          { label: 'Time', value: formatDuration(elapsedMs()) },
+          { label: 'Moves', value: current.moves.length },
+        ]}
         onClose={() => setResult(null)}
         actions={
           <>
@@ -325,11 +409,7 @@ export function SolitaireGameView({ id }: { id: string }) {
             </Button>
           </>
         }
-      >
-        {result?.newBest && <p className="font-bold text-primary">New best!</p>}
-        <p>Time {formatDuration(elapsedMs())}</p>
-        <p>Moves {current.moves.length}</p>
-      </AppDialog>
+      />
     </main>
   )
 }

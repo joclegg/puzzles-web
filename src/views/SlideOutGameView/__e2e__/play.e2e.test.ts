@@ -17,7 +17,7 @@ test('frees the red block in the daily beginner puzzle at par', async ({
     await slideOutPage.slideBy(move)
   }
 
-  await expect(slideOutPage.dialog).toContainText('4 moves, par!')
+  await expect(slideOutPage.dialog).toContainText('4, par!')
   await slideOutPage.expectScreenshot('daily-solved')
 })
 

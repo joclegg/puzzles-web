@@ -6,7 +6,7 @@ import {
 import type { FiveLettersSettings } from '@/common/fiveLetters/fiveLettersSaves.types'
 import { GAME_ROUTE } from '@/common/route.constants'
 import { useStoredState } from '@/common/storage.hooks'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
+import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
 export function FiveLettersSettingsView() {
@@ -16,8 +16,7 @@ export function FiveLettersSettingsView() {
   })
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col px-4 pb-8">
-      <ScreenHeader title="Settings" back={[GAME_ROUTE.FIVE_LETTERS]} />
+    <SettingsScreen game={GAME_ROUTE.FIVE_LETTERS}>
       <SettingRow
         label="Hard mode"
         detail="Every hint must be used in later guesses. Applies to new games."
@@ -40,6 +39,6 @@ export function FiveLettersSettingsView() {
           setSettings((current) => ({ ...current, ...patch }))
         }
       />
-    </main>
+    </SettingsScreen>
   )
 }
