@@ -1,22 +1,28 @@
 import { LogIn, LogOut } from 'lucide-react'
 import { useState } from 'react'
 
-import { SIGN_IN_PROVIDER } from '@/common/sync.constants'
 import type { SignInProvider } from '@/common/sync.types'
-import { AppDialog } from '@/components/AppDialog/AppDialog'
 import { Button } from '@/components/Button/Button'
 import {
   BUTTON_SIZE,
   BUTTON_VARIANT,
 } from '@/components/Button/Button.constants'
+import { SignInDialog } from '@/components/SignInDialog/SignInDialog'
 
 export function AccountButton({
   email,
   onSignIn,
+  onSendEmailLink,
+  onVerifyEmailCode,
   onSignOut,
 }: {
   email: string | null
   onSignIn: (provider: SignInProvider) => void
+  onSendEmailLink: (email: string) => Promise<boolean>
+  onVerifyEmailCode: (entry: {
+    email: string
+    code: string
+  }) => Promise<boolean>
   onSignOut: () => void
 }) {
   const [choosing, setChoosing] = useState(false)
@@ -45,31 +51,13 @@ export function AccountButton({
         <LogIn />
         Sign in to sync
       </Button>
-      <AppDialog
+      <SignInDialog
         open={choosing}
-        title="Sign in to sync"
         onClose={() => setChoosing(false)}
-        actions={
-          <>
-            <Button
-              variant={BUTTON_VARIANT.OUTLINE}
-              onClick={() => onSignIn(SIGN_IN_PROVIDER.GOOGLE)}
-            >
-              Google
-            </Button>
-            <Button
-              variant={BUTTON_VARIANT.OUTLINE}
-              onClick={() => onSignIn(SIGN_IN_PROVIDER.MICROSOFT)}
-            >
-              Microsoft
-            </Button>
-          </>
-        }
-      >
-        <p>
-          Sync your games and settings with other browsers and the Android app.
-        </p>
-      </AppDialog>
+        onSignIn={onSignIn}
+        onSendEmailLink={onSendEmailLink}
+        onVerifyEmailCode={onVerifyEmailCode}
+      />
     </>
   )
 }

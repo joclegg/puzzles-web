@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 
 import {
   changedEntryIds,
+  cleanEmailCode,
   entryStampKey,
+  isEmailAddress,
   mergeGames,
   mergeSettings,
   parseStampKey,
@@ -29,6 +31,27 @@ describe('changedEntryIds', () => {
         ],
       }),
     ).toEqual(['b', 'd', 'c'])
+  })
+})
+
+describe('cleanEmailCode', () => {
+  it('keeps only digits', () => {
+    expect(cleanEmailCode(' 1234 5678 ')).toBe('12345678')
+  })
+
+  it('stops at the code length', () => {
+    expect(cleanEmailCode('1234567890')).toBe('12345678')
+  })
+})
+
+describe('isEmailAddress', () => {
+  it('accepts an address with a domain', () => {
+    expect(isEmailAddress(' player@example.com ')).toBe(true)
+  })
+
+  it('rejects text without an at sign or a dot', () => {
+    expect(isEmailAddress('player')).toBe(false)
+    expect(isEmailAddress('player@example')).toBe(false)
   })
 })
 

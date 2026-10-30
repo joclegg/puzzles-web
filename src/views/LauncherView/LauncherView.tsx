@@ -16,10 +16,17 @@ import { TwoToneIcon } from '@/components/TwoToneIcon/TwoToneIcon'
 export function LauncherView({
   email,
   onSignIn,
+  onSendEmailLink,
+  onVerifyEmailCode,
   onSignOut,
 }: {
   email: string | null
   onSignIn: (provider: SignInProvider) => void
+  onSendEmailLink: (email: string) => Promise<boolean>
+  onVerifyEmailCode: (entry: {
+    email: string
+    code: string
+  }) => Promise<boolean>
   onSignOut: () => void
 }) {
   return (
@@ -29,6 +36,8 @@ export function LauncherView({
         <AccountButton
           email={email}
           onSignIn={onSignIn}
+          onSendEmailLink={onSendEmailLink}
+          onVerifyEmailCode={onVerifyEmailCode}
           onSignOut={onSignOut}
         />
         <ThemeToggle />

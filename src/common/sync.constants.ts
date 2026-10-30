@@ -1,3 +1,4 @@
+export const EMAIL_CODE_LENGTH = 8
 export const PAGE_SIZE = 1000
 export const PENDING_KEY = 'sync.pending'
 export const PULL_OVERLAP_MS = 60_000
@@ -13,6 +14,11 @@ export const PUSH_DELAY_MS = 1000
 export const SIGN_IN_PROVIDER = {
   GOOGLE: 'google',
   MICROSOFT: 'azure',
+} as const
+
+export const SIGN_IN_STEP = {
+  CHOOSE: 'choose',
+  CODE: 'code',
 } as const
 
 export const SYNCED_GAMES = [

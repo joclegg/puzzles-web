@@ -106,6 +106,31 @@ export function useSync() {
     [client],
   )
 
+  const sendEmailLink = useCallback(
+    async (email: string) => {
+      const { error } = await client.auth.signInWithOtp({
+        email: email.trim(),
+        options: {
+          emailRedirectTo: window.location.origin + window.location.pathname,
+        },
+      })
+      return error === null
+    },
+    [client],
+  )
+
+  const verifyEmailCode = useCallback(
+    async ({ email, code }: { email: string; code: string }) => {
+      const { error } = await client.auth.verifyOtp({
+        email: email.trim(),
+        token: code,
+        type: 'email',
+      })
+      return error === null
+    },
+    [client],
+  )
+
   const signOut = useCallback(() => {
     replaceStored({ key: PULLED_KEY, value: null })
     replaceStored({
@@ -117,7 +142,7 @@ export function useSync() {
     void client.auth.signOut()
   }, [client])
 
-  return { user, signIn, signOut }
+  return { user, signIn, sendEmailLink, verifyEmailCode, signOut }
 }
 
 async function fetchChanged<T>({

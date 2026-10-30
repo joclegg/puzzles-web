@@ -13,7 +13,7 @@ import { TwoToneView } from '@/views/TwoToneView/TwoToneView'
 import { WordWheelView } from '@/views/WordWheelView/WordWheelView'
 
 export function AppView() {
-  const { user, signIn, signOut } = useSync()
+  const { user, signIn, sendEmailLink, verifyEmailCode, signOut } = useSync()
   const [game, screen = SCREEN.HOME, id = ''] = useRoute()
 
   return routeView({
@@ -22,6 +22,8 @@ export function AppView() {
     id,
     email: user?.email ?? null,
     onSignIn: signIn,
+    onSendEmailLink: sendEmailLink,
+    onVerifyEmailCode: verifyEmailCode,
     onSignOut: signOut,
   })
 }
@@ -32,6 +34,8 @@ function routeView({
   id,
   email,
   onSignIn,
+  onSendEmailLink,
+  onVerifyEmailCode,
   onSignOut,
 }: {
   game: string | undefined
@@ -39,6 +43,11 @@ function routeView({
   id: string
   email: string | null
   onSignIn: (provider: SignInProvider) => void
+  onSendEmailLink: (email: string) => Promise<boolean>
+  onVerifyEmailCode: (entry: {
+    email: string
+    code: string
+  }) => Promise<boolean>
   onSignOut: () => void
 }) {
   if (game === GAME_ROUTE.FIVE_LETTERS) {
@@ -66,6 +75,12 @@ function routeView({
     return <SudokuView screen={screen} id={id} />
   }
   return (
-    <LauncherView email={email} onSignIn={onSignIn} onSignOut={onSignOut} />
+    <LauncherView
+      email={email}
+      onSignIn={onSignIn}
+      onSendEmailLink={onSendEmailLink}
+      onVerifyEmailCode={onVerifyEmailCode}
+      onSignOut={onSignOut}
+    />
   )
 }
