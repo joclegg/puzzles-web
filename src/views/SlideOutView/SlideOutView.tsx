@@ -18,5 +18,5 @@ export function SlideOutView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <SlideOutSettingsView />
   }
-  return <SlideOutHomeView />
+  return <SlideOutHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

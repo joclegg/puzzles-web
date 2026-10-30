@@ -6,12 +6,12 @@ import {
   PenLine,
   Settings,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
-import { navigate } from '@/common/route.hooks'
+import { navigate, replaceRoute } from '@/common/route.hooks'
 import { useStoredState } from '@/common/storage.hooks'
 import {
   DIFFICULTY_LABEL,
@@ -47,7 +47,7 @@ import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SudokuIcon } from '@/components/SudokuIcon/SudokuIcon'
 
-export function SudokuHomeView() {
+export function SudokuHomeView({ play }: { play?: string }) {
   const { games, openGame, startLevel, openDaily } = useSudokuGames()
   const [mode, setMode] = useStoredState<GameMode>({
     key: 'sudoku.homeMode',
@@ -83,6 +83,15 @@ export function SudokuHomeView() {
         parseDailyId(game.puzzleId) === null,
     )
   }
+
+  const playedRef = useRef(false)
+
+  useEffect(() => {
+    if (play === undefined || playedRef.current) return
+    playedRef.current = true
+    replaceRoute([GAME_ROUTE.SUDOKU])
+    void openDaily({ mode: play as GameMode, date: today })
+  }, [openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.SUDOKU}>

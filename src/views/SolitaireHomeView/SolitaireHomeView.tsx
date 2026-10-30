@@ -5,12 +5,12 @@ import {
   Layers,
   Settings,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
-import { navigate } from '@/common/route.hooks'
+import { navigate, replaceRoute } from '@/common/route.hooks'
 import { useSolitaireGames } from '@/common/solitaire/solitaire.hooks'
 import {
   DAILY_PREFIX,
@@ -37,7 +37,7 @@ import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SolitaireIcon } from '@/components/SolitaireIcon/SolitaireIcon'
 
-export function SolitaireHomeView() {
+export function SolitaireHomeView({ play }: { play?: string }) {
   const { games, openGame, startRandom, openDaily } = useSolitaireGames()
   const [resumeChoice, setResumeChoice] = useState<SavedDeal | null>(null)
   const [dealing, setDealing] = useState(false)
@@ -58,6 +58,15 @@ export function SolitaireHomeView() {
     setDealing(true)
     start().finally(() => setDealing(false))
   }
+
+  const playedRef = useRef(false)
+
+  useEffect(() => {
+    if (play === undefined || playedRef.current) return
+    playedRef.current = true
+    replaceRoute([GAME_ROUTE.SOLITAIRE])
+    void openDaily(today)
+  }, [openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.SOLITAIRE}>
@@ -101,7 +110,7 @@ export function SolitaireHomeView() {
           detail={daily?.status === DEAL_STATUS.WON ? 'Won' : undefined}
           done={daily?.status === DEAL_STATUS.WON}
           disabled={dealing}
-          onClick={() => deal(() => openDaily(today))}
+          onClick={() => openDaily(today)}
         />
       </MenuSection>
       <MenuSection title="New game">

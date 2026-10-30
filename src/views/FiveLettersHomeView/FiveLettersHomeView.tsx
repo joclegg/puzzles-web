@@ -7,7 +7,7 @@ import {
   RotateCcw,
   Settings,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth } from '@/common/format.functions'
@@ -24,7 +24,7 @@ import {
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
 import { WORDS } from '@/common/fiveLetters/fiveLettersWords.constants'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
-import { navigate } from '@/common/route.hooks'
+import { navigate, replaceRoute } from '@/common/route.hooks'
 import { Button } from '@/components/Button/Button'
 import { BUTTON_SIZE } from '@/components/Button/Button.constants'
 import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
@@ -36,7 +36,7 @@ import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { DAILY_RESULT_LABEL } from '@/views/FiveLettersHomeView/FiveLettersHomeView.constants'
 
-export function FiveLettersHomeView() {
+export function FiveLettersHomeView({ play }: { play?: string }) {
   const { games, openGame, startAndOpen, startPractice, startNytDaily } =
     useFiveLettersGames()
   const [fetching, setFetching] = useState(false)
@@ -66,6 +66,22 @@ export function FiveLettersHomeView() {
     setFetching(false)
     setNytUnavailable(!started)
   }
+
+  const playedRef = useRef(false)
+
+  useEffect(() => {
+    if (play === undefined || playedRef.current) return
+    playedRef.current = true
+    replaceRoute([GAME_ROUTE.FIVE_LETTERS])
+    if (daily) {
+      openGame(daily)
+    } else {
+      startAndOpen({
+        id: dailyId(today),
+        answer: dailyWord({ words: WORDS, date: today }),
+      })
+    }
+  }, [daily, openGame, play, startAndOpen, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.FIVE_LETTERS} className="min-h-dvh">

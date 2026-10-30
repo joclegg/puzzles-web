@@ -3,9 +3,9 @@ import type { MenuAccent } from '@/components/MenuScreen/MenuScreen.types'
 
 export interface DailyLeft {
   route: (typeof GAME_ROUTE)[keyof typeof GAME_ROUTE]
+  play: string
   label: string
   accent: MenuAccent
-  left: number
 }
 
 export interface DailySaves {

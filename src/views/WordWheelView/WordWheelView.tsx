@@ -18,5 +18,5 @@ export function WordWheelView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <WordWheelSettingsView />
   }
-  return <WordWheelHomeView />
+  return <WordWheelHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

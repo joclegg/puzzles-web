@@ -1,5 +1,6 @@
 import { BarChart3, History, Settings } from 'lucide-react'
-import { useState } from 'react'
+import type { Level } from '@/common/slideOut/slideOut.types'
+import { useEffect, useRef, useState } from 'react'
 
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth, formatDuration } from '@/common/format.functions'
@@ -10,7 +11,7 @@ import {
 } from '@/common/puzzleSaves.functions'
 import type { SavedPuzzle } from '@/common/puzzleSaves.types'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
-import { navigate } from '@/common/route.hooks'
+import { navigate, replaceRoute } from '@/common/route.hooks'
 import { LEVEL_LABEL, LEVELS } from '@/common/slideOut/slideOut.constants'
 import { useSlideOutGames } from '@/common/slideOut/slideOut.hooks'
 import { TITLE } from '@/common/slideOut/slideOutSaves.constants'
@@ -35,7 +36,7 @@ import { MenuTile } from '@/components/MenuTile/MenuTile'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SlideOutIcon } from '@/components/SlideOutIcon/SlideOutIcon'
 
-export function SlideOutHomeView() {
+export function SlideOutHomeView({ play }: { play?: string }) {
   const { games, openGame, startRandom, openDaily } = useSlideOutGames()
   const [resumeChoice, setResumeChoice] = useState<SavedPuzzle | null>(null)
   const today = todayIso()
@@ -46,6 +47,15 @@ export function SlideOutHomeView() {
       .filter((game) => game.status === PUZZLE_STATUS.SOLVED)
       .map((game) => game.puzzleId),
   )
+
+  const playedRef = useRef(false)
+
+  useEffect(() => {
+    if (play === undefined || playedRef.current) return
+    playedRef.current = true
+    replaceRoute([GAME_ROUTE.SLIDE_OUT])
+    void openDaily({ date: today, level: play as Level })
+  }, [openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.SLIDE_OUT}>

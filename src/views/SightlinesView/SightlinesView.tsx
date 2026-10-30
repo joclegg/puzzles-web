@@ -18,5 +18,5 @@ export function SightlinesView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <SightlinesSettingsView />
   }
-  return <SightlinesHomeView />
+  return <SightlinesHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

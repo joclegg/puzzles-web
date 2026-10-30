@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { todayIso } from '@/common/date.functions'
 import { GAMES_KEY as FIVE_LETTERS_KEY } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import { GAMES_KEY as KAKURO_KEY } from '@/common/kakuro/kakuroSettings.constants'
+import { SCREEN } from '@/common/route.constants'
 import { routeHash } from '@/common/route.functions'
 import { GAMES_KEY as SIGHTLINES_KEY } from '@/common/sightlines/sightlinesSettings.constants'
 import { GAMES_KEY as SLIDE_OUT_KEY } from '@/common/slideOut/slideOutSaves.constants'
@@ -107,9 +108,9 @@ export function WinDialog({
               </h3>
               <ul className="mt-2 flex flex-wrap gap-2">
                 {left.map((daily) => (
-                  <li key={daily.route}>
+                  <li key={`${daily.route}/${daily.play}`}>
                     <a
-                      href={routeHash([daily.route])}
+                      href={routeHash([daily.route, SCREEN.PLAY, daily.play])}
                       onClick={onClose}
                       className={cn(
                         'flex items-center gap-1.5 rounded-full bg-game/12 py-1 pr-2 pl-3 text-sm font-medium ring-1 ring-game/30 transition hover:bg-game/20',
@@ -117,9 +118,6 @@ export function WinDialog({
                       )}
                     >
                       {daily.label}
-                      <span className="rounded-full bg-game px-1.5 text-xs font-bold text-background tabular-nums">
-                        {daily.left}
-                      </span>
                       <ChevronRight aria-hidden className="size-4 text-game" />
                     </a>
                   </li>

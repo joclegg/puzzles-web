@@ -20,5 +20,5 @@ export function FiveLettersView({
   if (screen === SCREEN.SETTINGS) {
     return <FiveLettersSettingsView />
   }
-  return <FiveLettersHomeView />
+  return <FiveLettersHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }
