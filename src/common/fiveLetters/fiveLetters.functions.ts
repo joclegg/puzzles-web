@@ -44,6 +44,18 @@ export function createWords({
   return { answers: cleanAnswers, allowed, dailyOrder }
 }
 
+export function daily2Word(body: unknown): string | null {
+  const word =
+    typeof body === 'object' && body !== null && 'word' in body
+      ? body.word
+      : null
+  return typeof word === 'string' &&
+    word.length === WORD_LENGTH &&
+    /^[A-Za-z]+$/.test(word)
+    ? word.toUpperCase()
+    : null
+}
+
 export function dailyWord({ words, date }: { words: Words; date: string }) {
   const index = dayNumber(date) - 1
   const size = words.dailyOrder.length
@@ -113,12 +125,6 @@ export function newGame({
   revealed?: boolean
 }): FiveLettersGame {
   return { answer, guesses, typing: '', hardMode, rejection: null, revealed }
-}
-
-export function nytSolution(text: string): string | null {
-  const match = /"solution"\s*:\s*"([A-Za-z]+)"/.exec(text)
-  const word = match?.[1].toUpperCase() ?? null
-  return word !== null && word.length === WORD_LENGTH ? word : null
 }
 
 export function randomWord({ words, seed }: { words: Words; seed: bigint }) {

@@ -14,7 +14,7 @@ import {
   isWon,
   letterMarks,
   newGame,
-  nytSolution,
+  daily2Word,
   randomWord,
   revealWord,
   score,
@@ -210,16 +210,18 @@ describe('randomWord', () => {
   })
 })
 
-describe('nytSolution', () => {
-  it('reads the answer out of the proxied NYT response', () => {
-    const text =
-      'Title:\n\nURL Source: https://www.nytimes.com/svc/wordle/v2/2026-10-26.json\n\nMarkdown Content:\n{"id":921,"solution":"geeky","print_date":"2026-10-26"}'
-
-    expect(nytSolution(text)).toBe('GEEKY')
+describe('daily2Word', () => {
+  it('reads the word out of the daily word response', () => {
+    expect(daily2Word({ date: '2026-10-31', word: 'yahoo' })).toBe('YAHOO')
   })
 
-  it('ignores a response without a five-letter answer', () => {
-    expect(nytSolution('{"solution":"toolong"}')).toBeNull()
+  it('ignores a response without a five-letter word', () => {
+    expect([
+      daily2Word({ word: 'toolong' }),
+      daily2Word({ word: 'ab1de' }),
+      daily2Word({ date: '2026-10-31' }),
+      daily2Word(null),
+    ]).toEqual([null, null, null, null])
   })
 })
 

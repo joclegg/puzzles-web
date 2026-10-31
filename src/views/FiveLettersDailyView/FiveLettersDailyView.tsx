@@ -8,20 +8,22 @@ import { GAME_STATUS } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
   dailyId,
   dailyResults,
-  nytId,
+  daily2Id,
+  slotOf,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
 import { GAME_ROUTE } from '@/common/route.constants'
 import { DailyCalendar } from '@/components/DailyCalendar/DailyCalendar'
 import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 
 export function FiveLettersDailyView() {
-  const { games, openGame, startAndOpen, startNytDaily } = useFiveLettersGames()
+  const { games, openGame, startAndOpen, startDaily2 } = useFiveLettersGames()
   const results = dailyResults(games)
   const won = new Set(results.map((result) => result.id))
 
   function existing(wordId: string) {
     return games.findLast(
-      (game) => game.wordId === wordId && game.status !== GAME_STATUS.ABANDONED,
+      (game) =>
+        slotOf(game.wordId) === wordId && game.status !== GAME_STATUS.ABANDONED,
     )
   }
 
@@ -51,14 +53,14 @@ export function FiveLettersDailyView() {
           onPlay: () => void playDaily(date),
         },
         {
-          label: 'NY Times daily',
-          done: won.has(nytId(date)),
+          label: 'Daily puzzle 2',
+          done: won.has(daily2Id(date)),
           onPlay: () => {
-            const game = existing(nytId(date))
+            const game = existing(daily2Id(date))
             if (game) {
               openGame(game)
             } else {
-              void startNytDaily(date)
+              void startDaily2(date)
             }
           },
         },

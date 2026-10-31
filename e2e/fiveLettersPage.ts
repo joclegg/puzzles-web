@@ -3,7 +3,7 @@ import { expect, type Locator, type Page } from '@playwright/test'
 export class FiveLettersPage {
   readonly page: Page
   readonly dailyButton: Locator
-  readonly nytButton: Locator
+  readonly daily2Button: Locator
   readonly status: Locator
   readonly dialog: Locator
   readonly guesses: Locator
@@ -12,7 +12,7 @@ export class FiveLettersPage {
   constructor(page: Page) {
     this.page = page
     this.dailyButton = page.getByRole('button', { name: /Today's word/ })
-    this.nytButton = page.getByRole('button', { name: /NY Times daily/ })
+    this.daily2Button = page.getByRole('button', { name: /Daily puzzle 2/ })
     this.status = page.getByRole('status')
     this.dialog = page.getByRole('dialog')
     this.guesses = page.getByRole('grid', { name: 'Guesses' })
@@ -29,22 +29,28 @@ export class FiveLettersPage {
     await expect(this.key('ENTER')).toBeVisible()
   }
 
-  async fakeNytWord(word: string) {
-    await this.page.route('https://r.jina.ai/**', (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'text/plain',
-        body: `Markdown Content:\n{"solution":"${word}"}`,
-      }),
+  async fakeDaily2Word(word: string) {
+    await this.page.route(
+      'https://puzzles-daily.joclegg.dev/word/**',
+      (route) =>
+        route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          headers: { 'Access-Control-Allow-Origin': '*' },
+          body: JSON.stringify({ date: '2026-10-26', word }),
+        }),
     )
   }
 
-  async failNytWord() {
-    await this.page.route('https://r.jina.ai/**', (route) => route.abort())
+  async failDaily2Word() {
+    await this.page.route(
+      'https://puzzles-daily.joclegg.dev/word/**',
+      (route) => route.abort(),
+    )
   }
 
-  async openNytDaily() {
-    await this.nytButton.click()
+  async openDaily2() {
+    await this.daily2Button.click()
     await expect(this.key('ENTER')).toBeVisible()
   }
 
@@ -102,9 +108,9 @@ export class FiveLettersPage {
     await expect(this.page.getByLabel(label, { exact: true })).toHaveText(value)
   }
 
-  async expectNytUnavailable() {
+  async expectDaily2Unavailable() {
     await expect(this.page.getByRole('alert')).toContainText(
-      "Couldn't reach the New York Times",
+      "Couldn't load Daily puzzle 2",
     )
   }
 
