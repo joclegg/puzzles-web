@@ -24,6 +24,7 @@
   --color-sd-cage-sum: var(--sd-cage-sum);
   --color-sd-gold: var(--sd-gold);
   --color-sd-silver: var(--sd-silver);
+  --color-sd-bronze: var(--sd-bronze);
   --color-sol-felt: var(--sol-felt);
   --color-sol-empty-pile: var(--sol-empty-pile);
   --color-sol-card-face: var(--sol-card-face);
@@ -148,6 +149,7 @@
   --sd-cage-sum: #262c35;
   --sd-gold: #e2b33c;
   --sd-silver: #aeb6c1;
+  --sd-bronze: #c58a55;
   --sol-felt: #2e6b4a;
   --sol-empty-pile: #ffffff33;
   --sol-card-face: #ffffff;
@@ -272,6 +274,7 @@
   --sd-cage-sum: #dde1e7;
   --sd-gold: #d9a93a;
   --sd-silver: #8e97a3;
+  --sd-bronze: #a9713f;
   --sol-felt: #15301f;
   --sol-empty-pile: #ffffff26;
   --sol-card-face: #e3e6ea;

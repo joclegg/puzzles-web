@@ -1,6 +1,8 @@
 import { BarChart3, History, Settings } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
+import { dailyPuzzleResults } from '@/common/puzzleSaves.functions'
+import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import {
@@ -63,6 +65,11 @@ export function SightlinesHomeView({ play }: { play?: string }) {
   return (
     <MenuScreen accent={MENU_ACCENT.SIGHTLINES}>
       <ScreenHeader title={TITLE} back={[]}>
+        <DailyCalendarButton
+          route={GAME_ROUTE.SIGHTLINES}
+          results={dailyPuzzleResults(games)}
+          total={SIZES.length}
+        />
         <Button
           size={BUTTON_SIZE.ICON}
           aria-label="Stats"

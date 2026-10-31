@@ -1,4 +1,6 @@
 import { BarChart3, History, Settings } from 'lucide-react'
+import { dailyPuzzleResults } from '@/common/puzzleSaves.functions'
+import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
 import type { Level } from '@/common/wordWheel/wordWheel.types'
 import { useEffect, useRef, useState } from 'react'
 
@@ -61,6 +63,11 @@ export function WordWheelHomeView({ play }: { play?: string }) {
   return (
     <MenuScreen accent={MENU_ACCENT.WORD_WHEEL}>
       <ScreenHeader title={TITLE} back={[]}>
+        <DailyCalendarButton
+          route={GAME_ROUTE.WORD_WHEEL}
+          results={dailyPuzzleResults(games)}
+          total={LEVELS.length}
+        />
         <Button
           size={BUTTON_SIZE.ICON}
           aria-label="Stats"

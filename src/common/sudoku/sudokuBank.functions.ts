@@ -2,6 +2,7 @@ import { epochDay } from '@/common/date.functions'
 import { createRandom, newSeed } from '@/common/random.functions'
 import {
   BANK_SIZE,
+  DAILY_MODE_STRIDE,
   DAILY_SEED_STRIDE,
   GAME_MODES,
   LEVELS,
@@ -18,24 +19,33 @@ export function bankFile({
   return `${mode}_${difficulty}`
 }
 
-export function dailyPick({ mode, date }: { mode: GameMode; date: string }) {
+export function dailyIndex({
+  mode,
+  difficulty,
+  date,
+}: {
+  mode: GameMode
+  difficulty: Difficulty
+  date: string
+}) {
   const random = createRandom(
     BigInt(epochDay(date)) * DAILY_SEED_STRIDE +
-      BigInt(GAME_MODES.indexOf(mode)),
+      BigInt(GAME_MODES.indexOf(mode)) * DAILY_MODE_STRIDE +
+      BigInt(LEVELS[mode].indexOf(difficulty)),
   )
-  const levels = LEVELS[mode]
-  const difficulty = levels[random.nextIntBelow(levels.length)]
-  return { difficulty, index: random.nextIntBelow(BANK_SIZE) }
+  return random.nextIntBelow(BANK_SIZE)
 }
 
 export function dailySudokuId({
   mode,
+  difficulty,
   date,
 }: {
   mode: GameMode
+  difficulty: Difficulty
   date: string
 }) {
-  return `daily_${mode}:${date}`
+  return `daily_${mode}_${difficulty}:${date}`
 }
 
 export function nextUnplayedIndex({
@@ -62,6 +72,8 @@ export function nextUnplayedIndex({
 export function parseDailyId(
   id: string,
 ): { mode: GameMode; date: string } | null {
-  const match = /^daily_(classic|killer):(\d{4}-\d{2}-\d{2})$/.exec(id)
+  const match = /^daily_(classic|killer)(?:_[a-z]+)?:(\d{4}-\d{2}-\d{2})$/.exec(
+    id,
+  )
   return match === null ? null : { mode: match[1] as GameMode, date: match[2] }
 }

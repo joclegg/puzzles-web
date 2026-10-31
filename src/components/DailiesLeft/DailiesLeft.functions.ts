@@ -10,8 +10,13 @@ import {
   DAILY_PREFIX as SOLITAIRE_DAILY_PREFIX,
   DEAL_STATUS,
 } from '@/common/solitaire/solitaireSaves.constants'
-import { GAME_MODES } from '@/common/sudoku/sudoku.constants'
-import { dailySudokuId } from '@/common/sudoku/sudokuBank.functions'
+import {
+  DIFFICULTY_LABEL,
+  GAME_MODES,
+  LEVELS,
+} from '@/common/sudoku/sudoku.constants'
+import type { GameMode } from '@/common/sudoku/sudoku.types'
+import { bankFile, dailySudokuId } from '@/common/sudoku/sudokuBank.functions'
 import { SUDOKU_STATUS } from '@/common/sudoku/sudokuSaves.constants'
 import { SIZES as TWO_TONE_SIZES } from '@/common/twoTone/twoTone.constants'
 import { LEVELS as WORD_WHEEL_LEVELS } from '@/common/wordWheel/wordWheel.constants'
@@ -20,14 +25,17 @@ import type {
   DailySaves,
 } from '@/components/DailiesLeft/DailiesLeft.types'
 import { TODAY_PLAY } from '@/components/DailiesLeft/DailiesLeft.constants'
-import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 
 export function dailiesLeft({
   today,
   saves,
+  route,
+  mode,
 }: {
   today: string
   saves: DailySaves
+  route: DailyLeft['route']
+  mode?: GameMode
 }): DailyLeft[] {
   const sudokuDone = new Set(
     saves.sudoku
@@ -44,23 +52,29 @@ export function dailiesLeft({
       game.wordId === dailyId(today) &&
       (game.status === GAME_STATUS.WON || game.status === GAME_STATUS.LOST),
   )
-  return [
-    ...GAME_MODES.filter(
-      (mode) => !sudokuDone.has(dailySudokuId({ mode, date: today })),
-    ).map((mode) => ({
-      route: GAME_ROUTE.SUDOKU,
-      play: mode,
-      label: `Sudoku ${capitalise(mode)}`,
-      accent: MENU_ACCENT.SUDOKU,
-    })),
+  const all: DailyLeft[] = [
+    ...GAME_MODES.filter((each) => mode === undefined || each === mode).flatMap(
+      (each) =>
+        LEVELS[each]
+          .filter(
+            (difficulty) =>
+              !sudokuDone.has(
+                dailySudokuId({ mode: each, difficulty, date: today }),
+              ),
+          )
+          .map((difficulty) => ({
+            route: GAME_ROUTE.SUDOKU,
+            play: bankFile({ mode: each, difficulty }),
+            label: DIFFICULTY_LABEL[difficulty],
+          })),
+    ),
     ...(solitaireWon
       ? []
       : [
           {
             route: GAME_ROUTE.SOLITAIRE,
             play: TODAY_PLAY,
-            label: 'Solitaire',
-            accent: MENU_ACCENT.SOLITAIRE,
+            label: 'Deal',
           },
         ]),
     ...unsolvedSizes({
@@ -70,8 +84,7 @@ export function dailiesLeft({
     }).map((size) => ({
       route: GAME_ROUTE.TWO_TONE,
       play: String(size),
-      label: `Two Tone ${size}×${size}`,
-      accent: MENU_ACCENT.TWO_TONE,
+      label: `${size}×${size}`,
     })),
     ...unsolvedSizes({
       games: saves.sightlines,
@@ -80,8 +93,7 @@ export function dailiesLeft({
     }).map((size) => ({
       route: GAME_ROUTE.SIGHTLINES,
       play: String(size),
-      label: `Sightlines ${size}×${size}`,
-      accent: MENU_ACCENT.SIGHTLINES,
+      label: `${size}×${size}`,
     })),
     ...(wordDone
       ? []
@@ -89,16 +101,14 @@ export function dailiesLeft({
           {
             route: GAME_ROUTE.FIVE_LETTERS,
             play: TODAY_PLAY,
-            label: 'Five Letters',
-            accent: MENU_ACCENT.FIVE_LETTERS,
+            label: 'Word',
           },
         ]),
     ...unsolvedSizes({ games: saves.kakuro, sizes: KAKURO_SIZES, today }).map(
       (size) => ({
         route: GAME_ROUTE.KAKURO,
         play: String(size),
-        label: `Kakuro ${size}×${size}`,
-        accent: MENU_ACCENT.KAKURO,
+        label: `${size}×${size}`,
       }),
     ),
     ...unsolvedLevels({
@@ -108,8 +118,7 @@ export function dailiesLeft({
     }).map((level) => ({
       route: GAME_ROUTE.SLIDE_OUT,
       play: level,
-      label: `Slide Out ${capitalise(level)}`,
-      accent: MENU_ACCENT.SLIDE_OUT,
+      label: capitalise(level),
     })),
     ...unsolvedLevels({
       games: saves.wordWheel,
@@ -118,10 +127,10 @@ export function dailiesLeft({
     }).map((level) => ({
       route: GAME_ROUTE.WORD_WHEEL,
       play: level,
-      label: `Word Wheel ${capitalise(level)} letters`,
-      accent: MENU_ACCENT.WORD_WHEEL,
+      label: `${capitalise(level)} letters`,
     })),
   ]
+  return all.filter((daily) => daily.route === route)
 }
 
 function capitalise(text: string) {

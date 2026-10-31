@@ -257,6 +257,14 @@ export function SlideOutGameView({ id }: { id: string }) {
         open={result !== null}
         title="Solved!"
         accent={MENU_ACCENT.SLIDE_OUT}
+        route={GAME_ROUTE.SLIDE_OUT}
+        newLabel={
+          levelOf(saved).charAt(0).toUpperCase() + levelOf(saved).slice(1)
+        }
+        onNew={() => {
+          replaceRoute([GAME_ROUTE.SLIDE_OUT])
+          startRandom(levelOf(saved))
+        }}
         newBest={result?.newBest ?? false}
         stats={[
           {
@@ -269,20 +277,9 @@ export function SlideOutGameView({ id }: { id: string }) {
         ]}
         onClose={() => setResult(null)}
         actions={
-          <>
-            <Button onClick={() => replaceRoute([GAME_ROUTE.SLIDE_OUT])}>
-              Home
-            </Button>
-            <Button
-              variant={BUTTON_VARIANT.OUTLINE}
-              onClick={() => {
-                replaceRoute([GAME_ROUTE.SLIDE_OUT])
-                startRandom(levelOf(saved))
-              }}
-            >
-              New puzzle
-            </Button>
-          </>
+          <Button onClick={() => replaceRoute([GAME_ROUTE.SLIDE_OUT])}>
+            Home
+          </Button>
         }
       />
     </main>

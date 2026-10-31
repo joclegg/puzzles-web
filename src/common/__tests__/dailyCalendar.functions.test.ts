@@ -4,7 +4,7 @@ import {
   addMonths,
   monthDays,
   monthLabel,
-} from '@/common/sudoku/sudokuCalendar.functions'
+} from '@/common/dailyCalendar.functions'
 
 describe('monthDays', () => {
   it('starts the month on its weekday with Monday first', () => {

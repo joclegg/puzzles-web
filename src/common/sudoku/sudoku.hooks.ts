@@ -6,7 +6,7 @@ import { fetchBank } from '@/common/bank.hooks'
 import type { Difficulty, GameMode } from '@/common/sudoku/sudoku.types'
 import {
   bankFile,
-  dailyPick,
+  dailyIndex,
   dailySudokuId,
   nextUnplayedIndex,
 } from '@/common/sudoku/sudokuBank.functions'
@@ -76,8 +76,16 @@ export function useSudokuGames() {
     })
   }
 
-  async function openDaily({ mode, date }: { mode: GameMode; date: string }) {
-    const puzzleId = dailySudokuId({ mode, date })
+  async function openDaily({
+    mode,
+    difficulty,
+    date,
+  }: {
+    mode: GameMode
+    difficulty: Difficulty
+    date: string
+  }) {
+    const puzzleId = dailySudokuId({ mode, difficulty, date })
     const existing = games.findLast(
       (game) =>
         game.puzzleId === puzzleId && game.status === SUDOKU_STATUS.IN_PROGRESS,
@@ -86,7 +94,6 @@ export function useSudokuGames() {
       openGame(existing)
       return
     }
-    const { difficulty, index } = dailyPick({ mode, date })
     startAndOpen({
       puzzleId,
       mode,
@@ -94,7 +101,7 @@ export function useSudokuGames() {
       custom: false,
       puzzle: await fetchBankLine({
         file: bankFile({ mode, difficulty }),
-        index,
+        index: dailyIndex({ mode, difficulty, date }),
       }),
     })
   }

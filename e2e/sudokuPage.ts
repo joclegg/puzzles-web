@@ -5,11 +5,13 @@ export class SudokuPage {
   readonly board: Locator
   readonly dialog: Locator
   readonly subtitle: Locator
+  readonly title: Locator
 
   constructor(page: Page) {
     this.page = page
     this.board = page.getByRole('grid', { name: 'Board' })
     this.dialog = page.getByRole('dialog')
+    this.title = page.getByRole('heading', { level: 1 })
     this.subtitle = page.getByRole('heading', { level: 1 }).locator('+ p')
   }
 
@@ -24,9 +26,13 @@ export class SudokuPage {
     await this.page.getByRole('radio', { name }).click()
   }
 
-  async openDaily() {
-    await this.page.getByRole('button', { name: /^Daily puzzle/ }).click()
+  async openDaily(level = 'Medium') {
+    await this.page.getByRole('button', { name: `Daily ${level}` }).click()
     await expect(this.board).toBeVisible()
+  }
+
+  winTile(name: string) {
+    return this.dialog.getByRole('navigation').getByLabel(name)
   }
 
   async startLevel(name: string) {

@@ -1,4 +1,5 @@
 import { SCREEN } from '@/common/route.constants'
+import { SlideOutDailyView } from '@/views/SlideOutDailyView/SlideOutDailyView'
 import { SlideOutGameView } from '@/views/SlideOutGameView/SlideOutGameView'
 import { SlideOutHistoryView } from '@/views/SlideOutHistoryView/SlideOutHistoryView'
 import { SlideOutHomeView } from '@/views/SlideOutHomeView/SlideOutHomeView'
@@ -14,6 +15,9 @@ export function SlideOutView({ screen, id }: { screen: string; id: string }) {
   }
   if (screen === SCREEN.HISTORY) {
     return <SlideOutHistoryView />
+  }
+  if (screen === SCREEN.DAILY) {
+    return <SlideOutDailyView />
   }
   if (screen === SCREEN.SETTINGS) {
     return <SlideOutSettingsView />

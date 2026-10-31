@@ -10,15 +10,15 @@ test('starts a game of a level', async ({ sudokuPage }) => {
   await expect(sudokuPage.cell({ row: 6, column: 6 })).toBeVisible()
 })
 
-test('gives a silver medal for one daily on the day', async ({
+test('gives a bronze medal for one daily on the day', async ({
   sudokuPage,
 }) => {
   await sudokuPage.openDaily()
   await sudokuPage.solve({
     givens:
-      '000000784080401060407680000006000007890000056100000300000014502010802030259000000',
+      '009031057000600042050000000560970400090000020001064039000000090910006000730850100',
     solution:
-      '561329784983471265427685913346598127892137456175246398638914572714852639259763841',
+      '629431857178695342354728916563972481497183625281564739846217593915346278732859164',
   })
   await sudokuPage.closeDialog()
   await sudokuPage.back()
@@ -26,7 +26,7 @@ test('gives a silver medal for one daily on the day', async ({
   await sudokuPage.openFromHome('Daily calendar')
 
   await expect(
-    sudokuPage.page.getByRole('button', { name: '2026-10-25, silver medal' }),
+    sudokuPage.page.getByRole('button', { name: '2026-10-25, bronze medal' }),
   ).toBeVisible()
   await sudokuPage.expectScreenshot('calendar')
 })
