@@ -1,3 +1,4 @@
+import type { DailyResult } from '@/common/dailyMedal.types'
 import { daysBetween } from '@/common/date.functions'
 import { MAX_GUESSES } from '@/common/fiveLetters/fiveLetters.constants'
 import {
@@ -15,6 +16,21 @@ import type {
 
 export function dailyId(date: string): string {
   return `${DAILY_PREFIX}${date}`
+}
+
+export function dailyResults(games: SavedGame[]): DailyResult[] {
+  return games.flatMap((game) =>
+    game.status === GAME_STATUS.WON &&
+    (isDaily(game.wordId) || isNyt(game.wordId))
+      ? [
+          {
+            date: game.wordId.slice(game.wordId.indexOf('_') + 1),
+            id: game.wordId,
+            finishedAt: game.finishedAt,
+          },
+        ]
+      : [],
+  )
 }
 
 export function finishGame({

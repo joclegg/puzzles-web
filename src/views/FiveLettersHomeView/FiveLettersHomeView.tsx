@@ -12,6 +12,9 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
+import { MEDAL } from '@/common/dailyMedal.constants'
+import { dailyResults } from '@/common/fiveLetters/fiveLettersSaves.functions'
+import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth } from '@/common/format.functions'
 import {
@@ -90,6 +93,12 @@ export function FiveLettersHomeView({ play }: { play?: string }) {
   return (
     <MenuScreen accent={MENU_ACCENT.FIVE_LETTERS} className="min-h-dvh">
       <ScreenHeader title="Five Letters" back={[]}>
+        <DailyCalendarButton
+          route={GAME_ROUTE.FIVE_LETTERS}
+          results={dailyResults(games)}
+          total={2}
+          firstMedal={MEDAL.SILVER}
+        />
         <Button
           size={BUTTON_SIZE.ICON}
           aria-label="Stats"

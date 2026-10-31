@@ -1,3 +1,4 @@
+import type { DailyResult } from '@/common/dailyMedal.types'
 import { DAILY_PREFIX, PUZZLE_STATUS } from '@/common/puzzleSaves.constants'
 import type {
   PuzzleRef,
@@ -13,6 +14,21 @@ export function dailyDate(puzzleId: string): string | null {
 
 export function dailyPuzzleId({ date, size }: { date: string; size: number }) {
   return `${DAILY_PREFIX}${date}_${size}`
+}
+
+export function dailyPuzzleResults(
+  games: {
+    puzzleId: string
+    status: string
+    finishedAt: number | null
+  }[],
+): DailyResult[] {
+  return games.flatMap((game) => {
+    const date = dailyDate(game.puzzleId)
+    return date !== null && game.status === PUZZLE_STATUS.SOLVED
+      ? [{ date, id: game.puzzleId, finishedAt: game.finishedAt }]
+      : []
+  })
 }
 
 export function inProgressPuzzles(games: SavedPuzzle[]): SavedPuzzle[] {

@@ -1,33 +1,23 @@
 import { describe, expect, it } from 'vitest'
 
-import { addDays } from '@/common/date.functions'
 import { DIFFICULTY, GAME_MODE } from '@/common/sudoku/sudoku.constants'
 import {
-  dailyPick,
+  dailyIndex,
   dailySudokuId,
   nextUnplayedIndex,
   parseDailyId,
 } from '@/common/sudoku/sudokuBank.functions'
 
-describe('dailyPick', () => {
+describe('dailyIndex', () => {
   it.each([
-    [0, GAME_MODE.CLASSIC, DIFFICULTY.MEDIUM, 2962],
-    [0, GAME_MODE.KILLER, DIFFICULTY.MEDIUM, 4613],
-    [1, GAME_MODE.CLASSIC, DIFFICULTY.MEDIUM, 7592],
-    [1, GAME_MODE.KILLER, DIFFICULTY.HARD, 4024],
-    [2, GAME_MODE.CLASSIC, DIFFICULTY.EXPERT, 7012],
-    [2, GAME_MODE.KILLER, DIFFICULTY.BEGINNER, 3859],
-  ])(
-    'picks a fixed puzzle %i days in for %s',
-    (days, mode, difficulty, index) => {
-      expect(
-        dailyPick({ mode, date: addDays({ date: '2026-10-25', days }) }),
-      ).toEqual({
-        difficulty,
-        index,
-      })
-    },
-  )
+    [GAME_MODE.CLASSIC, DIFFICULTY.FAST, 2737],
+    [GAME_MODE.CLASSIC, DIFFICULTY.MEDIUM, 4380],
+    [GAME_MODE.CLASSIC, DIFFICULTY.EXPERT, 5377],
+    [GAME_MODE.KILLER, DIFFICULTY.FAST, 3934],
+    [GAME_MODE.KILLER, DIFFICULTY.EVIL, 5057],
+  ])('picks a fixed puzzle for %s %s', (mode, difficulty, index) => {
+    expect(dailyIndex({ mode, difficulty, date: '2026-10-25' })).toBe(index)
+  })
 })
 
 describe('nextUnplayedIndex', () => {
@@ -49,11 +39,22 @@ describe('nextUnplayedIndex', () => {
 
 describe('daily ids', () => {
   it('round-trips the mode and date', () => {
-    const id = dailySudokuId({ mode: GAME_MODE.KILLER, date: '2026-10-25' })
+    const id = dailySudokuId({
+      mode: GAME_MODE.KILLER,
+      difficulty: DIFFICULTY.HARD,
+      date: '2026-10-25',
+    })
 
     expect([id, parseDailyId(id)]).toEqual([
-      'daily_killer:2026-10-25',
+      'daily_killer_hard:2026-10-25',
       { mode: GAME_MODE.KILLER, date: '2026-10-25' },
     ])
+  })
+
+  it('still reads the older id with no level', () => {
+    expect(parseDailyId('daily_classic:2026-10-25')).toEqual({
+      mode: GAME_MODE.CLASSIC,
+      date: '2026-10-25',
+    })
   })
 })

@@ -1,4 +1,6 @@
 import { BarChart3, History, Settings } from 'lucide-react'
+import { dailyPuzzleResults } from '@/common/puzzleSaves.functions'
+import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
 import type { Level } from '@/common/slideOut/slideOut.types'
 import { useEffect, useRef, useState } from 'react'
 
@@ -60,6 +62,11 @@ export function SlideOutHomeView({ play }: { play?: string }) {
   return (
     <MenuScreen accent={MENU_ACCENT.SLIDE_OUT}>
       <ScreenHeader title={TITLE} back={[]}>
+        <DailyCalendarButton
+          route={GAME_ROUTE.SLIDE_OUT}
+          results={dailyPuzzleResults(games)}
+          total={LEVELS.length}
+        />
         <Button
           size={BUTTON_SIZE.ICON}
           aria-label="Stats"

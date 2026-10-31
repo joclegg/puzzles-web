@@ -1,24 +1,18 @@
+import type { DailyResult } from '@/common/dailyMedal.types'
 import { formatDayMonth } from '@/common/format.functions'
 import {
   DIFFICULTY_LABEL,
-  GAME_MODE,
-  GAME_MODE_LABEL,
   GAME_MODES,
+  GAME_MODE_LABEL,
   LEVELS,
 } from '@/common/sudoku/sudoku.constants'
 import type { GameMode, MistakeCheck } from '@/common/sudoku/sudoku.types'
 import { parseDailyId } from '@/common/sudoku/sudokuBank.functions'
 import { decodePuzzle } from '@/common/sudoku/sudokuPuzzle.functions'
-import {
-  DAILY_STATUS,
-  MEDAL,
-  SUDOKU_STATUS,
-} from '@/common/sudoku/sudokuSaves.constants'
+import { SUDOKU_STATUS } from '@/common/sudoku/sudokuSaves.constants'
 import type {
   PastBest,
   BestTime,
-  DailyDay,
-  DailyStatus,
   SavedSudoku,
   SudokuRef,
   SudokuStatus,
@@ -62,56 +56,13 @@ export function bestTimes({
   )
 }
 
-export function dailyDays({
-  games,
-  dayOf,
-}: {
-  games: SavedSudoku[]
-  dayOf: (ms: number) => string
-}): Map<string, DailyDay> {
-  const statuses = new Map<string, Record<GameMode, DailyStatus>>()
-  for (const game of games) {
+export function dailyResults(games: SavedSudoku[]): DailyResult[] {
+  return games.flatMap((game) => {
     const daily = parseDailyId(game.puzzleId)
-    if (game.status !== SUDOKU_STATUS.COMPLETED || daily === null) {
-      continue
-    }
-    const status =
-      game.finishedAt !== null && dayOf(game.finishedAt) === daily.date
-        ? DAILY_STATUS.ON_THE_DAY
-        : DAILY_STATUS.LATE
-    const current = statuses.get(daily.date) ?? {
-      [GAME_MODE.CLASSIC]: DAILY_STATUS.NOT_DONE,
-      [GAME_MODE.KILLER]: DAILY_STATUS.NOT_DONE,
-    }
-    if (rank(status) > rank(current[daily.mode])) {
-      current[daily.mode] = status
-    }
-    statuses.set(daily.date, current)
-  }
-  return new Map(
-    [...statuses].map(([date, byMode]) => {
-      const onTheDay = GAME_MODES.filter(
-        (mode) => byMode[mode] === DAILY_STATUS.ON_THE_DAY,
-      ).length
-      const medal =
-        onTheDay === GAME_MODES.length
-          ? MEDAL.GOLD
-          : onTheDay === 0
-            ? MEDAL.NONE
-            : MEDAL.SILVER
-      return [
-        date,
-        {
-          date,
-          statuses: byMode,
-          medal,
-          doneLate:
-            medal === MEDAL.NONE &&
-            GAME_MODES.some((mode) => byMode[mode] === DAILY_STATUS.LATE),
-        },
-      ]
-    }),
-  )
+    return game.status === SUDOKU_STATUS.COMPLETED && daily !== null
+      ? [{ date: daily.date, id: game.puzzleId, finishedAt: game.finishedAt }]
+      : []
+  })
 }
 
 export function finishSudoku({
@@ -217,14 +168,6 @@ export function sudokuTitle(
   return daily === null
     ? `${mode}${level}`
     : `Daily ${mode.toLowerCase()} · ${formatDayMonth(daily.date)}${level}`
-}
-
-function rank(status: DailyStatus): number {
-  return [
-    DAILY_STATUS.NOT_DONE,
-    DAILY_STATUS.LATE,
-    DAILY_STATUS.ON_THE_DAY,
-  ].indexOf(status)
 }
 
 function slotOf(

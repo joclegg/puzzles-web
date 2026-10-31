@@ -1,4 +1,5 @@
 import { SCREEN } from '@/common/route.constants'
+import { SightlinesDailyView } from '@/views/SightlinesDailyView/SightlinesDailyView'
 import { SightlinesGameView } from '@/views/SightlinesGameView/SightlinesGameView'
 import { SightlinesHistoryView } from '@/views/SightlinesHistoryView/SightlinesHistoryView'
 import { SightlinesHomeView } from '@/views/SightlinesHomeView/SightlinesHomeView'
@@ -14,6 +15,9 @@ export function SightlinesView({ screen, id }: { screen: string; id: string }) {
   }
   if (screen === SCREEN.HISTORY) {
     return <SightlinesHistoryView />
+  }
+  if (screen === SCREEN.DAILY) {
+    return <SightlinesDailyView />
   }
   if (screen === SCREEN.SETTINGS) {
     return <SightlinesSettingsView />

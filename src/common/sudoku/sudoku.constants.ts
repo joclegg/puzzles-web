@@ -113,6 +113,8 @@ export const FAST_GRID: Grid = makeGrid({ size: 6, boxRows: 2, boxCols: 3 })
 
 export const DAILY_SEED_STRIDE = 31n
 
+export const DAILY_MODE_STRIDE = 8n
+
 export const BANK_SIZE = 10_000
 
 export const TECHNIQUES: readonly {

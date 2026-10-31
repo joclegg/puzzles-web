@@ -1,4 +1,5 @@
 import { SCREEN } from '@/common/route.constants'
+import { FiveLettersDailyView } from '@/views/FiveLettersDailyView/FiveLettersDailyView'
 import { FiveLettersGameView } from '@/views/FiveLettersGameView/FiveLettersGameView'
 import { FiveLettersHomeView } from '@/views/FiveLettersHomeView/FiveLettersHomeView'
 import { FiveLettersSettingsView } from '@/views/FiveLettersSettingsView/FiveLettersSettingsView'
@@ -16,6 +17,9 @@ export function FiveLettersView({
   }
   if (screen === SCREEN.STATS) {
     return <FiveLettersStatsView />
+  }
+  if (screen === SCREEN.DAILY) {
+    return <FiveLettersDailyView />
   }
   if (screen === SCREEN.SETTINGS) {
     return <FiveLettersSettingsView />

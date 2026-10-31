@@ -1,6 +1,7 @@
+import { MEDAL } from '@/common/dailyMedal.constants'
+import type { Medal } from '@/common/dailyMedal.types'
 import { cn } from '@/common/utils.functions'
-import { MEDAL } from '@/common/sudoku/sudokuSaves.constants'
-import type { Medal } from '@/common/sudoku/sudokuSaves.types'
+import { MEDAL_CLASS } from '@/components/MedalBadge/MedalBadge.constants'
 
 export function MedalBadge({ medal }: { medal: Medal }) {
   if (medal === MEDAL.NONE) {
@@ -9,10 +10,7 @@ export function MedalBadge({ medal }: { medal: Medal }) {
   return (
     <span
       aria-hidden
-      className={cn(
-        'inline-block size-3 rounded-full',
-        medal === MEDAL.GOLD ? 'bg-sd-gold' : 'bg-sd-silver',
-      )}
+      className={cn('inline-block size-3 rounded-full', MEDAL_CLASS[medal])}
     />
   )
 }

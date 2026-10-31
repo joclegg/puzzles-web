@@ -1,11 +1,9 @@
 import type { GAME_ROUTE } from '@/common/route.constants'
-import type { MenuAccent } from '@/components/MenuScreen/MenuScreen.types'
 
 export interface DailyLeft {
   route: (typeof GAME_ROUTE)[keyof typeof GAME_ROUTE]
   play: string
   label: string
-  accent: MenuAccent
 }
 
 export interface DailySaves {

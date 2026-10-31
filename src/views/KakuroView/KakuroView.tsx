@@ -1,4 +1,5 @@
 import { SCREEN } from '@/common/route.constants'
+import { KakuroDailyView } from '@/views/KakuroDailyView/KakuroDailyView'
 import { KakuroGameView } from '@/views/KakuroGameView/KakuroGameView'
 import { KakuroHistoryView } from '@/views/KakuroHistoryView/KakuroHistoryView'
 import { KakuroHomeView } from '@/views/KakuroHomeView/KakuroHomeView'
@@ -14,6 +15,9 @@ export function KakuroView({ screen, id }: { screen: string; id: string }) {
   }
   if (screen === SCREEN.HISTORY) {
     return <KakuroHistoryView />
+  }
+  if (screen === SCREEN.DAILY) {
+    return <KakuroDailyView />
   }
   if (screen === SCREEN.SETTINGS) {
     return <KakuroSettingsView />

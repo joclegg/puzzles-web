@@ -390,6 +390,9 @@ export function SolitaireGameView({ id }: { id: string }) {
         open={result !== null}
         title="You won!"
         accent={MENU_ACCENT.SOLITAIRE}
+        route={GAME_ROUTE.SOLITAIRE}
+        newLabel="Deal"
+        onNew={() => void startRandom()}
         newBest={result?.newBest ?? false}
         stats={[
           { label: 'Time', value: formatDuration(elapsedMs()) },
@@ -397,17 +400,7 @@ export function SolitaireGameView({ id }: { id: string }) {
         ]}
         onClose={() => setResult(null)}
         actions={
-          <>
-            <Button onClick={() => navigate([GAME_ROUTE.SOLITAIRE])}>
-              Home
-            </Button>
-            <Button
-              variant={BUTTON_VARIANT.OUTLINE}
-              onClick={() => void startRandom()}
-            >
-              New deal
-            </Button>
-          </>
+          <Button onClick={() => navigate([GAME_ROUTE.SOLITAIRE])}>Home</Button>
         }
       />
     </main>

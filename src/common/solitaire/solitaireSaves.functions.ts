@@ -1,3 +1,4 @@
+import type { DailyResult } from '@/common/dailyMedal.types'
 import { formatDayMonth } from '@/common/format.functions'
 import {
   BUILD_ORDER,
@@ -13,6 +14,20 @@ import type {
   DrawStats,
   SavedDeal,
 } from '@/common/solitaire/solitaireSaves.types'
+
+export function dailyResults(games: SavedDeal[]): DailyResult[] {
+  return games.flatMap((game) =>
+    game.dealId.startsWith(DAILY_PREFIX) && game.status === DEAL_STATUS.WON
+      ? [
+          {
+            date: game.dealId.slice(DAILY_PREFIX.length),
+            id: game.dealId,
+            finishedAt: game.finishedAt,
+          },
+        ]
+      : [],
+  )
+}
 
 export function dealTitle(deal: SavedDeal): string {
   const kind = isDailyDeal(deal.dealId)

@@ -375,19 +375,14 @@ export function KakuroGameView({ id }: { id: string }) {
         open={result !== null}
         title="Solved!"
         accent={MENU_ACCENT.KAKURO}
+        route={GAME_ROUTE.KAKURO}
+        newLabel={`${saved.size}×${saved.size}`}
+        onNew={() => startRandom(saved.size)}
         newBest={result?.newBest ?? false}
         stats={[{ label: 'Time', value: formatDuration(elapsedMs()) }]}
         onClose={() => setResult(null)}
         actions={
-          <>
-            <Button onClick={() => navigate([GAME_ROUTE.KAKURO])}>Home</Button>
-            <Button
-              variant={BUTTON_VARIANT.OUTLINE}
-              onClick={() => startRandom(saved.size)}
-            >
-              New puzzle
-            </Button>
-          </>
+          <Button onClick={() => navigate([GAME_ROUTE.KAKURO])}>Home</Button>
         }
       />
     </main>

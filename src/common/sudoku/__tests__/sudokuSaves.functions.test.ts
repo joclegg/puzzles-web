@@ -5,10 +5,10 @@ import {
   GAME_MODE,
   MISTAKE_CHECK,
 } from '@/common/sudoku/sudoku.constants'
-import { MEDAL, SUDOKU_STATUS } from '@/common/sudoku/sudokuSaves.constants'
+import { SUDOKU_STATUS } from '@/common/sudoku/sudokuSaves.constants'
 import {
   bestTimes,
-  dailyDays,
+  dailyResults,
   finishSudoku,
   startSudoku,
   sudokuTitle,
@@ -124,40 +124,29 @@ describe('bestTimes', () => {
   })
 })
 
-describe('dailyDays', () => {
-  it.each([
-    [[GAME_MODE.CLASSIC], MEDAL.SILVER],
-    [[GAME_MODE.CLASSIC, GAME_MODE.KILLER], MEDAL.GOLD],
-  ])('gives a medal for %s done on the day', (modes, medal) => {
-    const games = modes.reduce<SavedSudoku[]>(
-      (all, mode) =>
-        playAndFinish({
-          games: all,
-          patch: { mode, puzzleId: `daily_${mode}:2026-10-25` },
-          finishedAt: 100,
-        }).games,
-      [],
-    )
+describe('dailyResults', () => {
+  it('lists solved dailies, old ids included, and nothing else', () => {
+    function solved({
+      puzzleId,
+      status = SUDOKU_STATUS.COMPLETED,
+    }: {
+      puzzleId: string
+      status?: string
+    }) {
+      return { puzzleId, status, finishedAt: 1 } as SavedSudoku
+    }
 
-    const day = dailyDays({ games, dayOf: () => '2026-10-25' }).get(
-      '2026-10-25',
-    )
-
-    expect(day?.medal).toBe(medal)
-  })
-
-  it('marks a daily done on a later day', () => {
-    const { games } = playAndFinish({
-      games: [],
-      patch: { puzzleId: 'daily_classic:2026-10-25' },
-      finishedAt: 100,
-    })
-
-    const day = dailyDays({ games, dayOf: () => '2026-10-27' }).get(
-      '2026-10-25',
-    )
-
-    expect([day?.medal, day?.doneLate]).toEqual([MEDAL.NONE, true])
+    expect(
+      dailyResults([
+        solved({ puzzleId: 'daily_classic:2026-10-25' }),
+        solved({ puzzleId: 'daily_killer_hard:2026-10-25' }),
+        solved({
+          puzzleId: 'daily_killer_easy:2026-10-25',
+          status: SUDOKU_STATUS.ABANDONED,
+        }),
+        solved({ puzzleId: 'classic_easy:4' }),
+      ]).map((result) => result.id),
+    ).toEqual(['daily_classic:2026-10-25', 'daily_killer_hard:2026-10-25'])
   })
 })
 

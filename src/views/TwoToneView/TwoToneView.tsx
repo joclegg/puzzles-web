@@ -1,4 +1,5 @@
 import { SCREEN } from '@/common/route.constants'
+import { TwoToneDailyView } from '@/views/TwoToneDailyView/TwoToneDailyView'
 import { TwoToneGameView } from '@/views/TwoToneGameView/TwoToneGameView'
 import { TwoToneHistoryView } from '@/views/TwoToneHistoryView/TwoToneHistoryView'
 import { TwoToneHomeView } from '@/views/TwoToneHomeView/TwoToneHomeView'
@@ -14,6 +15,9 @@ export function TwoToneView({ screen, id }: { screen: string; id: string }) {
   }
   if (screen === SCREEN.HISTORY) {
     return <TwoToneHistoryView />
+  }
+  if (screen === SCREEN.DAILY) {
+    return <TwoToneDailyView />
   }
   if (screen === SCREEN.SETTINGS) {
     return <TwoToneSettingsView />

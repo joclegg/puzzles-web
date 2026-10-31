@@ -7,9 +7,7 @@ import type {
   MistakeCheck,
 } from '@/common/sudoku/sudoku.types'
 import type {
-  DAILY_STATUS,
   DIGIT_COUNTS,
-  MEDAL,
   SUDOKU_STATUS,
 } from '@/common/sudoku/sudokuSaves.constants'
 
@@ -21,18 +19,7 @@ export interface BestTime {
   completed: number
 }
 
-export interface DailyDay {
-  date: string
-  statuses: Record<GameMode, DailyStatus>
-  medal: Medal
-  doneLate: boolean
-}
-
-export type DailyStatus = (typeof DAILY_STATUS)[keyof typeof DAILY_STATUS]
-
 export type DigitCounts = (typeof DIGIT_COUNTS)[keyof typeof DIGIT_COUNTS]
-
-export type Medal = (typeof MEDAL)[keyof typeof MEDAL]
 
 export interface ModeSettings {
   mistakeCheck: MistakeCheck

@@ -1,5 +1,5 @@
 import { Dialog } from '@base-ui/react/dialog'
-import { BookOpen, ChevronRight, Trophy } from 'lucide-react'
+import { BookOpen, Trophy } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { todayIso } from '@/common/date.functions'
@@ -11,18 +11,28 @@ import { GAMES_KEY as SIGHTLINES_KEY } from '@/common/sightlines/sightlinesSetti
 import { GAMES_KEY as SLIDE_OUT_KEY } from '@/common/slideOut/slideOutSaves.constants'
 import { GAMES_KEY as SOLITAIRE_KEY } from '@/common/solitaire/solitaireSaves.constants'
 import { readStored } from '@/common/storage.functions'
+import type { GameMode } from '@/common/sudoku/sudoku.types'
 import { GAMES_KEY as SUDOKU_KEY } from '@/common/sudoku/sudokuSaves.constants'
 import { GAMES_KEY as TWO_TONE_KEY } from '@/common/twoTone/twoToneSettings.constants'
 import { cn } from '@/common/utils.functions'
 import { GAMES_KEY as WORD_WHEEL_KEY } from '@/common/wordWheel/wordWheelSaves.constants'
 import { dailiesLeft } from '@/components/DailiesLeft/DailiesLeft.functions'
+import type { DailyLeft } from '@/components/DailiesLeft/DailiesLeft.types'
 import { MENU_ACCENT_CLASS } from '@/components/MenuScreen/MenuScreen.constants'
 import type { MenuAccent } from '@/components/MenuScreen/MenuScreen.types'
+import {
+  WIN_TILE_CAPTION_CLASS,
+  WIN_TILE_CLASS,
+} from '@/components/WinDialog/WinDialog.constants'
 
 export function WinDialog({
   open,
   title,
   accent,
+  route,
+  mode,
+  newLabel,
+  onNew,
   newBest,
   stats,
   message,
@@ -33,6 +43,10 @@ export function WinDialog({
   open: boolean
   title: string
   accent: MenuAccent
+  route: DailyLeft['route']
+  mode?: GameMode
+  newLabel?: string
+  onNew?: () => void
   newBest: boolean
   stats: readonly { label: string; value: string | number }[]
   message?: string
@@ -41,7 +55,7 @@ export function WinDialog({
   actions: ReactNode
 }) {
   const left = open
-    ? dailiesLeft({ today: todayIso(), saves: readSaves() })
+    ? dailiesLeft({ today: todayIso(), saves: readSaves(), route, mode })
     : []
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && onClose()}>
@@ -101,27 +115,38 @@ export function WinDialog({
               </div>
             ))}
           </dl>
-          {left.length > 0 && (
-            <nav aria-label="Still to play today" className="mt-4 px-5">
+          {(left.length > 0 || onNew) && (
+            <nav aria-label="Play next" className="mt-4 px-5">
               <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Still to play today
+                Play next
               </h3>
-              <ul className="mt-2 flex flex-wrap gap-2">
+              <ul className="mt-2 grid grid-cols-3 gap-2">
                 {left.map((daily) => (
-                  <li key={`${daily.route}/${daily.play}`}>
+                  <li key={daily.play}>
                     <a
                       href={routeHash([daily.route, SCREEN.PLAY, daily.play])}
                       onClick={onClose}
-                      className={cn(
-                        'flex items-center gap-1.5 rounded-full bg-game/12 py-1 pr-2 pl-3 text-sm font-medium ring-1 ring-game/30 transition hover:bg-game/20',
-                        MENU_ACCENT_CLASS[daily.accent],
-                      )}
+                      aria-label={`Daily ${daily.label}`}
+                      className={WIN_TILE_CLASS}
                     >
+                      <span className={WIN_TILE_CAPTION_CLASS}>Daily</span>
                       {daily.label}
-                      <ChevronRight aria-hidden className="size-4 text-game" />
                     </a>
                   </li>
                 ))}
+                {onNew && (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={onNew}
+                      aria-label={`New ${newLabel}`}
+                      className={WIN_TILE_CLASS}
+                    >
+                      <span className={WIN_TILE_CAPTION_CLASS}>New</span>
+                      {newLabel}
+                    </button>
+                  </li>
+                )}
               </ul>
             </nav>
           )}

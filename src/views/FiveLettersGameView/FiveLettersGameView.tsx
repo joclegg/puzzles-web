@@ -294,6 +294,9 @@ export function FiveLettersGameView({ id }: { id: string }) {
             : `The word was ${game.answer}`
         }
         accent={MENU_ACCENT.FIVE_LETTERS}
+        route={GAME_ROUTE.FIVE_LETTERS}
+        newLabel="Word"
+        onNew={daily ? undefined : startPractice}
         newBest={false}
         lost={isLost(game)}
         stats={[]}
@@ -309,11 +312,6 @@ export function FiveLettersGameView({ id }: { id: string }) {
             <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onShare}>
               {copied ? 'Copied' : 'Share'}
             </Button>
-            {!daily && (
-              <Button variant={BUTTON_VARIANT.OUTLINE} onClick={startPractice}>
-                New word
-              </Button>
-            )}
           </>
         }
       />

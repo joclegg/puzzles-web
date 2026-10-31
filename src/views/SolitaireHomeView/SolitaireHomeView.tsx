@@ -7,6 +7,8 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
+import { dailyResults } from '@/common/solitaire/solitaireSaves.functions'
+import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
@@ -71,6 +73,11 @@ export function SolitaireHomeView({ play }: { play?: string }) {
   return (
     <MenuScreen accent={MENU_ACCENT.SOLITAIRE}>
       <ScreenHeader title={TITLE} back={[]}>
+        <DailyCalendarButton
+          route={GAME_ROUTE.SOLITAIRE}
+          results={dailyResults(games)}
+          total={1}
+        />
         <Button
           size={BUTTON_SIZE.ICON}
           aria-label="Stats"

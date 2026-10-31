@@ -1,4 +1,5 @@
 import { SCREEN } from '@/common/route.constants'
+import { WordWheelDailyView } from '@/views/WordWheelDailyView/WordWheelDailyView'
 import { WordWheelGameView } from '@/views/WordWheelGameView/WordWheelGameView'
 import { WordWheelHistoryView } from '@/views/WordWheelHistoryView/WordWheelHistoryView'
 import { WordWheelHomeView } from '@/views/WordWheelHomeView/WordWheelHomeView'
@@ -14,6 +15,9 @@ export function WordWheelView({ screen, id }: { screen: string; id: string }) {
   }
   if (screen === SCREEN.HISTORY) {
     return <WordWheelHistoryView />
+  }
+  if (screen === SCREEN.DAILY) {
+    return <WordWheelDailyView />
   }
   if (screen === SCREEN.SETTINGS) {
     return <WordWheelSettingsView />

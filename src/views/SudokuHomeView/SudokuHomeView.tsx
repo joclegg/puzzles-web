@@ -1,13 +1,8 @@
-import {
-  BarChart3,
-  CalendarCheck,
-  CalendarDays,
-  History,
-  PenLine,
-  Settings,
-} from 'lucide-react'
+import { BarChart3, History, PenLine, Settings } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
+import { dailyResults } from '@/common/sudoku/sudokuSaves.functions'
+import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
@@ -23,7 +18,6 @@ import {
 import { useSudokuGames } from '@/common/sudoku/sudoku.hooks'
 import type { Difficulty, GameMode } from '@/common/sudoku/sudoku.types'
 import {
-  dailyPick,
   dailySudokuId,
   parseDailyId,
 } from '@/common/sudoku/sudokuBank.functions'
@@ -38,6 +32,7 @@ import {
 } from '@/components/Button/Button.constants'
 import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { ContinueCard } from '@/components/ContinueCard/ContinueCard'
+import { DailyTile } from '@/components/DailyTile/DailyTile'
 import { GameHero } from '@/components/GameHero/GameHero'
 import { LevelDots } from '@/components/LevelDots/LevelDots'
 import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
@@ -60,11 +55,14 @@ export function SudokuHomeView({ play }: { play?: string }) {
     .filter((game) => game.status === SUDOKU_STATUS.IN_PROGRESS)
     .sort((a, b) => b.startedAt - a.startedAt)
   const latest = inProgress[0]
-  const dailyId = dailySudokuId({ mode, date: today })
-  const dailyDone = games.some(
-    (game) =>
-      game.puzzleId === dailyId && game.status === SUDOKU_STATUS.COMPLETED,
-  )
+
+  function dailyDone(difficulty: Difficulty) {
+    const dailyId = dailySudokuId({ mode, difficulty, date: today })
+    return games.some(
+      (game) =>
+        game.puzzleId === dailyId && game.status === SUDOKU_STATUS.COMPLETED,
+    )
+  }
 
   function load(start: () => Promise<void>) {
     if (loading) {
@@ -90,12 +88,22 @@ export function SudokuHomeView({ play }: { play?: string }) {
     if (play === undefined || playedRef.current) return
     playedRef.current = true
     replaceRoute([GAME_ROUTE.SUDOKU])
-    void openDaily({ mode: play as GameMode, date: today })
+    const [playMode, playDifficulty] = play.split('_')
+    void openDaily({
+      mode: playMode as GameMode,
+      difficulty: playDifficulty as Difficulty,
+      date: today,
+    })
   }, [openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.SUDOKU}>
       <ScreenHeader title={TITLE} back={[]}>
+        <DailyCalendarButton
+          route={GAME_ROUTE.SUDOKU}
+          results={dailyResults(games)}
+          total={GAME_MODES.flatMap((each) => LEVELS[each]).length}
+        />
         <Button
           size={BUTTON_SIZE.ICON}
           aria-label="Best times"
@@ -136,24 +144,18 @@ export function SudokuHomeView({ play }: { play?: string }) {
         onChange={(next) => setMode(() => next)}
       />
       <MenuSection title="Today" aside={formatDayMonth(today)}>
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <MenuTile
-              label={`Daily puzzle · ${DIFFICULTY_LABEL[dailyPick({ mode, date: today }).difficulty]}`}
-              icon={<CalendarCheck className="size-5" />}
-              done={dailyDone}
-              disabled={loading}
-              onClick={() => load(() => openDaily({ mode, date: today }))}
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+          {LEVELS[mode].map((difficulty) => (
+            <DailyTile
+              key={difficulty}
+              label={DIFFICULTY_LABEL[difficulty]}
+              ariaLabel={`Daily ${DIFFICULTY_LABEL[difficulty]}`}
+              done={dailyDone(difficulty)}
+              onClick={() =>
+                load(() => openDaily({ mode, difficulty, date: today }))
+              }
             />
-          </div>
-          <button
-            type="button"
-            aria-label="Daily calendar"
-            onClick={() => navigate([GAME_ROUTE.SUDOKU, SCREEN.DAILY])}
-            className="flex w-16 shrink-0 items-center justify-center rounded-xl bg-card text-game ring-1 ring-border transition hover:bg-muted hover:ring-game/40 active:scale-[0.97]"
-          >
-            <CalendarDays className="size-6" />
-          </button>
+          ))}
         </div>
       </MenuSection>
       <MenuSection title="New game">

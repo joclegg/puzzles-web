@@ -72,6 +72,7 @@ Rules marked (lint) are enforced by `npm run lint`.
 - MUST NOT import one game's `src/common/<game>/` code from another game.
 - MUST draw every random number from `createRandom` in `src/common/random.functions.ts` (XorWow), never `Math.random`, so seeded puzzles are reproducible.
 - MUST pick daily puzzles locally and deterministically from the date, so everyone gets the same daily puzzle.
+- MUST give each game a `DailyCalendar` view (`SCREEN.DAILY`) and a `DailyCalendarButton` in its Home header, coloured by today's medal. `medalFor` is the only medal rule: bronze for one daily on the day, silver for more than one, gold for all. Five Letters starts at silver (two dailies), and Solitaire has one daily, so it is gold or nothing.
 - MUST give every screen except the launcher a back button at the top left.
 - MUST put a Settings item in every game's ⋮ menu.
 - MUST define each game's colours as CSS variables in `src/index.css`, with a dark value for every token.

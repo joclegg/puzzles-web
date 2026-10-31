@@ -40,18 +40,6 @@ export const DIGIT_COUNTS_LABEL: Record<DigitCounts, string> = {
   [DIGIT_COUNTS.OFF]: 'Off',
 }
 
-export const MEDAL = {
-  NONE: 'none',
-  SILVER: 'silver',
-  GOLD: 'gold',
-} as const
-
-export const DAILY_STATUS = {
-  NOT_DONE: 'notDone',
-  LATE: 'late',
-  ON_THE_DAY: 'onTheDay',
-} as const
-
 export const DEFAULT_MODE_SETTINGS: ModeSettings = {
   mistakeCheck: MISTAKE_CHECK.SHOW_WRONG,
   showMistakeCount: true,

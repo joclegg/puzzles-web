@@ -14,7 +14,7 @@ import { useGameTimer } from '@/common/gameTimer.hooks'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { useStoredState } from '@/common/storage.hooks'
-import { INPUT_MODE } from '@/common/sudoku/sudoku.constants'
+import { DIFFICULTY_LABEL, INPUT_MODE } from '@/common/sudoku/sudoku.constants'
 import {
   countsMistakes,
   digitCount,
@@ -33,6 +33,7 @@ import {
   undo,
 } from '@/common/sudoku/sudoku.functions'
 import { useSudokuGames } from '@/common/sudoku/sudoku.hooks'
+import { parseDailyId } from '@/common/sudoku/sudokuBank.functions'
 import type { SudokuGame, SudokuHint } from '@/common/sudoku/sudoku.types'
 import { findHint } from '@/common/sudoku/sudokuHint.functions'
 import { decodeMoves, encodeMoves } from '@/common/sudoku/sudokuMoves.functions'
@@ -80,7 +81,7 @@ const TUTORIAL = [
 ]
 
 export function SudokuGameView({ id }: { id: string }) {
-  const { games, saveProgress, finish } = useSudokuGames()
+  const { games, openGame, startLevel, saveProgress, finish } = useSudokuGames()
   const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<SudokuSettings>({
     key: SETTINGS_KEY,
@@ -108,6 +109,24 @@ export function SudokuGameView({ id }: { id: string }) {
   const [hint, setHint] = useState<SudokuHint | null>(null)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const finished = saved?.status !== SUDOKU_STATUS.IN_PROGRESS
+
+  function startNew() {
+    const { mode, difficulty } = saved!
+    const inProgress = games.find(
+      (other) =>
+        other.status === SUDOKU_STATUS.IN_PROGRESS &&
+        other.mode === mode &&
+        other.difficulty === difficulty &&
+        !other.custom &&
+        parseDailyId(other.puzzleId) === null,
+    )
+    if (inProgress) {
+      openGame(inProgress)
+      return
+    }
+    void startLevel({ mode, difficulty: difficulty! })
+  }
+
   const complete = game !== null && isComplete(game)
   const elapsedMs = useGameTimer({
     initialMs: saved?.elapsedMs ?? 0,
@@ -392,6 +411,14 @@ export function SudokuGameView({ id }: { id: string }) {
         open={result !== null}
         title="Solved!"
         accent={MENU_ACCENT.SUDOKU}
+        route={GAME_ROUTE.SUDOKU}
+        mode={saved.mode}
+        newLabel={
+          saved.difficulty === null || saved.custom
+            ? undefined
+            : DIFFICULTY_LABEL[saved.difficulty]
+        }
+        onNew={saved.difficulty === null || saved.custom ? undefined : startNew}
         newBest={result?.newBest ?? false}
         stats={[
           { label: 'Time', value: formatDuration(elapsedMs()) },
