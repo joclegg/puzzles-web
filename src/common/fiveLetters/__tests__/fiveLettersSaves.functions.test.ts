@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest'
 
-import { GAME_STATUS } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
+  GAME_STATUS,
+  LEGACY_DAILY2_PREFIX,
+} from '@/common/fiveLetters/fiveLettersSaves.constants'
+import {
+  daily2Id,
+  daily2Label,
+  dailyResults,
   finishGame,
   inProgress,
-  isNyt,
-  nytId,
-  nytLabel,
+  isDaily2,
   slotOf,
   startGame,
   statsOf,
@@ -109,22 +113,42 @@ describe('statsOf', () => {
   })
 })
 
-describe('the NY Times daily', () => {
+describe('Daily puzzle 2', () => {
   it('has its own id and slot for each date', () => {
-    const id = nytId('2026-10-26')
+    const id = daily2Id('2026-10-26')
 
-    expect([id, isNyt(id), slotOf(id)]).toEqual([
-      'nyt_2026-10-26',
+    expect([id, isDaily2(id), slotOf(id)]).toEqual([
+      'daily2_2026-10-26',
       true,
-      'nyt_2026-10-26',
+      'daily2_2026-10-26',
     ])
   })
 
-  it('never shares a slot with the Puzzles daily', () => {
-    expect(slotOf(nytId('2026-10-26'))).not.toBe(slotOf('daily_2026-10-26'))
+  it('reads older saves with the legacy prefix as Daily puzzle 2', () => {
+    const legacy = `${LEGACY_DAILY2_PREFIX}2026-10-26`
+
+    expect([isDaily2(legacy), slotOf(legacy), daily2Label(legacy)]).toEqual([
+      true,
+      'daily2_2026-10-26',
+      daily2Label('daily2_2026-10-26'),
+    ])
   })
 
-  it('is labelled with its Wordle number', () => {
-    expect(nytLabel(nytId('2026-03-05'))).toBe('Wordle 1,720')
+  it("counts a legacy win as that date's Daily puzzle 2", () => {
+    const game = finished({ id: '1', won: true, guesses: 1 })
+
+    expect(
+      dailyResults([
+        { ...game, wordId: `${LEGACY_DAILY2_PREFIX}2026-10-26` },
+      ]).map(({ date, id }) => [date, id]),
+    ).toEqual([['2026-10-26', 'daily2_2026-10-26']])
+  })
+
+  it('never shares a slot with the Puzzles daily', () => {
+    expect(slotOf(daily2Id('2026-10-26'))).not.toBe(slotOf('daily_2026-10-26'))
+  })
+
+  it('is labelled with the day number like the Puzzles daily', () => {
+    expect(daily2Label(daily2Id('2026-10-26'))).toBe('Daily puzzle 2 #2')
   })
 })

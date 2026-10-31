@@ -7,18 +7,18 @@ import {
 } from '@/common/fiveLetters/fiveLettersWords.constants'
 import {
   createWords,
-  nytSolution,
+  daily2Word,
   randomWord,
 } from '@/common/fiveLetters/fiveLetters.functions'
 import type { Words } from '@/common/fiveLetters/fiveLetters.types'
 import {
   DEFAULT_SETTINGS,
   GAMES_KEY,
-  NYT_PROXY_URL,
+  DAILY2_URL,
   SETTINGS_KEY,
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
-  nytId,
+  daily2Id,
   startGame,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
 import type {
@@ -77,12 +77,12 @@ export function useFiveLettersGames() {
     })
   }
 
-  async function startNytDaily(date: string): Promise<boolean> {
-    const answer = await fetchNytWord(date)
+  async function startDaily2(date: string): Promise<boolean> {
+    const answer = await fetchDaily2Word(date)
     if (answer === null) {
       return false
     }
-    startAndOpen({ id: nytId(date), answer })
+    startAndOpen({ id: daily2Id(date), answer })
     return true
   }
 
@@ -92,7 +92,7 @@ export function useFiveLettersGames() {
     openGame,
     startAndOpen,
     startPractice,
-    startNytDaily,
+    startDaily2,
   }
 }
 
@@ -111,10 +111,10 @@ export function useWords(): Words | null {
   )
 }
 
-async function fetchNytWord(date: string): Promise<string | null> {
+async function fetchDaily2Word(date: string): Promise<string | null> {
   try {
-    const response = await fetch(`${NYT_PROXY_URL}${date}.json`)
-    return response.ok ? nytSolution(await response.text()) : null
+    const response = await fetch(`${DAILY2_URL}${date}`)
+    return response.ok ? daily2Word(await response.json()) : null
   } catch {
     return null
   }

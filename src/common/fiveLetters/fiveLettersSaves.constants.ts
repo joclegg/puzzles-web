@@ -5,9 +5,9 @@ export const SETTINGS_KEY = 'fiveLetters.settings'
 
 export const DAILY_PREFIX = 'daily_'
 
-export const NYT_PREFIX = 'nyt_'
+export const DAILY2_PREFIX = 'daily2_'
 
-export const NYT_FIRST_DAY = '2021-06-19'
+export const LEGACY_DAILY2_PREFIX = 'nyt_'
 
 export const PRACTICE_SLOT = 'practice'
 
@@ -24,5 +24,4 @@ export const DEFAULT_SETTINGS = {
   highContrast: false,
 }
 
-export const NYT_PROXY_URL =
-  'https://r.jina.ai/https://www.nytimes.com/svc/wordle/v2/'
+export const DAILY2_URL = 'https://puzzles-daily.joclegg.dev/word/'

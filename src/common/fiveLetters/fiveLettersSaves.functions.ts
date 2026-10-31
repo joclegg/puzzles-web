@@ -1,11 +1,11 @@
 import type { DailyResult } from '@/common/dailyMedal.types'
-import { daysBetween } from '@/common/date.functions'
 import { MAX_GUESSES } from '@/common/fiveLetters/fiveLetters.constants'
+import { dayNumber } from '@/common/fiveLetters/fiveLetters.functions'
 import {
+  DAILY2_PREFIX,
   DAILY_PREFIX,
   GAME_STATUS,
-  NYT_FIRST_DAY,
-  NYT_PREFIX,
+  LEGACY_DAILY2_PREFIX,
   PRACTICE_SLOT,
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import type {
@@ -14,6 +14,18 @@ import type {
   WordStats,
 } from '@/common/fiveLetters/fiveLettersSaves.types'
 
+export function daily2Date(wordId: string): string {
+  return wordId.slice(wordId.indexOf('_') + 1)
+}
+
+export function daily2Id(date: string): string {
+  return `${DAILY2_PREFIX}${date}`
+}
+
+export function daily2Label(wordId: string): string {
+  return `Daily puzzle 2 #${dayNumber(daily2Date(wordId))}`
+}
+
 export function dailyId(date: string): string {
   return `${DAILY_PREFIX}${date}`
 }
@@ -21,11 +33,11 @@ export function dailyId(date: string): string {
 export function dailyResults(games: SavedGame[]): DailyResult[] {
   return games.flatMap((game) =>
     game.status === GAME_STATUS.WON &&
-    (isDaily(game.wordId) || isNyt(game.wordId))
+    (isDaily(game.wordId) || isDaily2(game.wordId))
       ? [
           {
-            date: game.wordId.slice(game.wordId.indexOf('_') + 1),
-            id: game.wordId,
+            date: daily2Date(game.wordId),
+            id: slotOf(game.wordId),
             finishedAt: game.finishedAt,
           },
         ]
@@ -60,20 +72,10 @@ export function isDaily(wordId: string): boolean {
   return wordId.startsWith(DAILY_PREFIX)
 }
 
-export function isNyt(wordId: string): boolean {
-  return wordId.startsWith(NYT_PREFIX)
-}
-
-export function nytId(date: string): string {
-  return `${NYT_PREFIX}${date}`
-}
-
-export function nytLabel(wordId: string): string {
-  const days = daysBetween({
-    from: NYT_FIRST_DAY,
-    to: wordId.slice(NYT_PREFIX.length),
-  })
-  return `Wordle ${days.toLocaleString('en-US')}`
+export function isDaily2(wordId: string): boolean {
+  return (
+    wordId.startsWith(DAILY2_PREFIX) || wordId.startsWith(LEGACY_DAILY2_PREFIX)
+  )
 }
 
 export function saveGuesses({
@@ -89,7 +91,11 @@ export function saveGuesses({
 }
 
 export function slotOf(wordId: string): string {
-  return isDaily(wordId) || isNyt(wordId) ? wordId : PRACTICE_SLOT
+  return isDaily2(wordId)
+    ? daily2Id(daily2Date(wordId))
+    : isDaily(wordId)
+      ? wordId
+      : PRACTICE_SLOT
 }
 
 export function startGame({

@@ -25,8 +25,9 @@ import { GAME_STATUS } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import {
   dailyId,
   isDaily,
-  isNyt,
-  nytId,
+  isDaily2,
+  daily2Id,
+  slotOf,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate, replaceRoute } from '@/common/route.hooks'
@@ -42,34 +43,35 @@ import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { DAILY_RESULT_LABEL } from '@/views/FiveLettersHomeView/FiveLettersHomeView.constants'
 
 export function FiveLettersHomeView({ play }: { play?: string }) {
-  const { games, openGame, startAndOpen, startPractice, startNytDaily } =
+  const { games, openGame, startAndOpen, startPractice, startDaily2 } =
     useFiveLettersGames()
   const [fetching, setFetching] = useState(false)
-  const [nytUnavailable, setNytUnavailable] = useState(false)
+  const [daily2Unavailable, setDaily2Unavailable] = useState(false)
   const today = todayIso()
   const daily = games.findLast((game) => game.wordId === dailyId(today))
-  const nyt = games.findLast(
+  const daily2 = games.findLast(
     (game) =>
-      game.wordId === nytId(today) && game.status !== GAME_STATUS.ABANDONED,
+      slotOf(game.wordId) === daily2Id(today) &&
+      game.status !== GAME_STATUS.ABANDONED,
   )
   const practice = games.findLast(
     (game) =>
       !isDaily(game.wordId) &&
-      !isNyt(game.wordId) &&
+      !isDaily2(game.wordId) &&
       game.status === GAME_STATUS.IN_PROGRESS,
   )
   const dailyResult = daily ? DAILY_RESULT_LABEL[daily.status] : null
-  const nytResult = nyt ? DAILY_RESULT_LABEL[nyt.status] : null
+  const daily2Result = daily2 ? DAILY_RESULT_LABEL[daily2.status] : null
 
-  async function openNyt() {
-    if (nyt) {
-      openGame(nyt)
+  async function openDaily2() {
+    if (daily2) {
+      openGame(daily2)
       return
     }
     setFetching(true)
-    const started = await startNytDaily(today)
+    const started = await startDaily2(today)
     setFetching(false)
-    setNytUnavailable(!started)
+    setDaily2Unavailable(!started)
   }
 
   const playedRef = useRef(false)
@@ -135,18 +137,17 @@ export function FiveLettersHomeView({ play }: { play?: string }) {
           }
         />
         <MenuTile
-          label="NY Times daily"
+          label="Daily puzzle 2"
           icon={<Newspaper className="size-5" />}
-          detail={nytResult ?? undefined}
-          done={nyt?.status === GAME_STATUS.WON}
-          active={nyt?.status === GAME_STATUS.IN_PROGRESS}
+          detail={daily2Result ?? undefined}
+          done={daily2?.status === GAME_STATUS.WON}
+          active={daily2?.status === GAME_STATUS.IN_PROGRESS}
           disabled={fetching}
-          onClick={() => void openNyt()}
+          onClick={() => void openDaily2()}
         />
-        {nytUnavailable && (
+        {daily2Unavailable && (
           <p role="alert" className="px-1 text-sm text-destructive">
-            Couldn't reach the New York Times. Check your connection and try
-            again.
+            Couldn't load Daily puzzle 2. Check your connection and try again.
           </p>
         )}
       </MenuSection>
