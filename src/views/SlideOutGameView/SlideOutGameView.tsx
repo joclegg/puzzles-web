@@ -1,10 +1,12 @@
+import { GameNotFound } from '@/components/GameNotFound/GameNotFound'
+import { RevealDialog } from '@/components/RevealDialog/RevealDialog'
 import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { Lightbulb, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { formatDuration } from '@/common/format.functions'
-import { useGameTimer } from '@/common/gameTimer.hooks'
+import { usePuzzleGame } from '@/common/puzzleGame.hooks'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate, replaceRoute } from '@/common/route.hooks'
 import {
@@ -35,14 +37,10 @@ import {
 } from '@/common/slideOut/slideOutSaves.functions'
 import type { SlideOutSettings } from '@/common/slideOut/slideOutSaves.types'
 import { useStoredState } from '@/common/storage.hooks'
-import { AppDialog } from '@/components/AppDialog/AppDialog'
 import { WinDialog } from '@/components/WinDialog/WinDialog'
 import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
-import {
-  BUTTON_SIZE,
-  BUTTON_VARIANT,
-} from '@/components/Button/Button.constants'
+import { BUTTON_SIZE } from '@/components/Button/Button.constants'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SlideOutBoard } from '@/components/SlideOutBoard/SlideOutBoard'
@@ -70,29 +68,33 @@ export function SlideOutGameView({ id }: { id: string }) {
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
-  const [game, setGame] = useState<SlideOutGame | null>(() =>
-    saved
-      ? newGame({
-          puzzle: decodePuzzle(saved.puzzle),
-          moves: decodeMoves(saved.changes),
-        })
-      : null,
-  )
-  const [hints, setHints] = useState(saved?.hints ?? 0)
-  const [revealing, setRevealing] = useState(false)
-  const [result, setResult] = useState<{ newBest: boolean } | null>(null)
-  const solved = game !== null && isSolved(game)
-  const elapsedMs = useGameTimer({
-    initialMs: saved?.elapsedMs ?? 0,
-    running: game !== null && !solved,
+  const {
+    game,
+    setGame,
+    revealing,
+    setRevealing,
+    result,
+    setResult,
+    solved,
+    elapsedMs,
+  } = usePuzzleGame({
+    saved,
+    load: (saved): SlideOutGame =>
+      newGame({
+        puzzle: decodePuzzle(saved.puzzle),
+        moves: decodeMoves(saved.changes),
+      }),
+    isSolved,
   })
+  const [hints, setHints] = useState(saved?.hints ?? 0)
 
   if (!saved || !game) {
     return (
-      <main className="mx-auto max-w-3xl px-4">
-        <ScreenHeader title={TITLE} back={[GAME_ROUTE.SLIDE_OUT]} />
-        <p>This puzzle could not be found.</p>
-      </main>
+      <GameNotFound
+        title={TITLE}
+        back={[GAME_ROUTE.SLIDE_OUT]}
+        message="This puzzle could not be found."
+      />
     )
   }
 
@@ -239,21 +241,11 @@ export function SlideOutGameView({ id }: { id: string }) {
           move((current) => slide({ game: current, block, position }))
         }
       />
-      <AppDialog
+      <RevealDialog
         open={revealing}
-        title="Show the solution?"
         onClose={() => setRevealing(false)}
-        actions={
-          <>
-            <Button onClick={() => setRevealing(false)}>Cancel</Button>
-            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onReveal}>
-              Show solution
-            </Button>
-          </>
-        }
-      >
-        <p>This ends the puzzle. It won't count towards best times.</p>
-      </AppDialog>
+        onReveal={onReveal}
+      />
       <WinDialog
         open={result !== null}
         title="Solved!"

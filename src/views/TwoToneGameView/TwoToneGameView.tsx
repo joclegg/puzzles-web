@@ -1,3 +1,5 @@
+import { GameNotFound } from '@/components/GameNotFound/GameNotFound'
+import { RevealDialog } from '@/components/RevealDialog/RevealDialog'
 import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { formatDuration } from '@/common/format.functions'
@@ -41,14 +43,10 @@ import {
   TITLE,
 } from '@/common/twoTone/twoToneSettings.constants'
 import type { TwoToneSettings } from '@/common/twoTone/twoToneSettings.types'
-import { AppDialog } from '@/components/AppDialog/AppDialog'
 import { WinDialog } from '@/components/WinDialog/WinDialog'
 import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
-import {
-  BUTTON_SIZE,
-  BUTTON_VARIANT,
-} from '@/components/Button/Button.constants'
+import { BUTTON_SIZE } from '@/components/Button/Button.constants'
 import { GameStatusBar } from '@/components/GameStatusBar/GameStatusBar'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
@@ -98,10 +96,11 @@ export function TwoToneGameView({ id }: { id: string }) {
 
   if (!saved || !game) {
     return (
-      <main className="mx-auto max-w-3xl px-4">
-        <ScreenHeader title={TITLE} back={[GAME_ROUTE.TWO_TONE]} />
-        <p>This puzzle could not be found.</p>
-      </main>
+      <GameNotFound
+        title={TITLE}
+        back={[GAME_ROUTE.TWO_TONE]}
+        message="This puzzle could not be found."
+      />
     )
   }
 
@@ -317,21 +316,11 @@ export function TwoToneGameView({ id }: { id: string }) {
           {hintMessage(hint)}
         </p>
       )}
-      <AppDialog
+      <RevealDialog
         open={revealing}
-        title="Show the solution?"
         onClose={() => setRevealing(false)}
-        actions={
-          <>
-            <Button onClick={() => setRevealing(false)}>Cancel</Button>
-            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onReveal}>
-              Show solution
-            </Button>
-          </>
-        }
-      >
-        <p>This ends the puzzle. It won't count towards best times.</p>
-      </AppDialog>
+        onReveal={onReveal}
+      />
       <WinDialog
         open={result !== null}
         title="Solved!"

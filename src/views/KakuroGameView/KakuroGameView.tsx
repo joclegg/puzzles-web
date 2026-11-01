@@ -1,3 +1,5 @@
+import { GameNotFound } from '@/components/GameNotFound/GameNotFound'
+import { RevealDialog } from '@/components/RevealDialog/RevealDialog'
 import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import {
@@ -12,7 +14,7 @@ import { useState } from 'react'
 
 import { HINT_STYLE } from '@/common/assists.constants'
 import { formatDuration } from '@/common/format.functions'
-import { useGameTimer } from '@/common/gameTimer.hooks'
+import { usePuzzleGame } from '@/common/puzzleGame.hooks'
 import { DIGITS, INPUT_MODE } from '@/common/kakuro/kakuro.constants'
 import {
   combinationLines,
@@ -50,14 +52,10 @@ import { puzzleTitle } from '@/common/puzzleTitle.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { useStoredState } from '@/common/storage.hooks'
-import { AppDialog } from '@/components/AppDialog/AppDialog'
 import { WinDialog } from '@/components/WinDialog/WinDialog'
 import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { Button } from '@/components/Button/Button'
-import {
-  BUTTON_SIZE,
-  BUTTON_VARIANT,
-} from '@/components/Button/Button.constants'
+import { BUTTON_SIZE } from '@/components/Button/Button.constants'
 import { KakuroBoard } from '@/components/KakuroBoard/KakuroBoard'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { NumberPad } from '@/components/NumberPad/NumberPad'
@@ -95,32 +93,35 @@ export function KakuroGameView({ id }: { id: string }) {
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
-  const [game, setGame] = useState<KakuroGame | null>(() =>
-    saved
-      ? {
-          ...replay({
-            game: newGame({ puzzle: decodePuzzle(saved.puzzle) }),
-            changes: decodeChanges(saved.changes),
-          }),
-          mistakes: saved.mistakes ?? 0,
-        }
-      : null,
-  )
-  const [hint, setHint] = useState<KakuroHint | null>(null)
-  const [revealing, setRevealing] = useState(false)
-  const [result, setResult] = useState<{ newBest: boolean } | null>(null)
-  const solved = game !== null && isSolved(game)
-  const elapsedMs = useGameTimer({
-    initialMs: saved?.elapsedMs ?? 0,
-    running: game !== null && !solved,
+  const {
+    game,
+    setGame,
+    revealing,
+    setRevealing,
+    result,
+    setResult,
+    solved,
+    elapsedMs,
+  } = usePuzzleGame({
+    saved,
+    load: (saved): KakuroGame => ({
+      ...replay({
+        game: newGame({ puzzle: decodePuzzle(saved.puzzle) }),
+        changes: decodeChanges(saved.changes),
+      }),
+      mistakes: saved.mistakes ?? 0,
+    }),
+    isSolved,
   })
+  const [hint, setHint] = useState<KakuroHint | null>(null)
 
   if (!saved || !game) {
     return (
-      <main className="mx-auto max-w-3xl px-4">
-        <ScreenHeader title={TITLE} back={[GAME_ROUTE.KAKURO]} />
-        <p>This puzzle could not be found.</p>
-      </main>
+      <GameNotFound
+        title={TITLE}
+        back={[GAME_ROUTE.KAKURO]}
+        message="This puzzle could not be found."
+      />
     )
   }
 
@@ -360,21 +361,11 @@ export function KakuroGameView({ id }: { id: string }) {
           },
         ]}
       />
-      <AppDialog
+      <RevealDialog
         open={revealing}
-        title="Show the solution?"
         onClose={() => setRevealing(false)}
-        actions={
-          <>
-            <Button onClick={() => setRevealing(false)}>Cancel</Button>
-            <Button variant={BUTTON_VARIANT.OUTLINE} onClick={reveal}>
-              Show solution
-            </Button>
-          </>
-        }
-      >
-        <p>This ends the puzzle. It won't count towards best times.</p>
-      </AppDialog>
+        onReveal={reveal}
+      />
       <WinDialog
         open={result !== null}
         title="Solved!"

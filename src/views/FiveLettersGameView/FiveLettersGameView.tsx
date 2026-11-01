@@ -1,3 +1,4 @@
+import { GameNotFound } from '@/components/GameNotFound/GameNotFound'
 import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import {
@@ -112,10 +113,11 @@ export function FiveLettersGameView({ id }: { id: string }) {
 
   if (!saved || !game) {
     return (
-      <main className="mx-auto max-w-3xl px-4">
-        <ScreenHeader title={TITLE} back={[GAME_ROUTE.FIVE_LETTERS]} />
-        <p>This game could not be found.</p>
-      </main>
+      <GameNotFound
+        title={TITLE}
+        back={[GAME_ROUTE.FIVE_LETTERS]}
+        message="This game could not be found."
+      />
     )
   }
 

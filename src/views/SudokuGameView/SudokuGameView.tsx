@@ -1,3 +1,4 @@
+import { GameNotFound } from '@/components/GameNotFound/GameNotFound'
 import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import {
   Eraser,
@@ -152,10 +153,11 @@ export function SudokuGameView({ id }: { id: string }) {
 
   if (!saved || !game) {
     return (
-      <main className="mx-auto max-w-3xl px-4">
-        <ScreenHeader title={TITLE} back={[GAME_ROUTE.SUDOKU]} />
-        <p>This game could not be found.</p>
-      </main>
+      <GameNotFound
+        title={TITLE}
+        back={[GAME_ROUTE.SUDOKU]}
+        message="This game could not be found."
+      />
     )
   }
 

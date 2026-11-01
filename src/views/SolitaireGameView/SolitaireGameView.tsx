@@ -1,3 +1,4 @@
+import { GameNotFound } from '@/components/GameNotFound/GameNotFound'
 import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { Lightbulb, Undo2 } from 'lucide-react'
@@ -126,10 +127,11 @@ export function SolitaireGameView({ id }: { id: string }) {
 
   if (!saved || !game) {
     return (
-      <main className="mx-auto max-w-3xl px-4">
-        <ScreenHeader title={TITLE} back={[GAME_ROUTE.SOLITAIRE]} />
-        <p>This game could not be found.</p>
-      </main>
+      <GameNotFound
+        title={TITLE}
+        back={[GAME_ROUTE.SOLITAIRE]}
+        message="This game could not be found."
+      />
     )
   }
 
