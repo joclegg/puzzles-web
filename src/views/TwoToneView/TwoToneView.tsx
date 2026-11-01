@@ -1,23 +1,55 @@
-import { SCREEN } from '@/common/route.constants'
-import { TwoToneDailyView } from '@/views/TwoToneDailyView/TwoToneDailyView'
+import { gameDefinition } from '@/common/game.functions'
+import { SIZES } from '@/common/twoTone/twoTone.constants'
+import { useTwoToneGames } from '@/common/twoTone/twoTone.hooks'
+import { sizeOptions } from '@/common/puzzleOptions.functions'
+import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
+import { SizeStatsTable } from '@/components/SizeStatsTable/SizeStatsTable'
+import { sizeStats } from '@/common/puzzleSaves.functions'
+import { sizeLabel } from '@/common/puzzleTitle.functions'
 import { TwoToneGameView } from '@/views/TwoToneGameView/TwoToneGameView'
-import { TwoToneHistoryView } from '@/views/TwoToneHistoryView/TwoToneHistoryView'
 import { TwoToneHomeView } from '@/views/TwoToneHomeView/TwoToneHomeView'
 import { TwoToneSettingsView } from '@/views/TwoToneSettingsView/TwoToneSettingsView'
-import { TwoToneStatsView } from '@/views/TwoToneStatsView/TwoToneStatsView'
+import { PuzzleDailyView } from '@/views/PuzzleDailyView/PuzzleDailyView'
+import { PuzzleHistoryView } from '@/views/PuzzleHistoryView/PuzzleHistoryView'
+import { PuzzleStatsView } from '@/views/PuzzleStatsView/PuzzleStatsView'
+
+const DEFINITION = gameDefinition(GAME_ROUTE.TWO_TONE)
+
+const OPTIONS = sizeOptions(SIZES)
 
 export function TwoToneView({ screen, id }: { screen: string; id: string }) {
+  const { games, openDaily } = useTwoToneGames()
   if (screen === SCREEN.GAME) {
     return <TwoToneGameView key={id} id={id} />
   }
   if (screen === SCREEN.STATS) {
-    return <TwoToneStatsView />
+    return (
+      <PuzzleStatsView definition={DEFINITION}>
+        <SizeStatsTable
+          stats={sizeStats({ games, sizes: SIZES })}
+          label={sizeLabel}
+        />
+      </PuzzleStatsView>
+    )
   }
   if (screen === SCREEN.HISTORY) {
-    return <TwoToneHistoryView />
+    return (
+      <PuzzleHistoryView
+        definition={DEFINITION}
+        games={games}
+        options={OPTIONS}
+      />
+    )
   }
   if (screen === SCREEN.DAILY) {
-    return <TwoToneDailyView />
+    return (
+      <PuzzleDailyView
+        definition={DEFINITION}
+        games={games}
+        options={OPTIONS}
+        onPlay={({ date, value }) => void openDaily({ date, size: value })}
+      />
+    )
   }
   if (screen === SCREEN.SETTINGS) {
     return <TwoToneSettingsView />
