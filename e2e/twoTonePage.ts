@@ -21,6 +21,24 @@ export class TwoTonePage {
     this.timer = page.getByRole('timer')
   }
 
+  get hintButton() {
+    return this.page.getByRole('button', { name: 'Show a hint' })
+  }
+
+  async customiseHelpers() {
+    await this.page.getByRole('link', { name: 'Customise helpers' }).click()
+  }
+
+  async expectOnSettings() {
+    await expect(
+      this.page.getByRole('heading', { name: 'Settings' }),
+    ).toBeVisible()
+  }
+
+  get colourToggle() {
+    return this.page.getByRole('button', { name: 'Pick a colour' })
+  }
+
   async open() {
     await this.page.goto('./#/two-tone')
     await expect(
@@ -91,14 +109,6 @@ export class TwoTonePage {
 
   async openFromHome(name: 'Stats' | 'History' | 'Settings') {
     await this.page.getByRole('button', { name, exact: true }).click()
-  }
-
-  async chooseInputMode(name: string) {
-    await this.page.getByRole('radio', { name }).click()
-  }
-
-  async pickColour(name: string) {
-    await this.page.getByRole('radio', { name }).click()
   }
 
   async expectTile({

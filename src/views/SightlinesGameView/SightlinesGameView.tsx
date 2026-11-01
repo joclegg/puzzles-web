@@ -1,6 +1,7 @@
+import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { formatDuration } from '@/common/format.functions'
-import { Lightbulb, Palette, Undo2 } from 'lucide-react'
+import { Lightbulb, Undo2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { useGameTimer } from '@/common/gameTimer.hooks'
@@ -13,14 +14,13 @@ import { puzzleTitle } from '@/common/puzzleTitle.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { useStoredState } from '@/common/storage.hooks'
-import { DOT, HINT_KIND } from '@/common/sightlines/sightlines.constants'
+import { HINT_KIND } from '@/common/sightlines/sightlines.constants'
 import {
   encodeChanges,
   hintMessage,
   hintTargets,
   isSolved,
   newGame,
-  paint,
   progressPercent,
   replay,
   tap,
@@ -28,7 +28,7 @@ import {
   withHint,
 } from '@/common/sightlines/sightlines.functions'
 import { useSightlinesGames } from '@/common/sightlines/sightlines.hooks'
-import type { Dot, SightlinesGame } from '@/common/sightlines/sightlines.types'
+import type { SightlinesGame } from '@/common/sightlines/sightlines.types'
 import { seenAll } from '@/common/sightlines/sightlinesGrid.functions'
 import {
   brokenCells,
@@ -37,7 +37,6 @@ import {
 import { decodeChanges } from '@/common/sightlines/sightlines.functions'
 import {
   DEFAULT_SETTINGS,
-  INPUT_MODE,
   SETTINGS_KEY,
   TITLE,
 } from '@/common/sightlines/sightlinesSettings.constants'
@@ -54,7 +53,6 @@ import { GameStatusBar } from '@/components/GameStatusBar/GameStatusBar'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SightlinesBoard } from '@/components/SightlinesBoard/SightlinesBoard'
-import { SightlinesColourPicker } from '@/components/SightlinesColourPicker/SightlinesColourPicker'
 
 const TUTORIAL = [
   {
@@ -74,7 +72,7 @@ const TUTORIAL = [
 export function SightlinesGameView({ id }: { id: string }) {
   const { games, setGames, startRandom } = useSightlinesGames()
   const saved = games.find((game) => game.id === id)
-  const [settings, setSettings] = useStoredState<SightlinesSettings>({
+  const [settings] = useStoredState<SightlinesSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
@@ -87,7 +85,6 @@ export function SightlinesGameView({ id }: { id: string }) {
       : null,
   )
   const [hints, setHints] = useState(saved?.hints ?? 0)
-  const [colour, setColour] = useState<Dot>(DOT.BLUE)
   const [revealing, setRevealing] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const solved = game !== null && isSolved(game)
@@ -150,11 +147,7 @@ export function SightlinesGameView({ id }: { id: string }) {
   }
 
   function onDot(cell: number) {
-    move((current) =>
-      settings.inputMode === INPUT_MODE.PICK_COLOUR
-        ? paint({ game: current, cell, colour })
-        : tap({ game: current, cell }),
-    )
+    move((current) => tap({ game: current, cell }))
   }
 
   function onHint() {
@@ -212,27 +205,6 @@ export function SightlinesGameView({ id }: { id: string }) {
             onClick={() => move(undo)}
           >
             <Undo2 className="size-5" />
-          </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Pick a colour"
-            aria-pressed={settings.inputMode === INPUT_MODE.PICK_COLOUR}
-            className={
-              settings.inputMode === INPUT_MODE.PICK_COLOUR
-                ? 'bg-muted'
-                : undefined
-            }
-            onClick={() =>
-              setSettings((current) => ({
-                ...current,
-                inputMode:
-                  current.inputMode === INPUT_MODE.PICK_COLOUR
-                    ? INPUT_MODE.TAP_TO_CYCLE
-                    : INPUT_MODE.PICK_COLOUR,
-              }))
-            }
-          >
-            <Palette className="size-5" />
           </Button>
           {settings.showHints && (
             <Button
@@ -309,9 +281,6 @@ export function SightlinesGameView({ id }: { id: string }) {
         hintTargets={hintTargets(hint)}
         onDot={onDot}
       />
-      {settings.inputMode === INPUT_MODE.PICK_COLOUR && (
-        <SightlinesColourPicker colour={colour} onColour={setColour} />
-      )}
       {hint && (
         <p className="text-center" role="status">
           {hintMessage(hint)}
@@ -351,6 +320,7 @@ export function SightlinesGameView({ id }: { id: string }) {
           </Button>
         }
       />
+      <CustomiseHelpers route={GAME_ROUTE.SIGHTLINES} />
     </main>
   )
 }

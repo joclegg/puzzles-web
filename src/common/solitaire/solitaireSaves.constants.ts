@@ -26,7 +26,7 @@ export const DEFAULT_SETTINGS: SolitaireSettings = {
   reverse: false,
   oneTapMove: true,
   winnableOnly: true,
-  warnUnwinnable: true,
+  warnUnwinnable: false,
   showTimer: true,
   showMoveCount: true,
 }

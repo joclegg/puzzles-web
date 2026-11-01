@@ -1,3 +1,4 @@
+import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import {
   useFiveLettersGames,
@@ -315,6 +316,7 @@ export function FiveLettersGameView({ id }: { id: string }) {
           </>
         }
       />
+      <CustomiseHelpers route={GAME_ROUTE.FIVE_LETTERS} />
     </main>
   )
 }

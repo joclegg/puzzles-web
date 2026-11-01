@@ -1,5 +1,9 @@
 import type { Assists } from '@/common/assists.types'
-import type { InputMode, MistakeCheck } from '@/common/kakuro/kakuro.types'
+import type {
+  CombinationOrder,
+  InputMode,
+  MistakeCheck,
+} from '@/common/kakuro/kakuro.types'
 
 export interface KakuroSettings extends Assists {
   inputMode: InputMode
@@ -9,5 +13,6 @@ export interface KakuroSettings extends Assists {
   highlightRuns: boolean
   showTimer: boolean
   showCombinations: boolean
+  combinationOrder: CombinationOrder
   greyUsedDigits: boolean
 }

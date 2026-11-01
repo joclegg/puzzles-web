@@ -1,3 +1,6 @@
+import { BankLoader } from '@/components/BankLoader/BankLoader'
+import { BANK_LOAD } from '@/components/BankLoader/BankLoader.constants'
+import { useBankLoader } from '@/components/BankLoader/BankLoader.hooks'
 import {
   BarChart3,
   CalendarCheck,
@@ -42,7 +45,8 @@ import { SolitaireIcon } from '@/components/SolitaireIcon/SolitaireIcon'
 export function SolitaireHomeView({ play }: { play?: string }) {
   const { games, openGame, startRandom, openDaily } = useSolitaireGames()
   const [resumeChoice, setResumeChoice] = useState<SavedDeal | null>(null)
-  const [dealing, setDealing] = useState(false)
+  const bank = useBankLoader()
+  const dealing = bank.status === BANK_LOAD.LOADING
   const today = todayIso()
   const inProgress = games
     .filter((game) => game.status === DEAL_STATUS.IN_PROGRESS)
@@ -54,11 +58,7 @@ export function SolitaireHomeView({ play }: { play?: string }) {
   )
 
   function deal(start: () => Promise<void>) {
-    if (dealing) {
-      return
-    }
-    setDealing(true)
-    start().finally(() => setDealing(false))
+    bank.run(start)
   }
 
   const playedRef = useRef(false)
@@ -67,8 +67,8 @@ export function SolitaireHomeView({ play }: { play?: string }) {
     if (play === undefined || playedRef.current) return
     playedRef.current = true
     replaceRoute([GAME_ROUTE.SOLITAIRE])
-    void openDaily(today)
-  }, [openDaily, play, today])
+    bank.run(() => openDaily(today))
+  }, [bank, openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.SOLITAIRE}>
@@ -117,7 +117,7 @@ export function SolitaireHomeView({ play }: { play?: string }) {
           detail={daily?.status === DEAL_STATUS.WON ? 'Won' : undefined}
           done={daily?.status === DEAL_STATUS.WON}
           disabled={dealing}
-          onClick={() => openDaily(today)}
+          onClick={() => deal(() => openDaily(today))}
         />
       </MenuSection>
       <MenuSection title="New game">
@@ -165,6 +165,7 @@ export function SolitaireHomeView({ play }: { play?: string }) {
           {formatDuration(resumeChoice?.elapsedMs ?? 0)}).
         </p>
       </AppDialog>
+      <BankLoader load={bank} />
     </MenuScreen>
   )
 }

@@ -1,6 +1,10 @@
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Medal as MedalIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
+import { MEDAL } from '@/common/dailyMedal.constants'
+import type { Medal } from '@/common/dailyMedal.types'
+import { MEDAL_ICON_CLASS } from '@/components/DailyCalendarButton/DailyCalendarButton.constants'
+import { MEDAL_LABEL } from '@/components/GameCard/GameCard.constants'
 import { cn } from '@/common/utils.functions'
 import { MENU_ACCENT_CLASS } from '@/components/MenuScreen/MenuScreen.constants'
 import type { MenuAccent } from '@/components/MenuScreen/MenuScreen.types'
@@ -11,12 +15,14 @@ export function GameCard({
   href,
   icon,
   accent,
+  medal,
 }: {
   title: string
   detail: string
   href: string
   icon: ReactNode
   accent: MenuAccent
+  medal: Medal
 }) {
   return (
     <a
@@ -37,6 +43,13 @@ export function GameCard({
         <span className="block text-lg font-semibold">{title}</span>
         <span className="block text-sm text-muted-foreground">{detail}</span>
       </span>
+      {medal !== MEDAL.NONE && (
+        <MedalIcon
+          role="img"
+          aria-label={`${MEDAL_LABEL[medal]} medal today`}
+          className={cn('size-6 shrink-0', MEDAL_ICON_CLASS[medal])}
+        />
+      )}
       <ChevronRight
         aria-hidden
         className="size-5 shrink-0 text-game transition group-hover:translate-x-0.5"

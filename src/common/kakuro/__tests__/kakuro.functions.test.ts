@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import { INPUT_MODE, MISTAKE_CHECK } from '@/common/kakuro/kakuro.constants'
+import {
+  COMBINATION_ORDER,
+  INPUT_MODE,
+  MISTAKE_CHECK,
+} from '@/common/kakuro/kakuro.constants'
 import {
   brokenRuns,
   combinationLines,
@@ -163,7 +167,7 @@ describe('combinationLines', () => {
       cell: 4,
     })
 
-    expect(combinationLines(game)).toEqual([
+    expect(combinationLines({ game })).toEqual([
       {
         label: 'Across 3 in 2',
         options: [
@@ -183,6 +187,35 @@ describe('combinationLines', () => {
         ],
       },
     ])
+  })
+
+  it.each([
+    [
+      COMBINATION_ORDER.INCREASING,
+      [
+        [1, 5],
+        [2, 4],
+      ],
+    ],
+    [
+      COMBINATION_ORDER.DECREASING,
+      [
+        [5, 1],
+        [4, 2],
+      ],
+    ],
+  ])('lists the combinations in %s order', (order, expected) => {
+    const puzzle = createPuzzle({
+      size: 3,
+      solution: [0, 0, 0, 0, 1, 5, 0, 3, 4],
+    })
+    const game = tapCell({ game: newGame({ puzzle }), cell: 4 })
+
+    const across = combinationLines({ game, order })[0]
+
+    expect(
+      across.options.map((option) => option.map((it) => it.digit)),
+    ).toEqual(expected)
   })
 })
 

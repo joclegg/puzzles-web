@@ -1,3 +1,4 @@
+import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { Lightbulb, Undo2 } from 'lucide-react'
 import { useState } from 'react'
@@ -282,6 +283,7 @@ export function SlideOutGameView({ id }: { id: string }) {
           </Button>
         }
       />
+      <CustomiseHelpers route={GAME_ROUTE.SLIDE_OUT} />
     </main>
   )
 }

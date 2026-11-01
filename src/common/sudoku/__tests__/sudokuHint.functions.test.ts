@@ -18,6 +18,20 @@ describe('findHint', () => {
     })
   })
 
+  it('explains the candidates when no cell can be worked out', () => {
+    const empty = decodePuzzle(`${'0'.repeat(81)}|${SOLUTION}|`)
+
+    const hint = findHint(newGame({ puzzle: empty }))
+
+    expect(hint).toEqual({
+      cell: 0,
+      digit: 5,
+      message:
+        'This cell can only be 1, 2, 3, 4, 5, 6, 7, 8 or 9: everything else is in its row, column or box.',
+    })
+    expect(hint?.message).not.toContain('first empty')
+  })
+
   it('points at a wrong digit first', () => {
     const game = { ...newGame({ puzzle: PUZZLE }), values: [...PUZZLE.givens] }
     game.values[80] = 1

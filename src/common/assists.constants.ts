@@ -6,8 +6,8 @@ export const HINT_STYLE = {
 } as const
 
 export const DEFAULT_ASSISTS: Assists = {
-  showHints: true,
+  showHints: false,
   showTutorial: true,
-  allowReveal: true,
+  allowReveal: false,
   hintStyle: HINT_STYLE.POINT,
 }

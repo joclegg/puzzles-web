@@ -10,16 +10,10 @@ test('starts a new puzzle of a size', async ({ sightlinesPage }) => {
   await expect(sightlinesPage.dot({ row: 9, column: 9 })).toBeVisible()
 })
 
-test('paints with a picked colour', async ({ sightlinesPage }) => {
-  await sightlinesPage.openFromHome('Settings')
-  await sightlinesPage.chooseInputMode('Pick a colour')
-  await sightlinesPage.back()
+test('fills by tapping, with no colour toggle', async ({ sightlinesPage }) => {
   await sightlinesPage.openDaily(4)
 
-  await sightlinesPage.pickColour('Red')
-  await sightlinesPage.tapDot({ row: 1, column: 1 })
-
-  await sightlinesPage.expectDot({ row: 1, column: 1, state: /, red/ })
+  await expect(sightlinesPage.colourToggle).toBeHidden()
 })
 
 test('counts a solved puzzle in the stats', async ({ sightlinesPage }) => {

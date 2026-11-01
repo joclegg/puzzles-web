@@ -64,22 +64,6 @@ export function newGame(puzzle: Puzzle): SightlinesGame {
   return { puzzle, grid: givensOf(puzzle), changes: [], hint: null }
 }
 
-export function paint({
-  game,
-  cell,
-  colour,
-}: {
-  game: SightlinesGame
-  cell: number
-  colour: Dot
-}): SightlinesGame {
-  return setDot({
-    game,
-    cell,
-    change: (current) => (current === colour ? DOT.EMPTY : colour),
-  })
-}
-
 export function progressPercent(game: SightlinesGame): number {
   const cells = [...game.grid.dots].map((_, cell) => cell)
   const open = cells.filter((cell) => !isGiven({ puzzle: game.puzzle, cell }))

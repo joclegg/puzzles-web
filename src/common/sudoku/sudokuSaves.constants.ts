@@ -41,18 +41,18 @@ export const DIGIT_COUNTS_LABEL: Record<DigitCounts, string> = {
 }
 
 export const DEFAULT_MODE_SETTINGS: ModeSettings = {
-  mistakeCheck: MISTAKE_CHECK.SHOW_WRONG,
-  showMistakeCount: true,
-  highlightHouses: true,
-  highlightCage: true,
-  sameNumberStyle: HIGHLIGHT_STYLE.CELL,
-  notesStyle: HIGHLIGHT_STYLE.CELL,
-  autoRemoveNotes: true,
-  digitCounts: DIGIT_COUNTS.COUNT_UP,
-  disableCompletedDigits: true,
+  mistakeCheck: MISTAKE_CHECK.OFF,
+  showMistakeCount: false,
+  highlightHouses: false,
+  highlightCage: false,
+  sameNumberStyle: HIGHLIGHT_STYLE.OFF,
+  notesStyle: HIGHLIGHT_STYLE.OFF,
+  autoRemoveNotes: false,
+  digitCounts: DIGIT_COUNTS.OFF,
+  disableCompletedDigits: false,
   showTimer: true,
   boldPlacedDigits: true,
-  highlightLastPlaced: true,
+  highlightLastPlaced: false,
   greyGivenCells: true,
 }
 

@@ -44,3 +44,23 @@ test('says when the code is wrong', async ({ launcherPage }) => {
 
   await launcherPage.expectCodeFailed()
 })
+
+test('shows today’s medal on a game card', async ({ launcherPage }) => {
+  await launcherPage.seedDailySolitaireWin()
+
+  await expect(
+    launcherPage.gameLink('Solitaire').getByRole('img', {
+      name: 'Gold medal today',
+    }),
+  ).toBeVisible()
+  await expect(launcherPage.medal('Gold in every puzzle')).toBeHidden()
+})
+
+test('lists every game’s history, newest first', async ({ launcherPage }) => {
+  await launcherPage.seedDailySolitaireWin()
+
+  await launcherPage.openHistory()
+
+  await launcherPage.expectHistoryRow('Solitaire')
+  await launcherPage.expectHistoryRow('Won · 120 moves')
+})

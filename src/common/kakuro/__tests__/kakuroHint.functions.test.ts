@@ -27,6 +27,20 @@ describe('findHint', () => {
     })
   })
 
+  it('explains the candidates when no cell can be worked out', () => {
+    const puzzle = createPuzzle({
+      size: 3,
+      solution: [0, 0, 0, 0, 1, 3, 0, 3, 1],
+    })
+
+    const message = findHint(newGame({ puzzle }))?.message
+
+    expect(message).toBe(
+      "This cell's across run (4 in 2) and down run (4 in 2) only allow 1 or 3.",
+    )
+    expect(message).not.toContain('first empty')
+  })
+
   it('points at a wrong digit first', () => {
     const game = {
       ...newGame({ puzzle: SMALL }),

@@ -1,4 +1,5 @@
 import type {
+  COMBINATION_ORDER,
   INPUT_MODE,
   MISTAKE_CHECK,
 } from '@/common/kakuro/kakuro.constants'
@@ -21,6 +22,9 @@ export interface CombinationLine {
   label: string
   options: CombinationDigit[][]
 }
+
+export type CombinationOrder =
+  (typeof COMBINATION_ORDER)[keyof typeof COMBINATION_ORDER]
 
 export type InputMode = (typeof INPUT_MODE)[keyof typeof INPUT_MODE]
 
