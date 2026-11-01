@@ -19,6 +19,7 @@ import {
   SYNCED_GAMES,
 } from '@/common/sync.constants'
 import {
+  deleteAccountThenSignOut,
   entryStampKey,
   isSyncableKey,
   mergeGames,
@@ -140,7 +141,23 @@ export function useSync() {
     void client.auth.signOut()
   }, [client])
 
-  return { user, signIn, sendEmailLink, verifyEmailCode, signOut }
+  const deleteAccount = useCallback(
+    () =>
+      deleteAccountThenSignOut({
+        rpc: () => client.rpc('delete_account'),
+        signOut,
+      }),
+    [client, signOut],
+  )
+
+  return {
+    user,
+    signIn,
+    sendEmailLink,
+    verifyEmailCode,
+    signOut,
+    deleteAccount,
+  }
 }
 
 function dropUnsyncableKeys() {

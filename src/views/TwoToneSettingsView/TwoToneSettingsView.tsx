@@ -1,6 +1,7 @@
 import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { cn } from '@/common/utils.functions'
 import { GAME_ROUTE } from '@/common/route.constants'
+import type { Account } from '@/common/sync.types'
 import { useStoredState } from '@/common/storage.hooks'
 import {
   DEFAULT_SETTINGS,
@@ -12,7 +13,7 @@ import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 import { INPUT_MODE_LABEL } from '@/views/TwoToneSettingsView/TwoToneSettingsView.constants'
 
-export function TwoToneSettingsView() {
+export function TwoToneSettingsView({ account }: { account: Account }) {
   const [settings, setSettings] = useStoredState<TwoToneSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
@@ -23,7 +24,7 @@ export function TwoToneSettingsView() {
   }
 
   return (
-    <SettingsScreen game={GAME_ROUTE.TWO_TONE}>
+    <SettingsScreen game={GAME_ROUTE.TWO_TONE} account={account}>
       <h2 className="pt-2 font-semibold text-game">Filling in</h2>
       <div
         className="flex gap-2 py-3"

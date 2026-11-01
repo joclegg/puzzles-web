@@ -5,18 +5,19 @@ import {
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import type { FiveLettersSettings } from '@/common/fiveLetters/fiveLettersSaves.types'
 import { GAME_ROUTE } from '@/common/route.constants'
+import type { Account } from '@/common/sync.types'
 import { useStoredState } from '@/common/storage.hooks'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function FiveLettersSettingsView() {
+export function FiveLettersSettingsView({ account }: { account: Account }) {
   const [settings, setSettings] = useStoredState<FiveLettersSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
 
   return (
-    <SettingsScreen game={GAME_ROUTE.FIVE_LETTERS}>
+    <SettingsScreen game={GAME_ROUTE.FIVE_LETTERS} account={account}>
       <SettingRow
         label="Hard mode"
         detail="Every hint must be used in later guesses. Applies to new games."

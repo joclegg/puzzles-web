@@ -5,6 +5,7 @@ import {
   isProgressOnly,
   isSyncableKey,
   cleanEmailCode,
+  deleteAccountThenSignOut,
   entryStampKey,
   isEmailAddress,
   mergeGames,
@@ -233,5 +234,39 @@ describe('isSyncableKey', () => {
     ['kakuro.settings', true],
   ])('given %s then returns %s', (key, expected) => {
     expect(isSyncableKey(key)).toBe(expected)
+  })
+})
+
+describe('deleteAccountThenSignOut', () => {
+  it('signs out after the account is deleted', async () => {
+    const calls: string[] = []
+    const deleted = await deleteAccountThenSignOut({
+      rpc: async () => ({ error: null }),
+      signOut: () => calls.push('signOut'),
+    })
+    expect(deleted).toBe(true)
+    expect(calls).toEqual(['signOut'])
+  })
+
+  it('stays signed in when the server returns an error', async () => {
+    const calls: string[] = []
+    const deleted = await deleteAccountThenSignOut({
+      rpc: async () => ({ error: { message: 'nope' } }),
+      signOut: () => calls.push('signOut'),
+    })
+    expect(deleted).toBe(false)
+    expect(calls).toEqual([])
+  })
+
+  it('stays signed in when the request fails', async () => {
+    const calls: string[] = []
+    const deleted = await deleteAccountThenSignOut({
+      rpc: async () => {
+        throw new Error('offline')
+      },
+      signOut: () => calls.push('signOut'),
+    })
+    expect(deleted).toBe(false)
+    expect(calls).toEqual([])
   })
 })
