@@ -1,6 +1,6 @@
 import { test as base } from '@playwright/test'
 
-import { LEGACY_SETTINGS } from '@/common/legacySettings.constants'
+import { LEGACY_SETTINGS } from '@/shared/storage/legacySettings.constants'
 import { AssistsPage } from '@e2e/assistsPage'
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { KakuroPage } from '@e2e/kakuroPage'
