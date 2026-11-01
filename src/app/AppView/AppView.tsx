@@ -62,7 +62,11 @@ function routeView({
   if (definition) {
     return (
       <Suspense fallback={null}>
-        <definition.View screen={screen} id={id} />
+        <definition.View
+          key={screen === SCREEN.GAME ? `${SCREEN.GAME}/${id}` : SCREEN.HOME}
+          screen={screen}
+          id={id}
+        />
       </Suspense>
     )
   }
