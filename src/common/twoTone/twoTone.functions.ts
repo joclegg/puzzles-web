@@ -82,6 +82,22 @@ export function newGame(puzzle: Puzzle): TwoToneGame {
   return { puzzle, grid: puzzle.givens, changes: [], hint: null }
 }
 
+export function paint({
+  game,
+  cell,
+  colour,
+}: {
+  game: TwoToneGame
+  cell: number
+  colour: Tile
+}): TwoToneGame {
+  return setTile({
+    game,
+    cell,
+    change: (current) => (current === colour ? TILE.EMPTY : colour),
+  })
+}
+
 export function progressPercent(game: TwoToneGame): number {
   const tiles = [...game.puzzle.givens.tiles]
   const open = tiles.filter((tile) => tile === TILE.EMPTY).length

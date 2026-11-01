@@ -36,7 +36,9 @@ export class TwoTonePage {
   }
 
   get colourToggle() {
-    return this.page.getByRole('button', { name: 'Pick a colour' })
+    return this.page.getByRole('button', {
+      name: /^(Pick a colour|Tap to cycle)$/,
+    })
   }
 
   async open() {
@@ -109,6 +111,14 @@ export class TwoTonePage {
 
   async openFromHome(name: 'Stats' | 'History' | 'Settings') {
     await this.page.getByRole('button', { name, exact: true }).click()
+  }
+
+  async chooseInputMode(name: string) {
+    await this.page.getByRole('radio', { name }).click()
+  }
+
+  async pickColour(name: string) {
+    await this.page.getByRole('radio', { name }).click()
   }
 
   async expectTile({

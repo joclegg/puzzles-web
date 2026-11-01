@@ -5,8 +5,14 @@ export const GAMES_KEY = 'sightlines.games'
 
 export const SETTINGS_KEY = 'sightlines.settings'
 
+export const INPUT_MODE = {
+  TAP_TO_CYCLE: 'tapToCycle',
+  PICK_COLOUR: 'pickColour',
+} as const
+
 export const DEFAULT_SETTINGS: SightlinesSettings = {
   ...DEFAULT_ASSISTS,
+  inputMode: INPUT_MODE.TAP_TO_CYCLE,
   markBrokenRules: false,
   showTimer: true,
   showProgress: false,

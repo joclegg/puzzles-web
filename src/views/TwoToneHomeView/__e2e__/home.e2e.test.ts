@@ -10,10 +10,30 @@ test('starts a new puzzle of a size', async ({ twoTonePage }) => {
   await expect(twoTonePage.tile({ row: 6, column: 6 })).toBeVisible()
 })
 
-test('fills by tapping, with no colour toggle', async ({ twoTonePage }) => {
+test('paints with a picked colour', async ({ twoTonePage }) => {
+  await twoTonePage.openFromHome('Settings')
+  await twoTonePage.chooseInputMode('Pick a colour')
+  await twoTonePage.back()
   await twoTonePage.openDaily(4)
 
-  await expect(twoTonePage.colourToggle).toBeHidden()
+  await twoTonePage.pickColour('Blue')
+  await twoTonePage.tapTile({ row: 1, column: 1 })
+
+  await twoTonePage.expectTile({ row: 1, column: 1, state: /, blue/ })
+})
+
+test('switches to Pick a colour from the game header', async ({
+  twoTonePage,
+}) => {
+  await twoTonePage.openDaily(4)
+  await expect(twoTonePage.colourToggle).toHaveAccessibleName('Tap to cycle')
+
+  await twoTonePage.colourToggle.click()
+  await twoTonePage.pickColour('Blue')
+  await twoTonePage.tapTile({ row: 1, column: 1 })
+
+  await expect(twoTonePage.colourToggle).toHaveAccessibleName('Pick a colour')
+  await twoTonePage.expectTile({ row: 1, column: 1, state: /, blue/ })
 })
 
 test('counts a solved puzzle in the stats', async ({ twoTonePage }) => {

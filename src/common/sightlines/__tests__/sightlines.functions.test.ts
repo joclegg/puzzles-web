@@ -6,8 +6,10 @@ import {
   encodeChanges,
   isSolved,
   newGame,
+  paint,
   replay,
   tap,
+  undo,
   withHint,
 } from '@/common/sightlines/sightlines.functions'
 import type { SightlinesGame } from '@/common/sightlines/sightlines.types'
@@ -97,5 +99,31 @@ describe('brokenCells', () => {
     const game = tapAll({ game: newGame(PUZZLE), cells: [1, 1, 4, 4] })
 
     expect(brokenCells({ puzzle: PUZZLE, grid: game.grid }).has(0)).toBe(true)
+  })
+})
+
+describe('paint', () => {
+  it.each([DOT.RED, DOT.BLUE])(
+    'paints an empty spot %s and clears it on a second tap',
+    (colour) => {
+      const painted = paint({ game: newGame(PUZZLE), cell: 1, colour })
+      const cleared = paint({ game: painted, cell: 1, colour })
+
+      expect([painted.grid.dots[1], cleared.grid.dots[1]]).toEqual([
+        colour,
+        DOT.EMPTY,
+      ])
+    },
+  )
+
+  it('switches colour in one undoable change', () => {
+    const game = paint({ game: newGame(PUZZLE), cell: 1, colour: DOT.RED })
+
+    const after = paint({ game, cell: 1, colour: DOT.BLUE })
+
+    expect([after.grid.dots[1], undo(after).grid.dots[1]]).toEqual([
+      DOT.BLUE,
+      DOT.RED,
+    ])
   })
 })
