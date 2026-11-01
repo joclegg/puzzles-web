@@ -6,6 +6,7 @@ import {
   encodeChanges,
   isSolved,
   newGame,
+  paint,
   progressPercent,
   replay,
   tap,
@@ -101,5 +102,37 @@ describe('withHint', () => {
     const hint = withHint(game).hint
 
     expect([hint?.kind, hint?.deduction?.cells]).toEqual([HINT_KIND.NEXT, [2]])
+  })
+})
+
+describe('paint', () => {
+  it.each([TILE.RED, TILE.BLUE])(
+    'paints an empty spot %s and clears it on a second tap',
+    (colour) => {
+      const painted = paint({ game: newGame(PUZZLE), cell: 1, colour })
+      const cleared = paint({ game: painted, cell: 1, colour })
+
+      expect([painted.grid.tiles[1], cleared.grid.tiles[1]]).toEqual([
+        colour,
+        TILE.EMPTY,
+      ])
+    },
+  )
+
+  it('switches colour in one undoable change', () => {
+    const game = paint({ game: newGame(PUZZLE), cell: 1, colour: TILE.RED })
+
+    const after = paint({ game, cell: 1, colour: TILE.BLUE })
+
+    expect([after.grid.tiles[1], undo(after).grid.tiles[1]]).toEqual([
+      TILE.BLUE,
+      TILE.RED,
+    ])
+  })
+
+  it('leaves a starting spot alone', () => {
+    const after = paint({ game: newGame(PUZZLE), cell: 0, colour: TILE.BLUE })
+
+    expect(after.grid).toEqual(PUZZLE.givens)
   })
 })
