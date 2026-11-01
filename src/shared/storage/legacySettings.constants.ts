@@ -9,12 +9,12 @@ import {
   DEFAULT_SETTINGS as KAKURO_DEFAULTS,
   GAMES_KEY as KAKURO_GAMES,
   SETTINGS_KEY as KAKURO_SETTINGS,
-} from '@/games/kakuro/engine/kakuroSettings.constants'
+} from '@/games/kakuro/engine/kakuroSaves.constants'
 import {
   DEFAULT_SETTINGS as SIGHTLINES_DEFAULTS,
   GAMES_KEY as SIGHTLINES_GAMES,
   SETTINGS_KEY as SIGHTLINES_SETTINGS,
-} from '@/games/sightlines/engine/sightlinesSettings.constants'
+} from '@/games/sightlines/engine/sightlinesSaves.constants'
 import {
   DEFAULT_SETTINGS as SLIDE_OUT_DEFAULTS,
   GAMES_KEY as SLIDE_OUT_GAMES,
@@ -39,7 +39,7 @@ import {
   DEFAULT_SETTINGS as TWO_TONE_DEFAULTS,
   GAMES_KEY as TWO_TONE_GAMES,
   SETTINGS_KEY as TWO_TONE_SETTINGS,
-} from '@/games/twoTone/engine/twoToneSettings.constants'
+} from '@/games/twoTone/engine/twoToneSaves.constants'
 import {
   DEFAULT_SETTINGS as WORD_WHEEL_DEFAULTS,
   GAMES_KEY as WORD_WHEEL_GAMES,

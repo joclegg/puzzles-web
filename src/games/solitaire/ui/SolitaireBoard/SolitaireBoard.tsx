@@ -18,18 +18,18 @@ import {
   FINISH_FLIGHT_MS,
   MOVE_MS,
   SNAP_BACK_MS,
-} from '@/games/solitaire/ui/SolitaireTable/SolitaireTable.constants'
+} from '@/games/solitaire/ui/SolitaireBoard/SolitaireBoard.constants'
 import {
   dragKey,
   isDropPile,
   parseDragKey,
   parsePileKey,
   pileKey,
-} from '@/games/solitaire/ui/SolitaireTable/SolitaireTable.functions'
+} from '@/games/solitaire/ui/SolitaireBoard/SolitaireBoard.functions'
 import { DRAW_CARDS } from '@/games/solitaire/engine/solitaire.constants'
-import type { CardPlace } from '@/games/solitaire/ui/SolitaireTable/SolitaireTable.types'
+import type { CardPlace } from '@/games/solitaire/ui/SolitaireBoard/SolitaireBoard.types'
 
-export function SolitaireTable({
+export function SolitaireBoard({
   board,
   drawMode,
   selection,

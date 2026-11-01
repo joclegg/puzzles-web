@@ -46,8 +46,8 @@ import {
   INPUT_MODE,
   SETTINGS_KEY,
   TITLE,
-} from '@/games/sightlines/engine/sightlinesSettings.constants'
-import type { SightlinesSettings } from '@/games/sightlines/engine/sightlinesSettings.types'
+} from '@/games/sightlines/engine/sightlinesSaves.constants'
+import type { SightlinesSettings } from '@/games/sightlines/engine/sightlinesSaves.types'
 import { WinDialog } from '@/shared/game/WinDialog/WinDialog'
 import { MENU_ACCENT } from '@/shared/screens/MenuScreen/MenuScreen.constants'
 import { Button } from '@/shared/ui/Button/Button'

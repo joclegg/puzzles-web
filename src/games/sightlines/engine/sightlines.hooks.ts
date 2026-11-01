@@ -8,7 +8,7 @@ import { useStoredState } from '@/shared/storage/storage.hooks'
 import { DAILY_SEED_SPREAD } from '@/games/sightlines/engine/sightlines.constants'
 import { generatePuzzle } from '@/games/sightlines/engine/sightlinesGenerator.functions'
 import { encodePuzzle } from '@/games/sightlines/engine/sightlinesPuzzle.functions'
-import { GAMES_KEY } from '@/games/sightlines/engine/sightlinesSettings.constants'
+import { GAMES_KEY } from '@/games/sightlines/engine/sightlinesSaves.constants'
 
 export function useSightlinesGames() {
   const [games, setGames] = useStoredState<SavedPuzzle[]>({

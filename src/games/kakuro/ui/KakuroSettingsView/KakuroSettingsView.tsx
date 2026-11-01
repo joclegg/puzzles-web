@@ -10,8 +10,8 @@ import {
 import {
   DEFAULT_SETTINGS,
   SETTINGS_KEY,
-} from '@/games/kakuro/engine/kakuroSettings.constants'
-import type { KakuroSettings } from '@/games/kakuro/engine/kakuroSettings.types'
+} from '@/games/kakuro/engine/kakuroSaves.constants'
+import type { KakuroSettings } from '@/games/kakuro/engine/kakuroSaves.types'
 import { GAME_ROUTE } from '@/shared/lib/route.constants'
 import { useStoredState } from '@/shared/storage/storage.hooks'
 import { OptionGroup } from '@/shared/ui/OptionGroup/OptionGroup'

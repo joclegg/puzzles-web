@@ -41,8 +41,8 @@ import {
   INPUT_MODE,
   SETTINGS_KEY,
   TITLE,
-} from '@/games/twoTone/engine/twoToneSettings.constants'
-import type { TwoToneSettings } from '@/games/twoTone/engine/twoToneSettings.types'
+} from '@/games/twoTone/engine/twoToneSaves.constants'
+import type { TwoToneSettings } from '@/games/twoTone/engine/twoToneSaves.types'
 import { WinDialog } from '@/shared/game/WinDialog/WinDialog'
 import { MENU_ACCENT } from '@/shared/screens/MenuScreen/MenuScreen.constants'
 import { Button } from '@/shared/ui/Button/Button'

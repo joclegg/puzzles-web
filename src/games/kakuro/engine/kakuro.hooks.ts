@@ -1,7 +1,7 @@
 import { dailyIndex, randomIndex } from '@/shared/bank/bank.functions'
 import { fetchBankLines } from '@/shared/bank/bank.hooks'
 import { FIRST_DAY } from '@/games/kakuro/engine/kakuro.constants'
-import { GAMES_KEY } from '@/games/kakuro/engine/kakuroSettings.constants'
+import { GAMES_KEY } from '@/games/kakuro/engine/kakuroSaves.constants'
 import {
   dailyPuzzleId,
   revealPuzzle,

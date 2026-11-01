@@ -45,8 +45,8 @@ import {
   DEFAULT_SETTINGS,
   SETTINGS_KEY,
   TITLE,
-} from '@/games/kakuro/engine/kakuroSettings.constants'
-import type { KakuroSettings } from '@/games/kakuro/engine/kakuroSettings.types'
+} from '@/games/kakuro/engine/kakuroSaves.constants'
+import type { KakuroSettings } from '@/games/kakuro/engine/kakuroSaves.types'
 import { MISTAKE_CHECK } from '@/games/kakuro/engine/kakuro.constants'
 import { puzzleTitle } from '@/shared/game/puzzleTitle.functions'
 import { GAME_ROUTE, SCREEN } from '@/shared/lib/route.constants'

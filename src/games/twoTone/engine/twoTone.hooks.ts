@@ -10,7 +10,7 @@ import {
   encodePuzzle,
   generatePuzzle,
 } from '@/games/twoTone/engine/twoToneGenerator.functions'
-import { GAMES_KEY } from '@/games/twoTone/engine/twoToneSettings.constants'
+import { GAMES_KEY } from '@/games/twoTone/engine/twoToneSaves.constants'
 
 export function useTwoToneGames() {
   const [games, setGames] = useStoredState<SavedPuzzle[]>({

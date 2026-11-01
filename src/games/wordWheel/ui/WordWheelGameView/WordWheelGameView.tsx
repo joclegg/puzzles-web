@@ -53,7 +53,7 @@ import {
 } from '@/shared/ui/Button/Button.constants'
 import { MoreMenu } from '@/shared/ui/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
-import { WordWheelGrid } from '@/games/wordWheel/ui/WordWheelGrid/WordWheelGrid'
+import { WordWheelBoard } from '@/games/wordWheel/ui/WordWheelBoard/WordWheelBoard'
 import { WordWheelLetters } from '@/games/wordWheel/ui/WordWheelLetters/WordWheelLetters'
 
 const TUTORIAL = [
@@ -260,7 +260,7 @@ export function WordWheelGameView({ id }: { id: string }) {
       </div>
       <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-3 lg:flex-row lg:items-center lg:justify-center lg:gap-10">
         <div className="flex min-h-0 w-full flex-1 justify-center lg:h-full">
-          <WordWheelGrid
+          <WordWheelBoard
             puzzle={game.puzzle}
             shown={shown}
             revealed={new Set(game.revealed)}

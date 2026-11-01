@@ -8,9 +8,9 @@ import {
 import {
   CELL_GAP,
   CELL_SIZE,
-} from '@/games/wordWheel/ui/WordWheelGrid/WordWheelGrid.constants'
+} from '@/games/wordWheel/ui/WordWheelBoard/WordWheelBoard.constants'
 
-export function WordWheelGrid({
+export function WordWheelBoard({
   puzzle,
   shown,
   revealed,

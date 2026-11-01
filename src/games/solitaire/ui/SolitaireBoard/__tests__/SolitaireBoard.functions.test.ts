@@ -7,7 +7,7 @@ import {
   parseDragKey,
   parsePileKey,
   pileKey,
-} from '@/games/solitaire/ui/SolitaireTable/SolitaireTable.functions'
+} from '@/games/solitaire/ui/SolitaireBoard/SolitaireBoard.functions'
 
 describe('drag keys', () => {
   it('round-trips a card in a pile', () => {

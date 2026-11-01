@@ -6,8 +6,8 @@ import {
   DEFAULT_SETTINGS,
   INPUT_MODE,
   SETTINGS_KEY,
-} from '@/games/twoTone/engine/twoToneSettings.constants'
-import type { TwoToneSettings } from '@/games/twoTone/engine/twoToneSettings.types'
+} from '@/games/twoTone/engine/twoToneSaves.constants'
+import type { TwoToneSettings } from '@/games/twoTone/engine/twoToneSaves.types'
 import { SettingsScreen } from '@/shared/screens/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/shared/screens/SettingRow/SettingRow'
 import { INPUT_MODE_LABEL } from '@/games/twoTone/ui/TwoToneSettingsView/TwoToneSettingsView.constants'

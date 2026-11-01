@@ -59,7 +59,7 @@ import {
 import { hintMessage } from '@/games/solitaire/ui/PlayingCard/PlayingCard.functions'
 import { MoreMenu } from '@/shared/ui/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
-import { SolitaireTable } from '@/games/solitaire/ui/SolitaireTable/SolitaireTable'
+import { SolitaireBoard } from '@/games/solitaire/ui/SolitaireBoard/SolitaireBoard'
 
 const FINISH_STEP_MS = 110
 
@@ -331,7 +331,7 @@ export function SolitaireGameView({ id }: { id: string }) {
           Finish
         </Button>
       )}
-      <SolitaireTable
+      <SolitaireBoard
         board={board}
         finishing={finishing.length > 0}
         drawMode={current.drawMode}

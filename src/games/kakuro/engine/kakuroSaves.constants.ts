@@ -4,7 +4,7 @@ import {
   INPUT_MODE,
   MISTAKE_CHECK,
 } from '@/games/kakuro/engine/kakuro.constants'
-import type { KakuroSettings } from '@/games/kakuro/engine/kakuroSettings.types'
+import type { KakuroSettings } from '@/games/kakuro/engine/kakuroSaves.types'
 
 export const GAMES_KEY = 'kakuro.games'
 

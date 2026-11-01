@@ -6,8 +6,8 @@ import {
   DEFAULT_SETTINGS,
   INPUT_MODE,
   SETTINGS_KEY,
-} from '@/games/sightlines/engine/sightlinesSettings.constants'
-import type { SightlinesSettings } from '@/games/sightlines/engine/sightlinesSettings.types'
+} from '@/games/sightlines/engine/sightlinesSaves.constants'
+import type { SightlinesSettings } from '@/games/sightlines/engine/sightlinesSaves.types'
 import { SettingsScreen } from '@/shared/screens/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/shared/screens/SettingRow/SettingRow'
 import { INPUT_MODE_LABEL } from '@/games/sightlines/ui/SightlinesSettingsView/SightlinesSettingsView.constants'
