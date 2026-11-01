@@ -22,4 +22,5 @@ export const SCREEN = {
 
 export const LAUNCHER_ROUTE = {
   HISTORY: 'history',
+  SETTINGS: 'settings',
 } as const

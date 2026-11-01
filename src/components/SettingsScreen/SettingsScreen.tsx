@@ -1,26 +1,22 @@
 import type { ReactNode } from 'react'
 
-import { SCREEN } from '@/common/route.constants'
+import { LAUNCHER_ROUTE, SCREEN } from '@/common/route.constants'
 import { routeHash } from '@/common/route.functions'
-import type { Account } from '@/common/sync.types'
 import { cn } from '@/common/utils.functions'
-import { DeleteAccount } from '@/components/DeleteAccount/DeleteAccount'
 import { MENU_ACCENT_CLASS } from '@/components/MenuScreen/MenuScreen.constants'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
-import { ThemePicker } from '@/components/ThemePicker/ThemePicker'
 import { SETTINGS_TABS } from '@/components/SettingsScreen/SettingsScreen.constants'
 
 export function SettingsScreen({
   game,
-  account,
   children,
 }: {
   game: string
-  account: Account
   children: ReactNode
 }) {
   const current =
     SETTINGS_TABS.find((tab) => tab.route === game) ?? SETTINGS_TABS[0]
+  const general = current.route === LAUNCHER_ROUTE.SETTINGS
   return (
     <main
       className={cn(
@@ -28,8 +24,7 @@ export function SettingsScreen({
         MENU_ACCENT_CLASS[current.accent],
       )}
     >
-      <ScreenHeader title="Settings" back={[game]} />
-      <ThemePicker />
+      <ScreenHeader title="Settings" back={general ? [] : [game]} />
       <nav
         aria-label="Games"
         className="sticky top-0 z-10 -mx-4 flex [scrollbar-width:none] gap-1 overflow-x-auto bg-background/90 px-4 py-2 backdrop-blur"
@@ -37,7 +32,11 @@ export function SettingsScreen({
         {SETTINGS_TABS.map((tab) => (
           <a
             key={tab.route}
-            href={routeHash([tab.route, SCREEN.SETTINGS])}
+            href={routeHash(
+              tab.route === LAUNCHER_ROUTE.SETTINGS
+                ? [tab.route]
+                : [tab.route, SCREEN.SETTINGS],
+            )}
             aria-current={tab.route === current.route ? 'page' : undefined}
             className={cn(
               'shrink-0 rounded-full px-3 py-1.5 text-sm font-medium whitespace-nowrap ring-1 transition-colors',
@@ -51,16 +50,15 @@ export function SettingsScreen({
           </a>
         ))}
       </nav>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Helpers such as hints, mistake checks and highlights start off for new
-        players. Turn on any you'd like below.
-      </p>
+      {!general && (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Helpers such as hints, mistake checks and highlights start off for new
+          players. Turn on any you'd like below.
+        </p>
+      )}
       <div className="mt-2 rounded-2xl bg-linear-to-b from-game/10 to-transparent px-4 pb-2 ring-1 ring-game/20">
         {children}
       </div>
-      {account.email !== null && (
-        <DeleteAccount onDeleteAccount={account.onDeleteAccount} />
-      )}
     </main>
   )
 }

@@ -36,6 +36,8 @@ Puzzles for the web: eight offline puzzle games served at https://joclegg.github
 - `scripts/solitaireBank.mjs`: appends winnable Solitaire deal seeds to `solitaire/<drawMode>_<order>.txt` in a puzzles-data clone, e.g. `PUZZLES_DATA=../puzzles-data node scripts/solitaireBank.mjs drawThree down 1000`. Winnable-only deals come from that bank (a random line, or the line for the day for the daily deal), so starting a game never runs the solver.
 - `src/assets/`: data used only by tests, such as `sudoku-samples/`
 - `src/views/AppView/`: the hash router that picks the view
+- `SettingsScreen` in `src/components/`: the settings hub, with a General tab first (`GeneralSettingsView` at `#/settings`: theme and account, opened by the launcher's Settings button) and then a tab per game (`#/<game>/settings`, opened by that game's ⋮ menu)
+- `<game>.settings` is also the synced settings JSON shared with puzzles-android and puzzles-ios. Sudoku keeps the helpers (`showHints`, `allowReveal`, `showTutorial`, `hintStyle`) in both `classic` and `killer`, and also writes Classic's values at the top level for older app versions; `fromStoredSettings` reads each mode's own value, falling back to the top level, and `toStoredSettings` writes both
 - `src/views/<Game><Screen>View/`: one view per game screen, e.g. `FiveLettersHomeView`, `FiveLettersGameView`, `FiveLettersStatsView`, `FiveLettersSettingsView`
 - `__tests__/`: Vitest unit tests, next to the files they test
 - `src/views/<View>/__e2e__/`: Playwright tests for that view, with screenshots in `__snapshots__`

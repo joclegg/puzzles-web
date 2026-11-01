@@ -35,10 +35,16 @@ export class SudokuPage {
     return this.dialog.getByRole('navigation').getByLabel(name)
   }
 
+  levelTile(name: string) {
+    return this.page.getByRole('button', { name: new RegExp(`^${name}`) })
+  }
+
+  async tapLevel(name: string) {
+    await this.levelTile(name).click()
+  }
+
   async startLevel(name: string) {
-    await this.page
-      .getByRole('button', { name: new RegExp(`^${name}`) })
-      .click()
+    await this.tapLevel(name)
     await expect(this.board).toBeVisible()
   }
 
@@ -89,6 +95,11 @@ export class SudokuPage {
     await this.page
       .getByRole('button', { name: 'Redo the move you undid' })
       .click()
+  }
+
+  async answerResume(choice: string) {
+    await expect(this.dialog).toContainText('in progress')
+    await this.dialog.getByRole('button', { name: choice }).click()
   }
 
   async back() {

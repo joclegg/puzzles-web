@@ -1,12 +1,19 @@
-import { GAME_ROUTE } from '@/common/route.constants'
+import { GAME_ROUTE, LAUNCHER_ROUTE } from '@/common/route.constants'
 import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import type { MenuAccent } from '@/components/MenuScreen/MenuScreen.types'
 
 export const SETTINGS_TABS: readonly {
-  route: (typeof GAME_ROUTE)[keyof typeof GAME_ROUTE]
+  route:
+    | (typeof GAME_ROUTE)[keyof typeof GAME_ROUTE]
+    | typeof LAUNCHER_ROUTE.SETTINGS
   label: string
   accent: MenuAccent
 }[] = [
+  {
+    route: LAUNCHER_ROUTE.SETTINGS,
+    label: 'General',
+    accent: MENU_ACCENT.SUDOKU,
+  },
   { route: GAME_ROUTE.SUDOKU, label: 'Sudoku', accent: MENU_ACCENT.SUDOKU },
   {
     route: GAME_ROUTE.SOLITAIRE,

@@ -21,3 +21,20 @@ describe('legacySettingsToKeep', () => {
     ).toMatchObject({ showHints: true, markBrokenRules: true })
   })
 })
+
+describe('legacy Sudoku settings', () => {
+  it('turns the old helpers on in both modes', () => {
+    const kept = legacySettingsToKeep((key) =>
+      key === 'sudoku.games' ? '[{"id":"a"}]' : null,
+    )
+
+    expect(
+      kept.find((entry) => entry.key === 'sudoku.settings')?.value,
+    ).toMatchObject({
+      showHints: true,
+      allowReveal: true,
+      classic: { showHints: true, allowReveal: true, showTutorial: true },
+      killer: { showHints: true, allowReveal: true, showTutorial: true },
+    })
+  })
+})

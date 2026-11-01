@@ -1,5 +1,4 @@
 import { SCREEN } from '@/common/route.constants'
-import type { Account } from '@/common/sync.types'
 import { SudokuDailyView } from '@/views/SudokuDailyView/SudokuDailyView'
 import { SudokuEntryView } from '@/views/SudokuEntryView/SudokuEntryView'
 import { SudokuGameView } from '@/views/SudokuGameView/SudokuGameView'
@@ -8,15 +7,7 @@ import { SudokuHomeView } from '@/views/SudokuHomeView/SudokuHomeView'
 import { SudokuSettingsView } from '@/views/SudokuSettingsView/SudokuSettingsView'
 import { SudokuStatsView } from '@/views/SudokuStatsView/SudokuStatsView'
 
-export function SudokuView({
-  screen,
-  id,
-  account,
-}: {
-  screen: string
-  id: string
-  account: Account
-}) {
+export function SudokuView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
     return <SudokuGameView key={id} id={id} />
   }
@@ -27,7 +18,7 @@ export function SudokuView({
     return <SudokuHistoryView />
   }
   if (screen === SCREEN.SETTINGS) {
-    return <SudokuSettingsView account={account} />
+    return <SudokuSettingsView />
   }
   if (screen === SCREEN.DAILY) {
     return <SudokuDailyView />

@@ -5,6 +5,7 @@ import { AssistsPage } from '@e2e/assistsPage'
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { KakuroPage } from '@e2e/kakuroPage'
 import { LauncherPage } from '@e2e/launcherPage'
+import { SettingsPage } from '@e2e/settingsPage'
 import { SightlinesPage } from '@e2e/sightlinesPage'
 import { SlideOutPage } from '@e2e/slideOutPage'
 import { SolitairePage } from '@e2e/solitairePage'
@@ -18,6 +19,7 @@ const DATA_URL = 'https://joclegg.github.io/puzzles-data/'
 
 export const test = base.extend<{
   assistsPage: AssistsPage
+  settingsPage: SettingsPage
   launcherPage: LauncherPage
   fiveLettersPage: FiveLettersPage
   twoTonePage: TwoTonePage
@@ -52,6 +54,9 @@ export const test = base.extend<{
   },
   assistsPage: async ({ page }, use) => {
     await use(new AssistsPage(page))
+  },
+  settingsPage: async ({ page }, use) => {
+    await use(new SettingsPage(page))
   },
   launcherPage: async ({ page }, use) => {
     const launcherPage = new LauncherPage(page)

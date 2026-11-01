@@ -5,30 +5,29 @@ import {
 } from '@/common/fiveLetters/fiveLettersSaves.constants'
 import type { FiveLettersSettings } from '@/common/fiveLetters/fiveLettersSaves.types'
 import { GAME_ROUTE } from '@/common/route.constants'
-import type { Account } from '@/common/sync.types'
 import { useStoredState } from '@/common/storage.hooks'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function FiveLettersSettingsView({ account }: { account: Account }) {
+export function FiveLettersSettingsView() {
   const [settings, setSettings] = useStoredState<FiveLettersSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
 
   return (
-    <SettingsScreen game={GAME_ROUTE.FIVE_LETTERS} account={account}>
+    <SettingsScreen game={GAME_ROUTE.FIVE_LETTERS}>
       <SettingRow
         label="Hard mode"
-        detail="Every hint must be used in later guesses. Applies to new games."
+        detail="Every green and yellow letter you find must be used in later guesses. Applies to new games."
         checked={settings.hardMode}
         onChange={(hardMode) =>
           setSettings((current) => ({ ...current, hardMode }))
         }
       />
       <SettingRow
-        label="High contrast"
-        detail="Orange and blue instead of green and yellow"
+        label="High contrast colours"
+        detail="Orange and blue instead of green and yellow."
         checked={settings.highContrast}
         onChange={(highContrast) =>
           setSettings((current) => ({ ...current, highContrast }))

@@ -7,6 +7,7 @@ export class WordWheelPage {
   readonly status: Locator
   readonly dialog: Locator
   readonly word: Locator
+  readonly continueCard: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -15,6 +16,7 @@ export class WordWheelPage {
     this.status = page.getByRole('status')
     this.dialog = page.getByRole('dialog')
     this.word = page.getByLabel('Word', { exact: true })
+    this.continueCard = page.getByRole('button', { name: /^Continue/ })
   }
 
   async open() {
@@ -29,6 +31,28 @@ export class WordWheelPage {
       .getByRole('button', { name: `Daily ${letters} letters` })
       .click()
     await expect(this.letters).toBeVisible()
+  }
+
+  levelTile(letters: number) {
+    return this.page.getByRole('button', {
+      name: new RegExp(`^${letters} letters`),
+    })
+  }
+
+  async startLevel(letters: number) {
+    await this.levelTile(letters).click()
+    await expect(this.letters).toBeVisible()
+  }
+
+  async goHome() {
+    await this.dialog.getByRole('button', { name: 'Home' }).click()
+    await expect(
+      this.page.getByRole('heading', { name: 'Word Wheel' }),
+    ).toBeVisible()
+  }
+
+  async showRules() {
+    await this.page.getByRole('button', { name: 'Show the rules' }).click()
   }
 
   letter(name: string) {

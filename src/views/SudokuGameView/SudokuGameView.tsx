@@ -46,7 +46,10 @@ import {
   SUDOKU_STATUS,
   TITLE,
 } from '@/common/sudoku/sudokuSaves.constants'
-import { sudokuTitle } from '@/common/sudoku/sudokuSaves.functions'
+import {
+  fromStoredSettings,
+  sudokuTitle,
+} from '@/common/sudoku/sudokuSaves.functions'
 import type { SudokuSettings } from '@/common/sudoku/sudokuSaves.types'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
 import { WinDialog } from '@/components/WinDialog/WinDialog'
@@ -156,7 +159,7 @@ export function SudokuGameView({ id }: { id: string }) {
     )
   }
 
-  const modeSettings = settings[saved.mode]
+  const modeSettings = fromStoredSettings(settings)[saved.mode]
   const current: SudokuGame = {
     ...game,
     inputMode: settings.inputMode,
@@ -228,7 +231,7 @@ export function SudokuGameView({ id }: { id: string }) {
     if (found === null || finished || complete) {
       return
     }
-    if (settings.hintStyle === HINT_STYLE.FILL) {
+    if (modeSettings.hintStyle === HINT_STYLE.FILL) {
       update((state) => placeHint({ game: state, hint: found }))
       return
     }
@@ -299,7 +302,7 @@ export function SudokuGameView({ id }: { id: string }) {
           >
             <Redo2 className="size-5" />
           </Button>
-          {settings.showHints && (
+          {modeSettings.showHints && (
             <Button
               size={BUTTON_SIZE.ICON}
               aria-label="Show a hint"
@@ -309,7 +312,7 @@ export function SudokuGameView({ id }: { id: string }) {
               <Lightbulb className="size-5" />
             </Button>
           )}
-          {settings.showTutorial && (
+          {modeSettings.showTutorial && (
             <HowToPlay steps={TUTORIAL}>
               <p>
                 Fill the grid so every row, column and box has each number once.
@@ -326,7 +329,7 @@ export function SudokuGameView({ id }: { id: string }) {
                 label: 'Restart puzzle',
                 onClick: () => setConfirming('restart'),
               },
-              ...(current.puzzle.solution !== null && settings.allowReveal
+              ...(current.puzzle.solution !== null && modeSettings.allowReveal
                 ? [
                     {
                       label: 'Show solution',

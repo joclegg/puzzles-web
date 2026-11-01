@@ -81,8 +81,16 @@ export const LEGACY_SETTINGS: Record<string, object> = {
   [SUDOKU_SETTINGS]: {
     ...SUDOKU_DEFAULTS,
     ...LEGACY_ASSISTS,
-    classic: { ...SUDOKU_DEFAULTS.classic, ...LEGACY_SUDOKU_MODE },
-    killer: { ...SUDOKU_DEFAULTS.killer, ...LEGACY_SUDOKU_MODE },
+    classic: {
+      ...SUDOKU_DEFAULTS.classic,
+      ...LEGACY_ASSISTS,
+      ...LEGACY_SUDOKU_MODE,
+    },
+    killer: {
+      ...SUDOKU_DEFAULTS.killer,
+      ...LEGACY_ASSISTS,
+      ...LEGACY_SUDOKU_MODE,
+    },
   },
   [SOLITAIRE_SETTINGS]: {
     ...SOLITAIRE_DEFAULTS,

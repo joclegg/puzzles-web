@@ -57,3 +57,19 @@ test('keeps progress after a reload', async ({ sightlinesPage }) => {
 
   await sightlinesPage.expectDot({ row: 1, column: 1, state: /, blue/ })
 })
+
+test('shows how many dots each number sees now', async ({
+  settingsPage,
+  sightlinesPage,
+}) => {
+  await settingsPage.open('sightlines')
+  await settingsPage.toggle('Show what numbers see now')
+  await settingsPage.back()
+  await sightlinesPage.openDaily(4)
+  await expect(sightlinesPage.dot({ row: 3, column: 1 })).toHaveText('42')
+
+  await sightlinesPage.tapDot({ row: 2, column: 1 })
+
+  await expect(sightlinesPage.dot({ row: 3, column: 1 })).toHaveText('43')
+  await sightlinesPage.expectScreenshot('seen-count')
+})

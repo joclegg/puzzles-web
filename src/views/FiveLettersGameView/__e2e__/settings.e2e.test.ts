@@ -14,7 +14,7 @@ test('starts hard mode games once it is turned on', async ({
 
 test('switches to high contrast colours', async ({ fiveLettersPage }) => {
   await fiveLettersPage.openSettings()
-  await fiveLettersPage.toggleSetting('High contrast')
+  await fiveLettersPage.toggleSetting('High contrast colours')
   await fiveLettersPage.back()
   await fiveLettersPage.openDaily()
 

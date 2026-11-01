@@ -5,15 +5,24 @@ import {
   GAME_MODE,
   MISTAKE_CHECK,
 } from '@/common/sudoku/sudoku.constants'
-import { SUDOKU_STATUS } from '@/common/sudoku/sudokuSaves.constants'
+import {
+  DEFAULT_SETTINGS,
+  SUDOKU_STATUS,
+} from '@/common/sudoku/sudokuSaves.constants'
 import {
   bestTimes,
   dailyResults,
   finishSudoku,
+  fromStoredSettings,
   startSudoku,
   sudokuTitle,
+  toStoredSettings,
 } from '@/common/sudoku/sudokuSaves.functions'
-import type { SavedSudoku, SudokuRef } from '@/common/sudoku/sudokuSaves.types'
+import type {
+  SavedSudoku,
+  SudokuRef,
+  SudokuSettings,
+} from '@/common/sudoku/sudokuSaves.types'
 
 const PUZZLE = `${'0'.repeat(81)}|${'1'.repeat(81)}|`
 
@@ -196,5 +205,80 @@ describe('sudokuTitle', () => {
       [2000, 1],
       [9000, 0],
     ])
+  })
+})
+
+describe('fromStoredSettings', () => {
+  it('copies old top-level helpers into both modes', () => {
+    const { showHints, allowReveal, showTutorial, hintStyle, ...classic } =
+      DEFAULT_SETTINGS.classic
+    const stored = {
+      ...DEFAULT_SETTINGS,
+      showHints: true,
+      allowReveal: true,
+      showTutorial: false,
+      hintStyle: 'fill',
+      classic,
+      killer: classic,
+    } as SudokuSettings
+
+    const settings = fromStoredSettings(stored)
+
+    expect([showHints, allowReveal, showTutorial, hintStyle]).toEqual([
+      false,
+      false,
+      true,
+      'point',
+    ])
+    for (const mode of [settings.classic, settings.killer]) {
+      expect(mode).toMatchObject({
+        showHints: true,
+        allowReveal: true,
+        showTutorial: false,
+        hintStyle: 'fill',
+      })
+    }
+  })
+
+  it("prefers each mode's own helpers over the top level", () => {
+    const stored: SudokuSettings = {
+      ...DEFAULT_SETTINGS,
+      showHints: true,
+      classic: { ...DEFAULT_SETTINGS.classic, showHints: false },
+      killer: { ...DEFAULT_SETTINGS.killer, hintStyle: 'fill' },
+    }
+
+    const settings = fromStoredSettings(stored)
+
+    expect([
+      settings.classic.showHints,
+      settings.killer.showHints,
+      settings.killer.hintStyle,
+    ]).toEqual([false, false, 'fill'])
+  })
+})
+
+describe('toStoredSettings', () => {
+  it("writes Classic's helpers at the top level too", () => {
+    const settings: SudokuSettings = {
+      ...DEFAULT_SETTINGS,
+      classic: {
+        ...DEFAULT_SETTINGS.classic,
+        showHints: true,
+        hintStyle: 'fill',
+      },
+      killer: { ...DEFAULT_SETTINGS.killer, allowReveal: true },
+    }
+
+    const stored = toStoredSettings(settings)
+
+    expect(stored).toMatchObject({
+      showHints: true,
+      allowReveal: false,
+      showTutorial: true,
+      hintStyle: 'fill',
+      classic: { showHints: true, hintStyle: 'fill' },
+      killer: { showHints: false, allowReveal: true },
+    })
   })
 })

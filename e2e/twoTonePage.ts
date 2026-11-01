@@ -16,7 +16,7 @@ export class TwoTonePage {
     this.dialog = page.getByRole('dialog')
     this.hintMessage = page.getByRole('status')
     this.startingTilesToggle = page.getByRole('button', {
-      name: 'Show the starting tiles',
+      name: /^(Show|Hide) the starting tiles$/,
     })
     this.timer = page.getByRole('timer')
   }
@@ -55,10 +55,18 @@ export class TwoTonePage {
     await expect(this.board).toBeVisible()
   }
 
+  sizeTile(size: number) {
+    return this.page.getByRole('button', {
+      name: new RegExp(`^${size} x ${size}`),
+    })
+  }
+
+  async tapSize(size: number) {
+    await this.sizeTile(size).click()
+  }
+
   async startSize(size: number) {
-    await this.page
-      .getByRole('button', { name: new RegExp(`^${size} x ${size}`) })
-      .click()
+    await this.tapSize(size)
     await expect(this.board).toBeVisible()
   }
 
@@ -103,6 +111,11 @@ export class TwoTonePage {
 
   async hint() {
     await this.page.getByRole('button', { name: 'Show a hint' }).click()
+  }
+
+  async answerResume(choice: string) {
+    await expect(this.dialog).toContainText('in progress')
+    await this.dialog.getByRole('button', { name: choice }).click()
   }
 
   async back() {

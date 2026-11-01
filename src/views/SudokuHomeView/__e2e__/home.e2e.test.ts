@@ -41,3 +41,16 @@ test('plays an entered puzzle', async ({ sudokuPage }) => {
 
   await sudokuPage.expectCell({ row: 1, column: 1, state: /, 5, given/ })
 })
+
+test('offers to resume a game of a level in progress', async ({
+  sudokuPage,
+}) => {
+  await sudokuPage.startLevel('Easy')
+  await sudokuPage.back()
+  await expect(sudokuPage.levelTile('Easy')).toContainText('In progress')
+
+  await sudokuPage.tapLevel('Easy')
+  await sudokuPage.answerResume('Resume')
+
+  await expect(sudokuPage.title).toContainText('Easy')
+})

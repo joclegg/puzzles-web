@@ -69,10 +69,10 @@ test('keeps progress after a reload', async ({ twoTonePage }) => {
 test('shows the starting tiles only when asked', async ({ twoTonePage }) => {
   await twoTonePage.openDaily(6)
   const toggle = twoTonePage.startingTilesToggle
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  await expect(toggle).toHaveAccessibleName('Show the starting tiles')
 
   await toggle.click()
 
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  await expect(toggle).toHaveAccessibleName('Hide the starting tiles')
   await twoTonePage.expectScreenshot('starting-tiles-shown')
 })

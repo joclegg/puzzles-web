@@ -51,3 +51,16 @@ test('counts a solved puzzle in the stats', async ({ sightlinesPage }) => {
 
   await sightlinesPage.expectStatsRow({ size: 4, text: /4 x 41 ?1/ })
 })
+
+test('offers to resume a puzzle of a size in progress', async ({
+  sightlinesPage,
+}) => {
+  await sightlinesPage.startSize(5)
+  await sightlinesPage.back()
+  await expect(sightlinesPage.sizeTile(5)).toContainText('In progress')
+
+  await sightlinesPage.tapSize(5)
+  await sightlinesPage.answerResume('Resume')
+
+  await expect(sightlinesPage.dot({ row: 5, column: 5 })).toBeVisible()
+})
