@@ -1,5 +1,4 @@
 import { SCREEN } from '@/common/route.constants'
-import type { Account } from '@/common/sync.types'
 import { SolitaireDailyView } from '@/views/SolitaireDailyView/SolitaireDailyView'
 import { SolitaireGameView } from '@/views/SolitaireGameView/SolitaireGameView'
 import { SolitaireHistoryView } from '@/views/SolitaireHistoryView/SolitaireHistoryView'
@@ -7,15 +6,7 @@ import { SolitaireHomeView } from '@/views/SolitaireHomeView/SolitaireHomeView'
 import { SolitaireSettingsView } from '@/views/SolitaireSettingsView/SolitaireSettingsView'
 import { SolitaireStatsView } from '@/views/SolitaireStatsView/SolitaireStatsView'
 
-export function SolitaireView({
-  screen,
-  id,
-  account,
-}: {
-  screen: string
-  id: string
-  account: Account
-}) {
+export function SolitaireView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
     return <SolitaireGameView key={id} id={id} />
   }
@@ -29,7 +20,7 @@ export function SolitaireView({
     return <SolitaireDailyView />
   }
   if (screen === SCREEN.SETTINGS) {
-    return <SolitaireSettingsView account={account} />
+    return <SolitaireSettingsView />
   }
   return <SolitaireHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

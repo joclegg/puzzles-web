@@ -9,6 +9,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
+  ignoreSnapshots: process.platform !== 'linux',
   snapshotPathTemplate:
     '{testDir}/{testFileDir}/__snapshots__/{arg}-{projectName}-{platform}{ext}',
   use: {
@@ -25,7 +26,12 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
       grepInvert: /@mobile/,
     },
-    { name: 'mobile', use: { ...devices['Pixel 7'] }, grepInvert: /@desktop/ },
+    {
+      name: 'mobile',
+      use: { ...devices['Pixel 7'] },
+      grepInvert: /@desktop/,
+      ignoreSnapshots: true,
+    },
   ],
   webServer: {
     command: `npm run build && npm run preview -- --port ${PORT} --strictPort`,

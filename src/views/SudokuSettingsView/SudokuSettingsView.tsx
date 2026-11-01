@@ -1,5 +1,4 @@
 import { GAME_ROUTE } from '@/common/route.constants'
-import type { Account } from '@/common/sync.types'
 import { useStoredState } from '@/common/storage.hooks'
 import {
   GAME_MODE,
@@ -19,6 +18,10 @@ import {
   DIGIT_COUNTS_LABEL,
   SETTINGS_KEY,
 } from '@/common/sudoku/sudokuSaves.constants'
+import {
+  fromStoredSettings,
+  toStoredSettings,
+} from '@/common/sudoku/sudokuSaves.functions'
 import type {
   ModeSettings,
   SudokuSettings,
@@ -28,23 +31,28 @@ import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function SudokuSettingsView({ account }: { account: Account }) {
-  const [settings, setSettings] = useStoredState<SudokuSettings>({
+export function SudokuSettingsView() {
+  const [stored, setStored] = useStoredState<SudokuSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
+  const settings = fromStoredSettings(stored)
   const [mode, setMode] = useStoredState<GameMode>({
     key: 'sudoku.settingsMode',
     fallback: GAME_MODE.CLASSIC,
   })
   const current = settings[mode]
 
+  function setSettings(change: (all: SudokuSettings) => SudokuSettings) {
+    setStored((all) => toStoredSettings(change(fromStoredSettings(all))))
+  }
+
   function set(patch: Partial<ModeSettings>) {
     setSettings((all) => ({ ...all, [mode]: { ...all[mode], ...patch } }))
   }
 
   return (
-    <SettingsScreen game={GAME_ROUTE.SUDOKU} account={account}>
+    <SettingsScreen game={GAME_ROUTE.SUDOKU}>
       <h2 className="pt-2 font-semibold text-game">Entering numbers</h2>
       <OptionGroup
         label="Entering numbers"
@@ -165,11 +173,7 @@ export function SudokuSettingsView({ account }: { account: Account }) {
         checked={current.showTimer}
         onChange={(showTimer) => set({ showTimer })}
       />
-      <AssistSettings
-        assists={settings}
-        hintStyles
-        onChange={(patch) => setSettings((all) => ({ ...all, ...patch }))}
-      />
+      <AssistSettings assists={current} hintStyles onChange={set} />
     </SettingsScreen>
   )
 }

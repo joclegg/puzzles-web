@@ -101,7 +101,11 @@ export class FiveLettersPage {
   }
 
   async toggleSetting(name: string) {
-    await this.page.getByRole('switch', { name: new RegExp(name) }).click()
+    await this.page
+      .locator('label')
+      .filter({ has: this.page.getByText(name, { exact: true }) })
+      .getByRole('switch')
+      .click()
   }
 
   async expectStat({ label, value }: { label: string; value: string }) {

@@ -13,13 +13,12 @@ import {
 } from '@/common/kakuro/kakuroSettings.constants'
 import type { KakuroSettings } from '@/common/kakuro/kakuroSettings.types'
 import { GAME_ROUTE } from '@/common/route.constants'
-import type { Account } from '@/common/sync.types'
 import { useStoredState } from '@/common/storage.hooks'
 import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function KakuroSettingsView({ account }: { account: Account }) {
+export function KakuroSettingsView() {
   const [settings, setSettings] = useStoredState<KakuroSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
@@ -30,7 +29,7 @@ export function KakuroSettingsView({ account }: { account: Account }) {
   }
 
   return (
-    <SettingsScreen game={GAME_ROUTE.KAKURO} account={account}>
+    <SettingsScreen game={GAME_ROUTE.KAKURO}>
       <h2 className="pt-2 font-semibold text-game">Entering numbers</h2>
       <OptionGroup
         label="Entering numbers"

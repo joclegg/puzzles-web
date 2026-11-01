@@ -1,3 +1,4 @@
+import type { Assists } from '@/common/assists.types'
 import type { DailyResult } from '@/common/dailyMedal.types'
 import { formatDayMonth } from '@/common/format.functions'
 import {
@@ -13,8 +14,10 @@ import { SUDOKU_STATUS } from '@/common/sudoku/sudokuSaves.constants'
 import type {
   PastBest,
   BestTime,
+  ModeSettings,
   SavedSudoku,
   SudokuRef,
+  SudokuSettings,
   SudokuStatus,
 } from '@/common/sudoku/sudokuSaves.types'
 
@@ -107,6 +110,14 @@ export function finishSudoku({
   }
 }
 
+export function fromStoredSettings(stored: SudokuSettings): SudokuSettings {
+  return {
+    ...stored,
+    classic: withModeAssists({ stored, mode: stored.classic }),
+    killer: withModeAssists({ stored, mode: stored.killer }),
+  }
+}
+
 export function playedIds({
   games,
   mode,
@@ -170,6 +181,19 @@ export function sudokuTitle(
     : `Daily ${mode.toLowerCase()} · ${formatDayMonth(daily.date)}${level}`
 }
 
+export function toStoredSettings(settings: SudokuSettings): SudokuSettings {
+  return { ...settings, ...modeAssists(settings.classic) }
+}
+
+function modeAssists(mode: ModeSettings): Assists {
+  return {
+    showHints: mode.showHints,
+    allowReveal: mode.allowReveal,
+    showTutorial: mode.showTutorial,
+    hintStyle: mode.hintStyle,
+  }
+}
+
 function slotOf(
   ref: Pick<SudokuRef, 'puzzleId' | 'mode' | 'difficulty' | 'custom'>,
 ) {
@@ -179,4 +203,20 @@ function slotOf(
   return parseDailyId(ref.puzzleId) !== null
     ? ref.puzzleId
     : `${ref.mode}_${ref.difficulty}`
+}
+
+function withModeAssists({
+  stored,
+  mode,
+}: {
+  stored: SudokuSettings
+  mode: Partial<ModeSettings>
+}): ModeSettings {
+  return {
+    ...(mode as ModeSettings),
+    showHints: mode.showHints ?? stored.showHints,
+    allowReveal: mode.allowReveal ?? stored.allowReveal,
+    showTutorial: mode.showTutorial ?? stored.showTutorial,
+    hintStyle: mode.hintStyle ?? stored.hintStyle,
+  }
 }

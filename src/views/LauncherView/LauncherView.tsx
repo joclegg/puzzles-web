@@ -1,7 +1,7 @@
 import { History, Settings, Trophy } from 'lucide-react'
 
 import { todayIso } from '@/common/date.functions'
-import { GAME_ROUTE, LAUNCHER_ROUTE, SCREEN } from '@/common/route.constants'
+import { GAME_ROUTE, LAUNCHER_ROUTE } from '@/common/route.constants'
 import { cn } from '@/common/utils.functions'
 import {
   BUTTON_BASE_CLASS,
@@ -84,7 +84,7 @@ export function LauncherView({
           <History />
         </a>
         <a
-          href={routeHash([GAME_ROUTE.SUDOKU, SCREEN.SETTINGS])}
+          href={routeHash([LAUNCHER_ROUTE.SETTINGS])}
           aria-label="Settings"
           className={cn(
             BUTTON_BASE_CLASS,

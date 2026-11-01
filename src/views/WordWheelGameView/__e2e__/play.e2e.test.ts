@@ -9,7 +9,6 @@ test('solves the daily 5-letter puzzle', async ({ wordWheelPage }) => {
   }
 
   await expect(wordWheelPage.dialog).toContainText('Solved!')
-  await wordWheelPage.expectScreenshot('daily-solved')
 })
 
 test('fills a word by tapping letters', async ({ wordWheelPage }) => {

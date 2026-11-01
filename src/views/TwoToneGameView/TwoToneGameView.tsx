@@ -215,8 +215,9 @@ export function TwoToneGameView({ id }: { id: string }) {
           </Button>
           <Button
             size={BUTTON_SIZE.ICON}
-            aria-label="Show the starting tiles"
-            aria-pressed={showGivens}
+            aria-label={
+              showGivens ? 'Hide the starting tiles' : 'Show the starting tiles'
+            }
             className={showGivens ? 'bg-muted' : undefined}
             onClick={() => setShowGivens(!showGivens)}
           >

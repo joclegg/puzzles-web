@@ -1,6 +1,5 @@
 import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { GAME_ROUTE } from '@/common/route.constants'
-import type { Account } from '@/common/sync.types'
 import {
   DEFAULT_SETTINGS,
   SETTINGS_KEY,
@@ -10,14 +9,14 @@ import { useStoredState } from '@/common/storage.hooks'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function WordWheelSettingsView({ account }: { account: Account }) {
+export function WordWheelSettingsView() {
   const [settings, setSettings] = useStoredState<WordWheelSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
 
   return (
-    <SettingsScreen game={GAME_ROUTE.WORD_WHEEL} account={account}>
+    <SettingsScreen game={GAME_ROUTE.WORD_WHEEL}>
       <SettingRow
         label="Show the timer"
         checked={settings.showTimer}

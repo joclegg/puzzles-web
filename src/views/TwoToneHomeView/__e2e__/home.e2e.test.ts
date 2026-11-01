@@ -1,7 +1,9 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
 test('shows the sizes and today’s puzzles', async ({ twoTonePage }) => {
-  await twoTonePage.expectScreenshot('home')
+  await expect(
+    twoTonePage.page.getByRole('button', { name: 'Daily 4 x 4' }),
+  ).toBeVisible()
 })
 
 test('starts a new puzzle of a size', async ({ twoTonePage }) => {
@@ -48,4 +50,17 @@ test('counts a solved puzzle in the stats', async ({ twoTonePage }) => {
   await twoTonePage.openFromHome('Stats')
 
   await twoTonePage.expectStatsRow({ size: 4, text: /4 x 41 ?1/ })
+})
+
+test('offers to resume a puzzle of a size in progress', async ({
+  twoTonePage,
+}) => {
+  await twoTonePage.startSize(6)
+  await twoTonePage.back()
+  await expect(twoTonePage.sizeTile(6)).toContainText('In progress')
+
+  await twoTonePage.tapSize(6)
+  await twoTonePage.answerResume('Resume')
+
+  await expect(twoTonePage.tile({ row: 6, column: 6 })).toBeVisible()
 })

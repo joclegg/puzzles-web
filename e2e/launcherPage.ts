@@ -38,6 +38,10 @@ export class LauncherPage {
     await this.open()
   }
 
+  async openSettings() {
+    await this.page.getByRole('link', { name: 'Settings' }).click()
+  }
+
   async openHistory() {
     await this.page.getByRole('link', { name: 'History' }).click()
   }

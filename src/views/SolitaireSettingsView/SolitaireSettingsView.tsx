@@ -1,6 +1,5 @@
 import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { GAME_ROUTE } from '@/common/route.constants'
-import type { Account } from '@/common/sync.types'
 import {
   DRAW_MODE,
   DRAW_MODE_LABEL,
@@ -15,7 +14,7 @@ import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function SolitaireSettingsView({ account }: { account: Account }) {
+export function SolitaireSettingsView() {
   const [settings, setSettings] = useStoredState<SolitaireSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
@@ -26,7 +25,7 @@ export function SolitaireSettingsView({ account }: { account: Account }) {
   }
 
   return (
-    <SettingsScreen game={GAME_ROUTE.SOLITAIRE} account={account}>
+    <SettingsScreen game={GAME_ROUTE.SOLITAIRE}>
       <h2 className="pt-2 font-semibold text-game">Play</h2>
       <OptionGroup
         label="Draw"
@@ -58,7 +57,7 @@ export function SolitaireSettingsView({ account }: { account: Account }) {
       />
       <SettingRow
         label="Tell me when a deal can't be won"
-        detail="Checks once you have been through the whole stock without playing a card, and offers to undo back to the last winnable position."
+        detail="Checks after a full pass through the stock with no move, and offers to undo to the last winnable position."
         checked={settings.warnUnwinnable}
         onChange={(warnUnwinnable) => set({ warnUnwinnable })}
       />

@@ -41,6 +41,7 @@ export const DIGIT_COUNTS_LABEL: Record<DigitCounts, string> = {
 }
 
 export const DEFAULT_MODE_SETTINGS: ModeSettings = {
+  ...DEFAULT_ASSISTS,
   mistakeCheck: MISTAKE_CHECK.OFF,
   showMistakeCount: false,
   highlightHouses: false,

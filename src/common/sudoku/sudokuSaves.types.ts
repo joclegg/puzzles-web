@@ -21,7 +21,7 @@ export interface BestTime {
 
 export type DigitCounts = (typeof DIGIT_COUNTS)[keyof typeof DIGIT_COUNTS]
 
-export interface ModeSettings {
+export interface ModeSettings extends Assists {
   mistakeCheck: MistakeCheck
   showMistakeCount: boolean
   highlightHouses: boolean

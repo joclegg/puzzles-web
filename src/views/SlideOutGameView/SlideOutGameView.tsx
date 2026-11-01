@@ -271,7 +271,9 @@ export function SlideOutGameView({ id }: { id: string }) {
           {
             label: 'Moves',
             value:
-              moveCount <= par ? `${moveCount}, par!` : `${moveCount} / ${par}`,
+              moveCount <= par
+                ? `${moveCount} moves, par!`
+                : `${moveCount} moves, par is ${par}`,
           },
           { label: 'Time', value: formatDuration(elapsedMs()) },
           ...(hints > 0 ? [{ label: 'Hints', value: hints }] : []),

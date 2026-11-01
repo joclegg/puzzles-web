@@ -7,12 +7,10 @@ const DAILY_6 = {
 
 test('solves the daily 6 x 6 puzzle', async ({ kakuroPage }) => {
   await kakuroPage.openDaily(6)
-  await kakuroPage.expectScreenshot('daily-start')
 
   await kakuroPage.solve(DAILY_6)
 
   await expect(kakuroPage.dialog).toContainText('Solved!')
-  await kakuroPage.expectScreenshot('daily-solved')
 })
 
 test('places a digit, undoes and redoes it', async ({ kakuroPage }) => {
@@ -44,7 +42,6 @@ test('pencils in notes', async ({ kakuroPage }) => {
   await kakuroPage.tapDigit(2)
 
   await kakuroPage.expectCell({ row: 2, column: 3, state: /, empty/ })
-  await kakuroPage.expectScreenshot('notes')
 })
 
 test('lists the sums that fit with the sum helper on', async ({

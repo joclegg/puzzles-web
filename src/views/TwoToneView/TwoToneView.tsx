@@ -1,5 +1,4 @@
 import { SCREEN } from '@/common/route.constants'
-import type { Account } from '@/common/sync.types'
 import { TwoToneDailyView } from '@/views/TwoToneDailyView/TwoToneDailyView'
 import { TwoToneGameView } from '@/views/TwoToneGameView/TwoToneGameView'
 import { TwoToneHistoryView } from '@/views/TwoToneHistoryView/TwoToneHistoryView'
@@ -7,15 +6,7 @@ import { TwoToneHomeView } from '@/views/TwoToneHomeView/TwoToneHomeView'
 import { TwoToneSettingsView } from '@/views/TwoToneSettingsView/TwoToneSettingsView'
 import { TwoToneStatsView } from '@/views/TwoToneStatsView/TwoToneStatsView'
 
-export function TwoToneView({
-  screen,
-  id,
-  account,
-}: {
-  screen: string
-  id: string
-  account: Account
-}) {
+export function TwoToneView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.GAME) {
     return <TwoToneGameView key={id} id={id} />
   }
@@ -29,7 +20,7 @@ export function TwoToneView({
     return <TwoToneDailyView />
   }
   if (screen === SCREEN.SETTINGS) {
-    return <TwoToneSettingsView account={account} />
+    return <TwoToneSettingsView />
   }
   return <TwoToneHomeView play={screen === SCREEN.PLAY ? id : undefined} />
 }

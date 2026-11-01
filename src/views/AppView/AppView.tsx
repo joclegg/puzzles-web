@@ -3,6 +3,7 @@ import { useRoute } from '@/common/route.hooks'
 import type { SignInProvider } from '@/common/sync.types'
 import { useSync } from '@/common/sync.hooks'
 import { AllHistoryView } from '@/views/AllHistoryView/AllHistoryView'
+import { GeneralSettingsView } from '@/views/GeneralSettingsView/GeneralSettingsView'
 import { FiveLettersView } from '@/views/FiveLettersView/FiveLettersView'
 import { KakuroView } from '@/views/KakuroView/KakuroView'
 import { LauncherView } from '@/views/LauncherView/LauncherView'
@@ -63,31 +64,34 @@ function routeView({
 }) {
   const account = { email, onDeleteAccount }
   if (game === GAME_ROUTE.FIVE_LETTERS) {
-    return <FiveLettersView screen={screen} id={id} account={account} />
+    return <FiveLettersView screen={screen} id={id} />
   }
   if (game === GAME_ROUTE.TWO_TONE) {
-    return <TwoToneView screen={screen} id={id} account={account} />
+    return <TwoToneView screen={screen} id={id} />
   }
   if (game === GAME_ROUTE.SIGHTLINES) {
-    return <SightlinesView screen={screen} id={id} account={account} />
+    return <SightlinesView screen={screen} id={id} />
   }
   if (game === GAME_ROUTE.KAKURO) {
-    return <KakuroView screen={screen} id={id} account={account} />
+    return <KakuroView screen={screen} id={id} />
   }
   if (game === GAME_ROUTE.SLIDE_OUT) {
-    return <SlideOutView screen={screen} id={id} account={account} />
+    return <SlideOutView screen={screen} id={id} />
   }
   if (game === GAME_ROUTE.WORD_WHEEL) {
-    return <WordWheelView screen={screen} id={id} account={account} />
+    return <WordWheelView screen={screen} id={id} />
   }
   if (game === GAME_ROUTE.SOLITAIRE) {
-    return <SolitaireView screen={screen} id={id} account={account} />
+    return <SolitaireView screen={screen} id={id} />
+  }
+  if (game === LAUNCHER_ROUTE.SETTINGS) {
+    return <GeneralSettingsView account={account} />
   }
   if (game === LAUNCHER_ROUTE.HISTORY) {
     return <AllHistoryView />
   }
   if (game === GAME_ROUTE.SUDOKU) {
-    return <SudokuView screen={screen} id={id} account={account} />
+    return <SudokuView screen={screen} id={id} />
   }
   return (
     <LauncherView

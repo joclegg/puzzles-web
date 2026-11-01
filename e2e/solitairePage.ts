@@ -8,6 +8,7 @@ export class SolitairePage {
   readonly page: Page
   readonly dialog: Locator
   readonly stock: Locator
+  readonly title: Locator
   readonly waste: Locator
 
   constructor(page: Page) {
@@ -15,6 +16,7 @@ export class SolitairePage {
     this.dialog = page.getByRole('dialog')
     this.stock = page.getByRole('button', { name: /^Stock/ })
     this.waste = page.getByRole('group', { name: 'Waste' })
+    this.title = page.getByRole('heading', { level: 1 })
   }
 
   async open() {
@@ -57,6 +59,15 @@ export class SolitairePage {
     await expect(this.stock).toBeVisible()
   }
 
+  async tapNewGame() {
+    await this.page.getByRole('button', { name: /^New game/ }).click()
+  }
+
+  async newGame() {
+    await this.tapNewGame()
+    await expect(this.stock).toBeVisible()
+  }
+
   card(name: string) {
     return this.page.getByRole('button', { name, exact: true })
   }
@@ -94,6 +105,11 @@ export class SolitairePage {
 
   async undo() {
     await this.page.getByRole('button', { name: 'Undo the last move' }).click()
+  }
+
+  async answerResume(choice: string) {
+    await expect(this.dialog).toContainText('in progress')
+    await this.dialog.getByRole('button', { name: choice }).click()
   }
 
   async back() {

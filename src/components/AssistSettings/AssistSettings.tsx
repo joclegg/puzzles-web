@@ -1,7 +1,5 @@
 import { HINT_STYLE } from '@/common/assists.constants'
 import type { Assists } from '@/common/assists.types'
-import { HINT_STYLE_LABEL } from '@/components/AssistSettings/AssistSettings.constants'
-import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
 export function AssistSettings({
@@ -24,25 +22,26 @@ export function AssistSettings({
         checked={assists.showHints}
         onChange={(showHints) => onChange({ showHints })}
       />
-      {hintStyles && assists.showHints && (
-        <OptionGroup
-          label="Hint style"
-          options={Object.values(HINT_STYLE)}
-          value={assists.hintStyle}
-          labels={HINT_STYLE_LABEL}
-          onChange={(hintStyle) => onChange({ hintStyle })}
-        />
-      )}
       <SettingRow
         label="How to play"
         detail="Show the ? button with the rules and a walkthrough."
         checked={assists.showTutorial}
         onChange={(showTutorial) => onChange({ showTutorial })}
       />
+      {hintStyles && assists.showHints && (
+        <SettingRow
+          label="Hints fill the answer in"
+          detail="Off: a hint points at the next step and says why."
+          checked={assists.hintStyle === HINT_STYLE.FILL}
+          onChange={(fill) =>
+            onChange({ hintStyle: fill ? HINT_STYLE.FILL : HINT_STYLE.POINT })
+          }
+        />
+      )}
       {reveal && (
         <SettingRow
           label="Show solution"
-          detail="Offer Show solution in the ⋮ menu."
+          detail="Offer Show solution in the game menu."
           checked={assists.allowReveal}
           onChange={(allowReveal) => onChange({ allowReveal })}
         />

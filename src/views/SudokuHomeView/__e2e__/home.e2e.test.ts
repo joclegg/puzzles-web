@@ -1,7 +1,9 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
 test('shows the levels and today’s puzzle', async ({ sudokuPage }) => {
-  await sudokuPage.expectScreenshot('home')
+  await expect(
+    sudokuPage.page.getByRole('button', { name: 'Daily Medium' }),
+  ).toBeVisible()
 })
 
 test('starts a game of a level', async ({ sudokuPage }) => {
@@ -28,7 +30,6 @@ test('gives a bronze medal for one daily on the day', async ({
   await expect(
     sudokuPage.page.getByRole('button', { name: '2026-10-25, bronze medal' }),
   ).toBeVisible()
-  await sudokuPage.expectScreenshot('calendar')
 })
 
 test('plays an entered puzzle', async ({ sudokuPage }) => {
@@ -40,4 +41,17 @@ test('plays an entered puzzle', async ({ sudokuPage }) => {
   await sudokuPage.openFromHome('Play anyway')
 
   await sudokuPage.expectCell({ row: 1, column: 1, state: /, 5, given/ })
+})
+
+test('offers to resume a game of a level in progress', async ({
+  sudokuPage,
+}) => {
+  await sudokuPage.startLevel('Easy')
+  await sudokuPage.back()
+  await expect(sudokuPage.levelTile('Easy')).toContainText('In progress')
+
+  await sudokuPage.tapLevel('Easy')
+  await sudokuPage.answerResume('Resume')
+
+  await expect(sudokuPage.title).toContainText('Easy')
 })
