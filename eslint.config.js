@@ -16,6 +16,8 @@ const CAMEL_CASE = /^[a-z][A-Za-z0-9]*$/
 
 const KIND_SUFFIX = /^\.(types|constants|functions|hooks)\.ts$/
 
+const SHARED_AREAS = ['bank', 'game', 'lib', 'screens', 'storage', 'sync', 'ui']
+
 const LOCAL_PLUGIN = {
   rules: {
     'one-component-per-file': {
@@ -293,22 +295,58 @@ function fileNamingProblem(filename) {
       ? null
       : 'Only main.tsx may sit directly in src.'
   }
-  if (area === 'components' || area === 'views') {
-    return componentFileProblem(area, segments.slice(1))
+  if (area === 'app') {
+    return mixedFileProblem({ area: 'src/app', segments: segments.slice(1) })
   }
-  if (area === 'common') {
-    return commonFileProblem(segments.slice(1))
+  if (area === 'shared') {
+    const [part, ...rest] = segments.slice(1)
+    if (!SHARED_AREAS.includes(part) || rest.length === 0) {
+      return `Shared code must live in src/shared/<${SHARED_AREAS.join('|')}>/.`
+    }
+    return mixedFileProblem({ area: `src/shared/${part}`, segments: rest })
   }
-  return `Code must live in src/components, src/views or src/common, not src/${area}.`
+  if (area === 'games') {
+    return gameFileProblem(segments.slice(1))
+  }
+  return `Code must live in src/app, src/shared or src/games, not src/${area}.`
 }
 
-function componentFileProblem(area, segments) {
-  const [folder, ...rest] = segments
-  if (folder === 'ui') {
-    return null
+function gameFileProblem(segments) {
+  if (segments.length === 1) {
+    return segments[0] === 'games.constants.ts'
+      ? null
+      : 'Only games.constants.ts may sit directly in src/games.'
+  }
+  const [game, part, ...rest] = segments
+  if (!CAMEL_CASE.test(game)) {
+    return `Folder ${game} in src/games must be camelCase.`
   }
   if (rest.length === 0) {
-    return `Put ${folder} in its own folder: src/${area}/<Name>/<Name>.tsx.`
+    return part === 'definition.ts'
+      ? null
+      : `${part} must be src/games/${game}/definition.ts or live in engine/ or ui/.`
+  }
+  if (part === 'engine') {
+    return commonFileProblem(rest)
+  }
+  if (part === 'ui') {
+    return componentFileProblem(rest)
+  }
+  return `src/games/${game}/${part} must be engine/ or ui/.`
+}
+
+function mixedFileProblem({ area, segments }) {
+  if (PASCAL_CASE.test(segments[0]) && segments.length > 1) {
+    return componentFileProblem(segments)
+  }
+  const problem = commonFileProblem(segments)
+  return problem === null ? null : `${problem} (in ${area})`
+}
+
+function componentFileProblem(segments) {
+  const [folder, ...rest] = segments
+  if (rest.length === 0) {
+    return `Put ${folder} in its own folder: <Name>/<Name>.tsx.`
   }
   if (!PASCAL_CASE.test(folder)) {
     return `Folder ${folder} must be PascalCase.`
@@ -327,7 +365,7 @@ function componentFileProblem(area, segments) {
       ? null
       : `${file} must be ${folder}.functions.test.ts. Only functions are unit tested.`
   }
-  if (rest.length === 2 && rest[0] === '__e2e__' && area === 'views') {
+  if (rest.length === 2 && rest[0] === '__e2e__') {
     return /^[a-z][A-Za-z0-9]*\.e2e\.test\.ts$/.test(file)
       ? null
       : `${file} must be <feature>.e2e.test.ts. Put helpers on the page object in e2e/.`
@@ -351,10 +389,10 @@ function commonFileProblem(segments) {
       : `${file} must be <name>.functions.test.ts.`
   }
   if (segments.length >= 2 && !CAMEL_CASE.test(segments[0])) {
-    return `Folder ${segments[0]} in src/common must be camelCase.`
+    return `Folder ${segments[0]} must be camelCase.`
   }
   if (segments.length === 2 || segments.length === 3) {
     return commonFileProblem(segments.slice(1))
   }
-  return `${segments.join('/')} is not an allowed location in src/common.`
+  return `${segments.join('/')} is not an allowed location.`
 }
