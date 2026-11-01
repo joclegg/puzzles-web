@@ -1,4 +1,5 @@
 import { GAME_ROUTE } from '@/common/route.constants'
+import type { Account } from '@/common/sync.types'
 import { useStoredState } from '@/common/storage.hooks'
 import {
   GAME_MODE,
@@ -27,7 +28,7 @@ import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function SudokuSettingsView() {
+export function SudokuSettingsView({ account }: { account: Account }) {
   const [settings, setSettings] = useStoredState<SudokuSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
@@ -43,7 +44,7 @@ export function SudokuSettingsView() {
   }
 
   return (
-    <SettingsScreen game={GAME_ROUTE.SUDOKU}>
+    <SettingsScreen game={GAME_ROUTE.SUDOKU} account={account}>
       <h2 className="pt-2 font-semibold text-game">Entering numbers</h2>
       <OptionGroup
         label="Entering numbers"

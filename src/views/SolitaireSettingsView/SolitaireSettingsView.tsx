@@ -1,5 +1,6 @@
 import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { GAME_ROUTE } from '@/common/route.constants'
+import type { Account } from '@/common/sync.types'
 import {
   DRAW_MODE,
   DRAW_MODE_LABEL,
@@ -14,7 +15,7 @@ import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function SolitaireSettingsView() {
+export function SolitaireSettingsView({ account }: { account: Account }) {
   const [settings, setSettings] = useStoredState<SolitaireSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
@@ -25,7 +26,7 @@ export function SolitaireSettingsView() {
   }
 
   return (
-    <SettingsScreen game={GAME_ROUTE.SOLITAIRE}>
+    <SettingsScreen game={GAME_ROUTE.SOLITAIRE} account={account}>
       <h2 className="pt-2 font-semibold text-game">Play</h2>
       <OptionGroup
         label="Draw"

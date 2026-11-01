@@ -2,7 +2,9 @@ import type { ReactNode } from 'react'
 
 import { SCREEN } from '@/common/route.constants'
 import { routeHash } from '@/common/route.functions'
+import type { Account } from '@/common/sync.types'
 import { cn } from '@/common/utils.functions'
+import { DeleteAccount } from '@/components/DeleteAccount/DeleteAccount'
 import { MENU_ACCENT_CLASS } from '@/components/MenuScreen/MenuScreen.constants'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { ThemePicker } from '@/components/ThemePicker/ThemePicker'
@@ -10,9 +12,11 @@ import { SETTINGS_TABS } from '@/components/SettingsScreen/SettingsScreen.consta
 
 export function SettingsScreen({
   game,
+  account,
   children,
 }: {
   game: string
+  account: Account
   children: ReactNode
 }) {
   const current =
@@ -50,6 +54,9 @@ export function SettingsScreen({
       <div className="mt-2 rounded-2xl bg-linear-to-b from-game/10 to-transparent px-4 pb-2 ring-1 ring-game/20">
         {children}
       </div>
+      {account.email !== null && (
+        <DeleteAccount onDeleteAccount={account.onDeleteAccount} />
+      )}
     </main>
   )
 }

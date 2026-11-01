@@ -36,6 +36,23 @@ export function cleanEmailCode(input: string): string {
   return input.replace(/\D/g, '').slice(0, EMAIL_CODE_LENGTH)
 }
 
+export async function deleteAccountThenSignOut({
+  rpc,
+  signOut,
+}: {
+  rpc: () => PromiseLike<{ error: unknown }>
+  signOut: () => void
+}): Promise<boolean> {
+  try {
+    const { error } = await rpc()
+    if (error !== null && error !== undefined) return false
+  } catch {
+    return false
+  }
+  signOut()
+  return true
+}
+
 export function entryStampKey({ game, id }: { game: string; id: string }) {
   return `${game}.${SYNC_KIND.GAMES}/${id}`
 }

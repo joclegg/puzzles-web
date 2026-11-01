@@ -13,7 +13,14 @@ import { TwoToneView } from '@/views/TwoToneView/TwoToneView'
 import { WordWheelView } from '@/views/WordWheelView/WordWheelView'
 
 export function AppView() {
-  const { user, signIn, sendEmailLink, verifyEmailCode, signOut } = useSync()
+  const {
+    user,
+    signIn,
+    sendEmailLink,
+    verifyEmailCode,
+    signOut,
+    deleteAccount,
+  } = useSync()
   const [game, screen = SCREEN.HOME, id = ''] = useRoute()
 
   return routeView({
@@ -25,6 +32,7 @@ export function AppView() {
     onSendEmailLink: sendEmailLink,
     onVerifyEmailCode: verifyEmailCode,
     onSignOut: signOut,
+    onDeleteAccount: deleteAccount,
   })
 }
 
@@ -37,6 +45,7 @@ function routeView({
   onSendEmailLink,
   onVerifyEmailCode,
   onSignOut,
+  onDeleteAccount,
 }: {
   game: string | undefined
   screen: string
@@ -49,30 +58,32 @@ function routeView({
     code: string
   }) => Promise<boolean>
   onSignOut: () => void
+  onDeleteAccount: () => Promise<boolean>
 }) {
+  const account = { email, onDeleteAccount }
   if (game === GAME_ROUTE.FIVE_LETTERS) {
-    return <FiveLettersView screen={screen} id={id} />
+    return <FiveLettersView screen={screen} id={id} account={account} />
   }
   if (game === GAME_ROUTE.TWO_TONE) {
-    return <TwoToneView screen={screen} id={id} />
+    return <TwoToneView screen={screen} id={id} account={account} />
   }
   if (game === GAME_ROUTE.SIGHTLINES) {
-    return <SightlinesView screen={screen} id={id} />
+    return <SightlinesView screen={screen} id={id} account={account} />
   }
   if (game === GAME_ROUTE.KAKURO) {
-    return <KakuroView screen={screen} id={id} />
+    return <KakuroView screen={screen} id={id} account={account} />
   }
   if (game === GAME_ROUTE.SLIDE_OUT) {
-    return <SlideOutView screen={screen} id={id} />
+    return <SlideOutView screen={screen} id={id} account={account} />
   }
   if (game === GAME_ROUTE.WORD_WHEEL) {
-    return <WordWheelView screen={screen} id={id} />
+    return <WordWheelView screen={screen} id={id} account={account} />
   }
   if (game === GAME_ROUTE.SOLITAIRE) {
-    return <SolitaireView screen={screen} id={id} />
+    return <SolitaireView screen={screen} id={id} account={account} />
   }
   if (game === GAME_ROUTE.SUDOKU) {
-    return <SudokuView screen={screen} id={id} />
+    return <SudokuView screen={screen} id={id} account={account} />
   }
   return (
     <LauncherView

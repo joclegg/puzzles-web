@@ -4,6 +4,11 @@ import type {
   SYNC_KIND,
 } from '@/common/sync.constants'
 
+export interface Account {
+  email: string | null
+  onDeleteAccount: () => Promise<boolean>
+}
+
 export interface SavedGameRow {
   game: string
   id: string

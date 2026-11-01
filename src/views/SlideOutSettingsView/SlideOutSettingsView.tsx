@@ -1,5 +1,6 @@
 import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import { GAME_ROUTE } from '@/common/route.constants'
+import type { Account } from '@/common/sync.types'
 import {
   DEFAULT_SETTINGS,
   SETTINGS_KEY,
@@ -9,14 +10,14 @@ import { useStoredState } from '@/common/storage.hooks'
 import { SettingsScreen } from '@/components/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/components/SettingRow/SettingRow'
 
-export function SlideOutSettingsView() {
+export function SlideOutSettingsView({ account }: { account: Account }) {
   const [settings, setSettings] = useStoredState<SlideOutSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
 
   return (
-    <SettingsScreen game={GAME_ROUTE.SLIDE_OUT}>
+    <SettingsScreen game={GAME_ROUTE.SLIDE_OUT} account={account}>
       <SettingRow
         label="Show the timer"
         checked={settings.showTimer}
