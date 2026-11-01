@@ -91,7 +91,6 @@ export function FiveLettersHomeView({ play }: { play?: string }) {
       dailyResults={dailyResults(games)}
       dailyTotal={2}
       firstMedal={MEDAL.SILVER}
-
       className="min-h-dvh"
     >
       <MenuSection title="Today" aside={formatDayMonth(today)}>

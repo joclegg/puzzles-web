@@ -102,7 +102,6 @@ export function SudokuHomeView({ play }: { play?: string }) {
       tagline="Classic and killer, from 6x6 to evil"
       dailyResults={dailyResults(games)}
       dailyTotal={GAME_MODES.flatMap((each) => LEVELS[each]).length}
-
       statsLabel="Best times"
     >
       {latest && (
