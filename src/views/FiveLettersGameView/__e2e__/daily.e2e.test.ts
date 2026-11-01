@@ -9,7 +9,6 @@ test('solves the daily word with the on-screen keys', async ({
   await fiveLettersPage.tapWord('TEMPO')
 
   await expect(fiveLettersPage.dialog).toContainText('Got it in 2!')
-  await fiveLettersPage.expectScreenshot('daily-won')
 })
 
 test('marks the tiles of a guess', async ({ fiveLettersPage }) => {

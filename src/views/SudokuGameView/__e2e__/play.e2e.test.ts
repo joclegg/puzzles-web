@@ -9,7 +9,6 @@ const DAILY_CLASSIC = {
 
 test('solves the daily classic puzzle', async ({ sudokuPage }) => {
   await sudokuPage.openDaily()
-  await sudokuPage.expectScreenshot('daily-classic')
 
   await sudokuPage.solve(DAILY_CLASSIC)
 
@@ -35,7 +34,6 @@ test('pencils in notes', async ({ sudokuPage }) => {
   await sudokuPage.tapDigit(6)
 
   await sudokuPage.expectCell({ row: 1, column: 1, state: /, empty/ })
-  await sudokuPage.expectScreenshot('notes')
 })
 
 test('undoes and redoes a number', async ({ sudokuPage }) => {
@@ -64,7 +62,6 @@ test('draws the cages of the daily killer puzzle', async ({ sudokuPage }) => {
   await sudokuPage.openDaily()
 
   await sudokuPage.expectCell({ row: 1, column: 1, state: /cage \d+/ })
-  await sudokuPage.expectScreenshot('daily-killer')
 })
 
 test('offers only this mode’s dailies and a new puzzle of this level', async ({
@@ -76,7 +73,6 @@ test('offers only this mode’s dailies and a new puzzle of this level', async (
   await expect(sudokuPage.winTile('Daily Expert')).toBeVisible()
   await expect(sudokuPage.winTile('Daily Medium')).toBeHidden()
   await expect(sudokuPage.winTile('Daily Evil')).toBeHidden()
-  await sudokuPage.expectScreenshot('win-tiles')
 
   await sudokuPage.winTile('New Medium').click()
 

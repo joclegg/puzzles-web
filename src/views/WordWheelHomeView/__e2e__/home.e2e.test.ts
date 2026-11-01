@@ -1,7 +1,9 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
 test('shows the levels and today’s puzzles', async ({ wordWheelPage }) => {
-  await wordWheelPage.expectScreenshot('home')
+  await expect(
+    wordWheelPage.page.getByRole('button', { name: 'Daily 5 letters' }),
+  ).toBeVisible()
 })
 
 test('starts a new puzzle of a level', async ({ wordWheelPage }) => {

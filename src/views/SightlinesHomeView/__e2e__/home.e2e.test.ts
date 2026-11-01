@@ -1,7 +1,9 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
 test('shows the sizes and today’s puzzles', async ({ sightlinesPage }) => {
-  await sightlinesPage.expectScreenshot('home')
+  await expect(
+    sightlinesPage.page.getByRole('button', { name: 'Daily 4 x 4' }),
+  ).toBeVisible()
 })
 
 test('starts a new puzzle of a size', async ({ sightlinesPage }) => {

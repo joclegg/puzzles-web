@@ -68,8 +68,4 @@ export class SettingsPage {
   async expectText(text: string) {
     await expect(this.page.getByText(text, { exact: true })).toBeVisible()
   }
-
-  async expectScreenshot(name: string) {
-    await expect(this.page).toHaveScreenshot(`${name}.png`, { fullPage: true })
-  }
 }

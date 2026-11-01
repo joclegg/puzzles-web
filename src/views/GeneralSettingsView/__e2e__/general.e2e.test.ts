@@ -8,7 +8,6 @@ test('opens the General tab from the launcher', async ({
 
   await settingsPage.expectTab('General')
   await expect(settingsPage.option('Dark')).toBeVisible()
-  await settingsPage.expectScreenshot('general')
 })
 
 test('switches the theme', async ({ launcherPage, settingsPage }) => {

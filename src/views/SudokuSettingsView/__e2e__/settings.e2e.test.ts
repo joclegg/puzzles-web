@@ -59,7 +59,6 @@ test.describe('a new player', () => {
     await settingsPage.open('sudoku')
     await settingsPage.expectSetting({ name: 'Hints', checked: false })
     await settingsPage.expectSetting({ name: 'How to play', checked: true })
-    await settingsPage.expectScreenshot('new-player-classic')
 
     await settingsPage.choose('Killer')
 

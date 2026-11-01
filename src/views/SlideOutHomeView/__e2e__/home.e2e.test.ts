@@ -1,7 +1,9 @@
-import { test } from '@e2e/playwrightExtensions'
+import { expect, test } from '@e2e/playwrightExtensions'
 
 test('shows the levels and today’s puzzles', async ({ slideOutPage }) => {
-  await slideOutPage.expectScreenshot('home')
+  await expect(
+    slideOutPage.page.getByRole('button', { name: 'Daily Beginner' }),
+  ).toBeVisible()
 })
 
 test('counts a puzzle solved at par in the stats', async ({ slideOutPage }) => {

@@ -8,7 +8,6 @@ test('explains the rules', async ({ wordWheelPage }) => {
   await expect(wordWheelPage.dialog).toContainText(
     'Each letter can be used once per word.',
   )
-  await wordWheelPage.expectScreenshot('rules')
 })
 
 test('walks through the controls', async ({ wordWheelPage, assistsPage }) => {

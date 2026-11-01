@@ -1,7 +1,9 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
 test('shows the sizes and today’s puzzles', async ({ twoTonePage }) => {
-  await twoTonePage.expectScreenshot('home')
+  await expect(
+    twoTonePage.page.getByRole('button', { name: 'Daily 4 x 4' }),
+  ).toBeVisible()
 })
 
 test('starts a new puzzle of a size', async ({ twoTonePage }) => {

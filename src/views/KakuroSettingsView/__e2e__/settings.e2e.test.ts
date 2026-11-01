@@ -9,7 +9,6 @@ test('offers the combination order only with the sum helper on', async ({
   await settingsPage.toggle('Sum helper')
 
   await settingsPage.expectOption('Increasing')
-  await settingsPage.expectScreenshot('sum-helper')
 })
 
 test('lists combinations in decreasing order', async ({

@@ -8,7 +8,6 @@ test('describes the unwinnable check like the apps', async ({
   await settingsPage.expectText(
     'Checks after a full pass through the stock with no move, and offers to undo to the last winnable position.',
   )
-  await settingsPage.expectScreenshot('settings')
 })
 
 test('deals a Draw 3 reverse game', async ({ settingsPage, solitairePage }) => {

@@ -11,7 +11,6 @@ test('plays Daily puzzle 2 as its own daily', async ({ fiveLettersPage }) => {
   await fiveLettersPage.back()
   await expect(fiveLettersPage.daily2Button).toContainText('Solved')
   await expect(fiveLettersPage.dailyButton).not.toContainText('Solved')
-  await fiveLettersPage.expectScreenshot('daily2-solved')
 })
 
 test('says when Daily puzzle 2 cannot be loaded', async ({

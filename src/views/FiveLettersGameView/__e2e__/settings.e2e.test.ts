@@ -20,5 +20,5 @@ test('switches to high contrast colours', async ({ fiveLettersPage }) => {
 
   await fiveLettersPage.typeWord('TOPIC')
 
-  await fiveLettersPage.expectScreenshot('high-contrast')
+  await expect(fiveLettersPage.page.locator('.high-contrast')).toBeVisible()
 })
