@@ -1,7 +1,7 @@
 import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { formatDuration } from '@/common/format.functions'
-import { Brush, Lightbulb, Undo2, CircleDot } from 'lucide-react'
+import { ArrowLeftRight, Lightbulb, Undo2, CircleDot } from 'lucide-react'
 import { useState } from 'react'
 
 import { useGameTimer } from '@/common/gameTimer.hooks'
@@ -245,7 +245,7 @@ export function TwoToneGameView({ id }: { id: string }) {
               }))
             }
           >
-            <Brush className="size-5" />
+            <ArrowLeftRight className="size-5" />
           </Button>
           {settings.showHints && (
             <Button
