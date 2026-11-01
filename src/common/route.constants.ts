@@ -19,3 +19,7 @@ export const SCREEN = {
   PLAY: 'play',
   ENTRY: 'entry',
 } as const
+
+export const LAUNCHER_ROUTE = {
+  HISTORY: 'history',
+} as const

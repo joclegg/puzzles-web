@@ -51,6 +51,10 @@ export function SettingsScreen({
           </a>
         ))}
       </nav>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Helpers such as hints, mistake checks and highlights start off for new
+        players. Turn on any you'd like below.
+      </p>
       <div className="mt-2 rounded-2xl bg-linear-to-b from-game/10 to-transparent px-4 pb-2 ring-1 ring-game/20">
         {children}
       </div>

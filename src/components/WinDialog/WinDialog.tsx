@@ -16,6 +16,7 @@ import { GAMES_KEY as SUDOKU_KEY } from '@/common/sudoku/sudokuSaves.constants'
 import { GAMES_KEY as TWO_TONE_KEY } from '@/common/twoTone/twoToneSettings.constants'
 import { cn } from '@/common/utils.functions'
 import { GAMES_KEY as WORD_WHEEL_KEY } from '@/common/wordWheel/wordWheelSaves.constants'
+import { AllGoldsBanner } from '@/components/AllGoldsBanner/AllGoldsBanner'
 import { dailiesLeft } from '@/components/DailiesLeft/DailiesLeft.functions'
 import type { DailyLeft } from '@/components/DailiesLeft/DailiesLeft.types'
 import { MENU_ACCENT_CLASS } from '@/components/MenuScreen/MenuScreen.constants'
@@ -97,6 +98,7 @@ export function WinDialog({
               </p>
             )}
           </div>
+          {!lost && <AllGoldsBanner />}
           {message && (
             <p className="px-5 pb-3 text-center text-sm text-muted-foreground">
               {message}

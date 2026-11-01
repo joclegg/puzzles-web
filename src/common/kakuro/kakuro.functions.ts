@@ -1,7 +1,12 @@
-import { INPUT_MODE, MISTAKE_CHECK } from '@/common/kakuro/kakuro.constants'
+import {
+  COMBINATION_ORDER,
+  INPUT_MODE,
+  MISTAKE_CHECK,
+} from '@/common/kakuro/kakuro.constants'
 import type {
   Change,
   CombinationLine,
+  CombinationOrder,
   InputMode,
   KakuroGame,
   KakuroHint,
@@ -25,15 +30,32 @@ export function brokenRuns(game: KakuroGame): Run[] {
   })
 }
 
-export function combinationLines(game: KakuroGame): CombinationLine[] {
+export function combinationLines({
+  game,
+  order = COMBINATION_ORDER.INCREASING,
+}: {
+  game: KakuroGame
+  order?: CombinationOrder
+}): CombinationLine[] {
+  const direction = order === COMBINATION_ORDER.DECREASING ? -1 : 1
   return selectedCombinations(game).map(({ run, masks, placed }) => ({
     label: `${run.isAcross ? 'Across' : 'Down'} ${run.sum} in ${run.cells.length}`,
-    options: masks.map((mask) =>
-      digitsOf(mask).map((digit) => ({
-        digit,
-        placed: (placed & bit(digit)) !== 0,
-      })),
-    ),
+    options: masks
+      .map((mask) =>
+        digitsOf(mask)
+          .sort((a, b) => (a - b) * direction)
+          .map((digit) => ({
+            digit,
+            placed: (placed & bit(digit)) !== 0,
+          })),
+      )
+      .sort(
+        (a, b) =>
+          compareDigits({
+            a: a.map((it) => it.digit),
+            b: b.map((it) => it.digit),
+          }) * direction,
+      ),
   }))
 }
 
@@ -361,6 +383,11 @@ function applyNotes({ notes, change }: { notes: number[]; change: Change }) {
       }),
     replaced({ list: notes, index: change.cell, value: change.toNotes }),
   )
+}
+
+function compareDigits({ a, b }: { a: number[]; b: number[] }): number {
+  const index = a.findIndex((digit, at) => digit !== b[at])
+  return index === -1 ? a.length - b.length : a[index] - b[index]
 }
 
 function place({

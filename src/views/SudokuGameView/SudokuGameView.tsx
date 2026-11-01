@@ -1,3 +1,4 @@
+import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import {
   Eraser,
   Lightbulb,
@@ -429,6 +430,7 @@ export function SudokuGameView({ id }: { id: string }) {
           <Button onClick={() => navigate([GAME_ROUTE.SUDOKU])}>Home</Button>
         }
       />
+      <CustomiseHelpers route={GAME_ROUTE.SUDOKU} />
     </main>
   )
 }

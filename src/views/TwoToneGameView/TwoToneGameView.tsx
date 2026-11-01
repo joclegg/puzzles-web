@@ -1,6 +1,7 @@
+import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { formatDuration } from '@/common/format.functions'
-import { Lightbulb, Palette, Undo2, CircleDot } from 'lucide-react'
+import { Lightbulb, Undo2, CircleDot } from 'lucide-react'
 import { useState } from 'react'
 
 import { useGameTimer } from '@/common/gameTimer.hooks'
@@ -13,7 +14,7 @@ import { puzzleTitle } from '@/common/puzzleTitle.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
 import { useStoredState } from '@/common/storage.hooks'
-import { HINT_KIND, TILE } from '@/common/twoTone/twoTone.constants'
+import { HINT_KIND } from '@/common/twoTone/twoTone.constants'
 import {
   encodeChanges,
   gameBrokenCells,
@@ -22,7 +23,6 @@ import {
   hintTwin,
   isSolved,
   newGame,
-  paint,
   progressPercent,
   replay,
   tap,
@@ -30,12 +30,11 @@ import {
   withHint,
 } from '@/common/twoTone/twoTone.functions'
 import { useTwoToneGames } from '@/common/twoTone/twoTone.hooks'
-import type { Tile, TwoToneGame } from '@/common/twoTone/twoTone.types'
+import type { TwoToneGame } from '@/common/twoTone/twoTone.types'
 import { decodePuzzle } from '@/common/twoTone/twoToneGenerator.functions'
 import { decodeChanges } from '@/common/twoTone/twoTone.functions'
 import {
   DEFAULT_SETTINGS,
-  INPUT_MODE,
   SETTINGS_KEY,
   TITLE,
 } from '@/common/twoTone/twoToneSettings.constants'
@@ -52,7 +51,6 @@ import { GameStatusBar } from '@/components/GameStatusBar/GameStatusBar'
 import { MoreMenu } from '@/components/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { TwoToneBoard } from '@/components/TwoToneBoard/TwoToneBoard'
-import { TwoToneColourPicker } from '@/components/TwoToneColourPicker/TwoToneColourPicker'
 
 const TUTORIAL = [
   {
@@ -72,7 +70,7 @@ const TUTORIAL = [
 export function TwoToneGameView({ id }: { id: string }) {
   const { games, setGames, startRandom } = useTwoToneGames()
   const saved = games.find((game) => game.id === id)
-  const [settings, setSettings] = useStoredState<TwoToneSettings>({
+  const [settings] = useStoredState<TwoToneSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
@@ -85,7 +83,6 @@ export function TwoToneGameView({ id }: { id: string }) {
       : null,
   )
   const [hints, setHints] = useState(saved?.hints ?? 0)
-  const [colour, setColour] = useState<Tile>(TILE.RED)
   const [showGivens, setShowGivens] = useState(false)
   const [revealing, setRevealing] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
@@ -149,11 +146,7 @@ export function TwoToneGameView({ id }: { id: string }) {
   }
 
   function onTile(cell: number) {
-    move((current) =>
-      settings.inputMode === INPUT_MODE.PICK_COLOUR
-        ? paint({ game: current, cell, colour })
-        : tap({ game: current, cell }),
-    )
+    move((current) => tap({ game: current, cell }))
   }
 
   function onHint() {
@@ -221,27 +214,6 @@ export function TwoToneGameView({ id }: { id: string }) {
           >
             <CircleDot className="size-5" />
           </Button>
-          <Button
-            size={BUTTON_SIZE.ICON}
-            aria-label="Pick a colour"
-            aria-pressed={settings.inputMode === INPUT_MODE.PICK_COLOUR}
-            className={
-              settings.inputMode === INPUT_MODE.PICK_COLOUR
-                ? 'bg-muted'
-                : undefined
-            }
-            onClick={() =>
-              setSettings((current) => ({
-                ...current,
-                inputMode:
-                  current.inputMode === INPUT_MODE.PICK_COLOUR
-                    ? INPUT_MODE.TAP_TO_CYCLE
-                    : INPUT_MODE.PICK_COLOUR,
-              }))
-            }
-          >
-            <Palette className="size-5" />
-          </Button>
           {settings.showHints && (
             <Button
               size={BUTTON_SIZE.ICON}
@@ -303,9 +275,6 @@ export function TwoToneGameView({ id }: { id: string }) {
         hintTwin={hintTwin({ game, hint })}
         onTile={onTile}
       />
-      {settings.inputMode === INPUT_MODE.PICK_COLOUR && (
-        <TwoToneColourPicker colour={colour} onColour={setColour} />
-      )}
       {hint && (
         <p className="text-center" role="status">
           {hintMessage(hint)}
@@ -343,6 +312,7 @@ export function TwoToneGameView({ id }: { id: string }) {
           <Button onClick={() => navigate([GAME_ROUTE.TWO_TONE])}>Home</Button>
         }
       />
+      <CustomiseHelpers route={GAME_ROUTE.TWO_TONE} />
     </main>
   )
 }

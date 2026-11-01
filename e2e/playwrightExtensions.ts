@@ -1,5 +1,6 @@
 import { test as base } from '@playwright/test'
 
+import { LEGACY_SETTINGS } from '@/common/legacySettings.constants'
 import { AssistsPage } from '@e2e/assistsPage'
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { KakuroPage } from '@e2e/kakuroPage'
@@ -26,9 +27,20 @@ export const test = base.extend<{
   wordWheelPage: WordWheelPage
   solitairePage: SolitairePage
   sudokuPage: SudokuPage
+  helpers: boolean
 }>({
-  page: async ({ page }, use) => {
+  helpers: [true, { option: true }],
+  page: async ({ page, helpers }, use) => {
     await page.clock.setFixedTime(FIXED_NOW)
+    if (helpers) {
+      await page.addInitScript((settings) => {
+        for (const [key, value] of Object.entries(settings)) {
+          if (localStorage.getItem(key) === null) {
+            localStorage.setItem(key, JSON.stringify(value))
+          }
+        }
+      }, LEGACY_SETTINGS)
+    }
     await page.route(`${DATA_URL}**`, async (route) => {
       const file = route.request().url().slice(DATA_URL.length)
       await route.fulfill({

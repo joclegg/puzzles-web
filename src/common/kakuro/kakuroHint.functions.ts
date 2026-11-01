@@ -51,11 +51,32 @@ export function findHint(game: KakuroGame): KakuroHint | null {
       }
     }
   }
+  const allowed = new Map(
+    empty.map((cell) => [cell, runAllowed({ game, cell })]),
+  )
+  const cell = empty.reduce((best, each) =>
+    digitsOf(allowed.get(each) ?? 0).length <
+    digitsOf(allowed.get(best) ?? 0).length
+      ? each
+      : best,
+  )
+  const runs = (puzzle.runsOf.get(cell) ?? [])
+    .map(
+      (run) =>
+        `${run.isAcross ? 'across' : 'down'} run (${run.sum} in ${run.cells.length})`,
+    )
+    .join(' and ')
   return {
-    cell: empty[0],
-    digit: puzzle.solution[empty[0]],
-    message: 'No cell can be worked out yet, so here is the first empty one.',
+    cell,
+    digit: puzzle.solution[cell],
+    message: `This cell's ${runs} only allow ${listDigits(digitsOf(allowed.get(cell) ?? 0))}.`,
   }
+}
+
+export function listDigits(digits: number[]): string {
+  return digits.length <= 1
+    ? digits.join('')
+    : `${digits.slice(0, -1).join(', ')} or ${digits[digits.length - 1]}`
 }
 
 function assignable({
@@ -145,6 +166,16 @@ function placedMask({ game, run }: { game: KakuroGame; run: Run }) {
   return run.cells
     .filter((cell) => game.values[cell] !== 0)
     .reduce((mask, cell) => mask | bit(game.values[cell]), 0)
+}
+
+function runAllowed({ game, cell }: { game: KakuroGame; cell: number }) {
+  return (game.puzzle.runsOf.get(cell) ?? []).reduce(
+    (mask, run) =>
+      mask &
+      fittingMasks({ game, run }).reduce((all, each) => all | each, 0) &
+      ~placedMask({ game, run }),
+    ALL_DIGITS,
+  )
 }
 
 function runName(run: Run) {

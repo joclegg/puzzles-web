@@ -14,6 +14,42 @@ export class LauncherPage {
     await expect(this.heading).toBeVisible()
   }
 
+  async seedDailySolitaireWin() {
+    const finished = new Date('2026-10-25T09:30:00').getTime()
+    const game = {
+      id: 'won-daily',
+      dealId: 'daily_2026-10-25',
+      drawMode: 'drawOne',
+      order: 'down',
+      board: '',
+      moves: '',
+      moveCount: 120,
+      elapsedMs: 300000,
+      status: 'won',
+      startedAt: finished - 300000,
+      finishedAt: finished,
+    }
+    await this.page.addInitScript(
+      (saved) => {
+        localStorage.setItem('solitaire.games', saved)
+      },
+      JSON.stringify([game]),
+    )
+    await this.open()
+  }
+
+  async openHistory() {
+    await this.page.getByRole('link', { name: 'History' }).click()
+  }
+
+  async expectHistoryRow(text: string) {
+    await expect(this.page.getByRole('listitem').first()).toContainText(text)
+  }
+
+  medal(name: string) {
+    return this.page.getByRole('img', { name })
+  }
+
   gameLink(name: string) {
     return this.page.getByRole('link', { name: new RegExp(`^${name}`) })
   }

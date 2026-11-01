@@ -1,5 +1,7 @@
 import { AssistSettings } from '@/components/AssistSettings/AssistSettings'
 import {
+  COMBINATION_ORDER,
+  COMBINATION_ORDER_LABEL,
   INPUT_MODE,
   INPUT_MODE_LABEL,
   MISTAKE_CHECK,
@@ -82,6 +84,15 @@ export function KakuroSettingsView({ account }: { account: Account }) {
         checked={settings.showCombinations}
         onChange={(showCombinations) => set({ showCombinations })}
       />
+      {settings.showCombinations && (
+        <OptionGroup
+          label="Combination order"
+          options={Object.values(COMBINATION_ORDER)}
+          value={settings.combinationOrder}
+          labels={COMBINATION_ORDER_LABEL}
+          onChange={(combinationOrder) => set({ combinationOrder })}
+        />
+      )}
       <SettingRow
         label="Grey out used-up numbers"
         detail="Dim a number on the pad once every cell that needs it has it."

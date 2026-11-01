@@ -1,6 +1,7 @@
-import { Settings } from 'lucide-react'
+import { History, Settings, Trophy } from 'lucide-react'
 
-import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
+import { todayIso } from '@/common/date.functions'
+import { GAME_ROUTE, LAUNCHER_ROUTE, SCREEN } from '@/common/route.constants'
 import { cn } from '@/common/utils.functions'
 import {
   BUTTON_BASE_CLASS,
@@ -11,6 +12,11 @@ import {
 } from '@/components/Button/Button.constants'
 import { routeHash } from '@/common/route.functions'
 import type { SignInProvider } from '@/common/sync.types'
+import {
+  hasAllGolds,
+  todayMedals,
+} from '@/components/AllGames/AllGames.functions'
+import { useAllSaves } from '@/components/AllGames/AllGames.hooks'
 import { AccountButton } from '@/components/AccountButton/AccountButton'
 import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
 import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
@@ -40,10 +46,24 @@ export function LauncherView({
   }) => Promise<boolean>
   onSignOut: () => void
 }) {
+  const medals = todayMedals({
+    saves: useAllSaves(),
+    today: todayIso(),
+    dayOf: (ms) => todayIso(new Date(ms)),
+  })
   return (
     <main className="mx-auto grid max-w-3xl gap-4 px-4 py-6 md:grid-cols-2">
       <header className="flex items-center gap-2 md:col-span-2">
-        <h1 className="flex-1 text-3xl font-semibold">Puzzles</h1>
+        <h1 className="flex flex-1 items-center gap-2 text-3xl font-semibold">
+          Puzzles
+          {hasAllGolds(medals) && (
+            <Trophy
+              role="img"
+              aria-label="Gold in every puzzle"
+              className="size-7 text-sd-gold"
+            />
+          )}
+        </h1>
         <AccountButton
           email={email}
           onSignIn={onSignIn}
@@ -52,6 +72,17 @@ export function LauncherView({
           onSignOut={onSignOut}
         />
         <ThemeToggle />
+        <a
+          href={routeHash([LAUNCHER_ROUTE.HISTORY])}
+          aria-label="History"
+          className={cn(
+            BUTTON_BASE_CLASS,
+            BUTTON_VARIANT_CLASS[BUTTON_VARIANT.OUTLINE],
+            BUTTON_SIZE_CLASS[BUTTON_SIZE.ICON],
+          )}
+        >
+          <History />
+        </a>
         <a
           href={routeHash([GAME_ROUTE.SUDOKU, SCREEN.SETTINGS])}
           aria-label="Settings"
@@ -69,6 +100,7 @@ export function LauncherView({
         detail="Classic and killer, from 6x6 to evil"
         href={routeHash([GAME_ROUTE.SUDOKU])}
         accent={MENU_ACCENT.SUDOKU}
+        medal={medals[GAME_ROUTE.SUDOKU]}
         icon={<SudokuIcon />}
       />
       <GameCard
@@ -76,6 +108,7 @@ export function LauncherView({
         detail="Klondike, draw 1 or 3, or reverse"
         href={routeHash([GAME_ROUTE.SOLITAIRE])}
         accent={MENU_ACCENT.SOLITAIRE}
+        medal={medals[GAME_ROUTE.SOLITAIRE]}
         icon={<SolitaireIcon />}
       />
       <GameCard
@@ -83,6 +116,7 @@ export function LauncherView({
         detail="Fill the grid red and blue, three simple rules"
         href={routeHash([GAME_ROUTE.TWO_TONE])}
         accent={MENU_ACCENT.TWO_TONE}
+        medal={medals[GAME_ROUTE.TWO_TONE]}
         icon={<TwoToneIcon />}
       />
       <GameCard
@@ -90,6 +124,7 @@ export function LauncherView({
         detail="Blue dots count what they can see"
         href={routeHash([GAME_ROUTE.SIGHTLINES])}
         accent={MENU_ACCENT.SIGHTLINES}
+        medal={medals[GAME_ROUTE.SIGHTLINES]}
         icon={<SightlinesIcon />}
       />
       <GameCard
@@ -97,6 +132,7 @@ export function LauncherView({
         detail="Guess the word in six tries, a new one every day"
         href={routeHash([GAME_ROUTE.FIVE_LETTERS])}
         accent={MENU_ACCENT.FIVE_LETTERS}
+        medal={medals[GAME_ROUTE.FIVE_LETTERS]}
         icon={<FiveLettersIcon />}
       />
       <GameCard
@@ -104,6 +140,7 @@ export function LauncherView({
         detail="Cross sums: runs of different digits that add up"
         href={routeHash([GAME_ROUTE.KAKURO])}
         accent={MENU_ACCENT.KAKURO}
+        medal={medals[GAME_ROUTE.KAKURO]}
         icon={<KakuroIcon />}
       />
       <GameCard
@@ -111,6 +148,7 @@ export function LauncherView({
         detail="Slide the blocks to free the red one"
         href={routeHash([GAME_ROUTE.SLIDE_OUT])}
         accent={MENU_ACCENT.SLIDE_OUT}
+        medal={medals[GAME_ROUTE.SLIDE_OUT]}
         icon={<SlideOutIcon />}
       />
       <GameCard
@@ -118,6 +156,7 @@ export function LauncherView({
         detail="Swipe the letters to fill the crossword"
         href={routeHash([GAME_ROUTE.WORD_WHEEL])}
         accent={MENU_ACCENT.WORD_WHEEL}
+        medal={medals[GAME_ROUTE.WORD_WHEEL]}
         icon={<WordWheelIcon />}
       />
     </main>

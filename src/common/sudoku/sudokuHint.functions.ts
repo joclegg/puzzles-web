@@ -53,15 +53,26 @@ export function findHint(game: SudokuGame): SudokuHint | null {
   if (solution === null) {
     return null
   }
-  const empty = values.findIndex((value) => value === 0)
-  return empty === -1
-    ? null
-    : {
-        cell: empty,
-        digit: solution[empty],
-        message:
-          'No cell can be worked out yet, so here is the first empty one.',
-      }
+  const empty = values
+    .map((value, cell) => (value === 0 ? cell : -1))
+    .filter((cell) => cell !== -1)
+  if (empty.length === 0) {
+    return null
+  }
+  const cell = empty.reduce((best, each) =>
+    bitCount(candidates[each]) < bitCount(candidates[best]) ? each : best,
+  )
+  return {
+    cell,
+    digit: solution[cell],
+    message: `This cell can only be ${listDigits(digitsOf(candidates[cell]))}: everything else is in its row, column or box.`,
+  }
+}
+
+export function listDigits(digits: number[]): string {
+  return digits.length <= 1
+    ? digits.join('')
+    : `${digits.slice(0, -1).join(', ')} or ${digits[digits.length - 1]}`
 }
 
 function bitCount(mask: number) {

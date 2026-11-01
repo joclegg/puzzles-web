@@ -1,3 +1,6 @@
+import { BankLoader } from '@/components/BankLoader/BankLoader'
+import { BANK_LOAD } from '@/components/BankLoader/BankLoader.constants'
+import { useBankLoader } from '@/components/BankLoader/BankLoader.hooks'
 import { BarChart3, History, PenLine, Settings } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -49,7 +52,8 @@ export function SudokuHomeView({ play }: { play?: string }) {
     fallback: GAME_MODE.CLASSIC,
   })
   const [resumeChoice, setResumeChoice] = useState<SavedSudoku | null>(null)
-  const [loading, setLoading] = useState(false)
+  const bank = useBankLoader()
+  const loading = bank.status === BANK_LOAD.LOADING
   const today = todayIso()
   const inProgress = games
     .filter((game) => game.status === SUDOKU_STATUS.IN_PROGRESS)
@@ -65,11 +69,7 @@ export function SudokuHomeView({ play }: { play?: string }) {
   }
 
   function load(start: () => Promise<void>) {
-    if (loading) {
-      return
-    }
-    setLoading(true)
-    start().finally(() => setLoading(false))
+    bank.run(start)
   }
 
   function savedFor(difficulty: Difficulty) {
@@ -89,12 +89,14 @@ export function SudokuHomeView({ play }: { play?: string }) {
     playedRef.current = true
     replaceRoute([GAME_ROUTE.SUDOKU])
     const [playMode, playDifficulty] = play.split('_')
-    void openDaily({
-      mode: playMode as GameMode,
-      difficulty: playDifficulty as Difficulty,
-      date: today,
-    })
-  }, [openDaily, play, today])
+    bank.run(() =>
+      openDaily({
+        mode: playMode as GameMode,
+        difficulty: playDifficulty as Difficulty,
+        date: today,
+      }),
+    )
+  }, [bank, openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.SUDOKU}>
@@ -226,6 +228,7 @@ export function SudokuHomeView({ play }: { play?: string }) {
           {formatDuration(resumeChoice?.elapsedMs ?? 0)}).
         </p>
       </AppDialog>
+      <BankLoader load={bank} />
     </MenuScreen>
   )
 }

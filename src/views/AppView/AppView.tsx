@@ -1,7 +1,8 @@
-import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
+import { GAME_ROUTE, LAUNCHER_ROUTE, SCREEN } from '@/common/route.constants'
 import { useRoute } from '@/common/route.hooks'
 import type { SignInProvider } from '@/common/sync.types'
 import { useSync } from '@/common/sync.hooks'
+import { AllHistoryView } from '@/views/AllHistoryView/AllHistoryView'
 import { FiveLettersView } from '@/views/FiveLettersView/FiveLettersView'
 import { KakuroView } from '@/views/KakuroView/KakuroView'
 import { LauncherView } from '@/views/LauncherView/LauncherView'
@@ -81,6 +82,9 @@ function routeView({
   }
   if (game === GAME_ROUTE.SOLITAIRE) {
     return <SolitaireView screen={screen} id={id} account={account} />
+  }
+  if (game === LAUNCHER_ROUTE.HISTORY) {
+    return <AllHistoryView />
   }
   if (game === GAME_ROUTE.SUDOKU) {
     return <SudokuView screen={screen} id={id} account={account} />

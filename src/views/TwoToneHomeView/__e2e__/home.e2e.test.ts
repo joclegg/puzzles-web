@@ -10,16 +10,10 @@ test('starts a new puzzle of a size', async ({ twoTonePage }) => {
   await expect(twoTonePage.tile({ row: 6, column: 6 })).toBeVisible()
 })
 
-test('paints with a picked colour', async ({ twoTonePage }) => {
-  await twoTonePage.openFromHome('Settings')
-  await twoTonePage.chooseInputMode('Pick a colour')
-  await twoTonePage.back()
+test('fills by tapping, with no colour toggle', async ({ twoTonePage }) => {
   await twoTonePage.openDaily(4)
 
-  await twoTonePage.pickColour('Blue')
-  await twoTonePage.tapTile({ row: 1, column: 1 })
-
-  await twoTonePage.expectTile({ row: 1, column: 1, state: /, blue/ })
+  await expect(twoTonePage.colourToggle).toBeHidden()
 })
 
 test('counts a solved puzzle in the stats', async ({ twoTonePage }) => {

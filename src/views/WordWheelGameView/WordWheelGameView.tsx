@@ -1,3 +1,4 @@
+import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { Check, Lightbulb, Shuffle, X } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
@@ -354,6 +355,7 @@ export function WordWheelGameView({ id }: { id: string }) {
           </Button>
         }
       />
+      <CustomiseHelpers route={GAME_ROUTE.WORD_WHEEL} />
     </main>
   )
 }

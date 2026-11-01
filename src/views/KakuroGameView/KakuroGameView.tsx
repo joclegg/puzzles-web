@@ -1,3 +1,4 @@
+import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import {
   Lightbulb,
@@ -287,7 +288,10 @@ export function KakuroGameView({ id }: { id: string }) {
           className="w-full max-w-md text-sm text-muted-foreground"
           aria-label="Combinations"
         >
-          {combinationLines(current).map((line) => (
+          {combinationLines({
+            game: current,
+            order: settings.combinationOrder,
+          }).map((line) => (
             <li key={line.label}>
               {line.label}:{' '}
               {line.options.length === 0
@@ -385,6 +389,7 @@ export function KakuroGameView({ id }: { id: string }) {
           <Button onClick={() => navigate([GAME_ROUTE.KAKURO])}>Home</Button>
         }
       />
+      <CustomiseHelpers route={GAME_ROUTE.KAKURO} />
     </main>
   )
 }

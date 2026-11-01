@@ -1,3 +1,4 @@
+import { CustomiseHelpers } from '@/components/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/components/HowToPlay/HowToPlay'
 import { Lightbulb, Undo2 } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
@@ -403,6 +404,7 @@ export function SolitaireGameView({ id }: { id: string }) {
           <Button onClick={() => navigate([GAME_ROUTE.SOLITAIRE])}>Home</Button>
         }
       />
+      <CustomiseHelpers route={GAME_ROUTE.SOLITAIRE} />
     </main>
   )
 }

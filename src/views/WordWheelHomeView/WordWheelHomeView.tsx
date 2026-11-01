@@ -1,3 +1,5 @@
+import { BankLoader } from '@/components/BankLoader/BankLoader'
+import { useBankLoader } from '@/components/BankLoader/BankLoader.hooks'
 import { BarChart3, History, Settings } from 'lucide-react'
 import { dailyPuzzleResults } from '@/common/puzzleSaves.functions'
 import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
@@ -41,6 +43,7 @@ import { WordWheelIcon } from '@/components/WordWheelIcon/WordWheelIcon'
 
 export function WordWheelHomeView({ play }: { play?: string }) {
   const { games, openGame, startRandom, openDaily } = useWordWheelGames()
+  const bank = useBankLoader()
   const [resumeChoice, setResumeChoice] = useState<SavedPuzzle | null>(null)
   const today = todayIso()
   const inProgress = inProgressPuzzles(games)
@@ -57,8 +60,8 @@ export function WordWheelHomeView({ play }: { play?: string }) {
     if (play === undefined || playedRef.current) return
     playedRef.current = true
     replaceRoute([GAME_ROUTE.WORD_WHEEL])
-    void openDaily({ date: today, level: play as Level })
-  }, [openDaily, play, today])
+    bank.run(() => openDaily({ date: today, level: play as Level }))
+  }, [bank, openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.WORD_WHEEL}>
@@ -108,7 +111,7 @@ export function WordWheelHomeView({ play }: { play?: string }) {
               label={levelLabel(level)}
               ariaLabel={`Daily ${levelLabel(level)}`}
               done={solvedIds.has(`${DAILY_PREFIX}${today}_${level}`)}
-              onClick={() => openDaily({ date: today, level })}
+              onClick={() => bank.run(() => openDaily({ date: today, level }))}
             />
           ))}
         </div>
@@ -132,7 +135,9 @@ export function WordWheelHomeView({ play }: { play?: string }) {
                 }
                 active={saved !== undefined}
                 onClick={() =>
-                  saved ? setResumeChoice(saved) : startRandom(level)
+                  saved
+                    ? setResumeChoice(saved)
+                    : bank.run(() => startRandom(level))
                 }
               />
             )
@@ -148,7 +153,7 @@ export function WordWheelHomeView({ play }: { play?: string }) {
             <Button
               onClick={() => {
                 setResumeChoice(null)
-                startRandom(levelOf(resumeChoice!))
+                bank.run(() => startRandom(levelOf(resumeChoice!)))
               }}
             >
               New puzzle
@@ -170,6 +175,7 @@ export function WordWheelHomeView({ play }: { play?: string }) {
           {formatDuration(resumeChoice?.elapsedMs ?? 0)}).
         </p>
       </AppDialog>
+      <BankLoader load={bank} />
     </MenuScreen>
   )
 }

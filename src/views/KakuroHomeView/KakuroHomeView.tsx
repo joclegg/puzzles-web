@@ -1,3 +1,5 @@
+import { BankLoader } from '@/components/BankLoader/BankLoader'
+import { useBankLoader } from '@/components/BankLoader/BankLoader.hooks'
 import { BarChart3, History, Settings } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -37,6 +39,7 @@ import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
 
 export function KakuroHomeView({ play }: { play?: string }) {
   const { games, openGame, startRandom, openDaily } = useKakuroGames()
+  const bank = useBankLoader()
   const [resumeChoice, setResumeChoice] = useState<SavedPuzzle | null>(null)
   const today = todayIso()
   const inProgress = inProgressPuzzles(games)
@@ -59,8 +62,8 @@ export function KakuroHomeView({ play }: { play?: string }) {
     if (play === undefined || playedRef.current) return
     playedRef.current = true
     replaceRoute([GAME_ROUTE.KAKURO])
-    void openDaily({ date: today, size: Number(play) })
-  }, [openDaily, play, today])
+    bank.run(() => openDaily({ date: today, size: Number(play) }))
+  }, [bank, openDaily, play, today])
 
   return (
     <MenuScreen accent={MENU_ACCENT.KAKURO}>
@@ -110,7 +113,7 @@ export function KakuroHomeView({ play }: { play?: string }) {
               label={sizeLabel(size)}
               ariaLabel={`Daily ${sizeLabel(size)}`}
               done={dailySolved.has(dailyPuzzleId({ date: today, size }))}
-              onClick={() => openDaily({ date: today, size })}
+              onClick={() => bank.run(() => openDaily({ date: today, size }))}
             />
           ))}
         </div>
@@ -131,7 +134,9 @@ export function KakuroHomeView({ play }: { play?: string }) {
                 }
                 active={saved !== undefined}
                 onClick={() =>
-                  saved ? setResumeChoice(saved) : startRandom(size)
+                  saved
+                    ? setResumeChoice(saved)
+                    : bank.run(() => startRandom(size))
                 }
               />
             )
@@ -147,7 +152,7 @@ export function KakuroHomeView({ play }: { play?: string }) {
             <Button
               onClick={() => {
                 setResumeChoice(null)
-                startRandom(resumeChoice!.size)
+                bank.run(() => startRandom(resumeChoice!.size))
               }}
             >
               New puzzle
@@ -169,6 +174,7 @@ export function KakuroHomeView({ play }: { play?: string }) {
           {formatDuration(resumeChoice?.elapsedMs ?? 0)}).
         </p>
       </AppDialog>
+      <BankLoader load={bank} />
     </MenuScreen>
   )
 }
