@@ -14,20 +14,16 @@ import {
   STORED_EVENT,
   SUPABASE_KEY,
   SUPABASE_URL,
-  SYNC_KIND,
   SYNCED_EVENT,
-  SYNCED_GAMES,
 } from '@/common/sync.constants'
 import {
   deleteAccountThenSignOut,
-  entryStampKey,
-  isSyncableKey,
-  mergeGames,
-  mergeSettings,
-  parseStampKey,
+  mergePulled,
   pulledUpTo,
   pullSince,
-  settingsStampKey,
+  pushRows,
+  stillPending,
+  syncableOnly,
 } from '@/common/sync.functions'
 import type {
   SavedGameRow,
@@ -161,20 +157,15 @@ export function useSync() {
 }
 
 function dropUnsyncableKeys() {
-  replaceStored({
-    key: PENDING_KEY,
-    value: readStored<string[]>({ key: PENDING_KEY, fallback: [] }).filter(
-      isSyncableKey,
-    ),
+  const kept = syncableOnly({
+    pending: readStored<string[]>({ key: PENDING_KEY, fallback: [] }),
+    stamps: readStored<Record<string, number>>({
+      key: STAMPS_KEY,
+      fallback: {},
+    }),
   })
-  replaceStored({
-    key: STAMPS_KEY,
-    value: Object.fromEntries(
-      Object.entries(
-        readStored<Record<string, number>>({ key: STAMPS_KEY, fallback: {} }),
-      ).filter(([key]) => isSyncableKey(key)),
-    ),
-  })
+  replaceStored({ key: PENDING_KEY, value: kept.pending })
+  replaceStored({ key: STAMPS_KEY, value: kept.stamps })
 }
 
 async function fetchChanged<T>({
@@ -221,52 +212,24 @@ async function pull(client: SupabaseClient) {
     }),
   ])
   if (rows === null || settingsRows === null) return false
-  let stamps = readStored<Record<string, number>>({
-    key: STAMPS_KEY,
-    fallback: {},
+  const merged = mergePulled({
+    rows,
+    settingsRows,
+    stamps: readStored<Record<string, number>>({
+      key: STAMPS_KEY,
+      fallback: {},
+    }),
+    pending: readStored<string[]>({ key: PENDING_KEY, fallback: [] }),
+    readGames,
+    readSettings: (key) => readStored<unknown>({ key, fallback: null }),
+    now: Date.now,
   })
-  const pending = new Set(
-    readStored<string[]>({ key: PENDING_KEY, fallback: [] }),
-  )
-  const changedKeys: string[] = []
-  for (const game of SYNCED_GAMES) {
-    const gamesKey = `${game}.${SYNC_KIND.GAMES}`
-    const mergedGames = mergeGames({
-      game,
-      games: readStored<SyncedEntry[]>({ key: gamesKey, fallback: [] }),
-      rows,
-      stamps,
-    })
-    stamps = mergedGames.stamps
-    for (const id of mergedGames.unstamped) {
-      const key = entryStampKey({ game, id })
-      stamps = { ...stamps, [key]: Date.now() }
-      pending.add(key)
-    }
-    if (mergedGames.changed) {
-      replaceStored({ key: gamesKey, value: mergedGames.games })
-      changedKeys.push(gamesKey)
-    }
-    const settingsKey = `${game}.${SYNC_KIND.SETTINGS}`
-    const mergedSettings = mergeSettings({
-      game,
-      settings: readStored<unknown>({ key: settingsKey, fallback: null }),
-      row: settingsRows.find((row) => row.game === game),
-      stamps,
-    })
-    stamps = mergedSettings.stamps
-    if (mergedSettings.unstamped) {
-      const key = settingsStampKey(game)
-      stamps = { ...stamps, [key]: Date.now() }
-      pending.add(key)
-    }
-    if (mergedSettings.changed) {
-      replaceStored({ key: settingsKey, value: mergedSettings.settings })
-      changedKeys.push(settingsKey)
-    }
+  for (const write of merged.writes) {
+    replaceStored(write)
   }
-  replaceStored({ key: STAMPS_KEY, value: stamps })
-  replaceStored({ key: PENDING_KEY, value: [...pending] })
+  const changedKeys = merged.changedKeys
+  replaceStored({ key: STAMPS_KEY, value: merged.stamps })
+  replaceStored({ key: PENDING_KEY, value: merged.pending })
   replaceStored({
     key: PULLED_KEY,
     value: pulledUpTo({ cursor, rows: [...rows, ...settingsRows] }),
@@ -284,34 +247,13 @@ async function push(client: SupabaseClient) {
     key: STAMPS_KEY,
     fallback: {},
   })
-  const savedRows: SavedGameRow[] = []
-  const settingsRows: SettingsRow[] = []
-  for (const key of pending) {
-    const { game, kind, id } = parseStampKey(key)
-    const updatedAt = new Date(stamps[key] ?? Date.now()).toISOString()
-    if (kind === SYNC_KIND.GAMES && id !== null) {
-      const entry = readStored<SyncedEntry[]>({
-        key: `${game}.${SYNC_KIND.GAMES}`,
-        fallback: [],
-      }).find((it) => it.id === id)
-      savedRows.push({
-        game,
-        id,
-        data: entry ?? {},
-        updated_at: updatedAt,
-        deleted: entry === undefined,
-      })
-    } else {
-      settingsRows.push({
-        game,
-        data: readStored<unknown>({
-          key: `${game}.${SYNC_KIND.SETTINGS}`,
-          fallback: {},
-        }),
-        updated_at: updatedAt,
-      })
-    }
-  }
+  const { savedRows, settingsRows } = pushRows({
+    pending,
+    stamps,
+    readGames,
+    readSettings: (key) => readStored<unknown>({ key, fallback: {} }),
+    now: Date.now,
+  })
   const [saved, settings] = await Promise.all([
     savedRows.length > 0
       ? client.from('saved_games').upsert(savedRows)
@@ -320,22 +262,25 @@ async function push(client: SupabaseClient) {
       ? client.from('game_settings').upsert(settingsRows)
       : Promise.resolve({ error: null }),
   ])
-  const uploaded = pending.filter((key) =>
-    parseStampKey(key).id === null
-      ? settings.error === null
-      : saved.error === null,
-  )
-  const latest = readStored<Record<string, number>>({
-    key: STAMPS_KEY,
-    fallback: {},
-  })
   replaceStored({
     key: PENDING_KEY,
-    value: readStored<string[]>({ key: PENDING_KEY, fallback: [] }).filter(
-      (key) => !uploaded.includes(key) || latest[key] !== stamps[key],
-    ),
+    value: stillPending({
+      pushed: pending,
+      current: readStored<string[]>({ key: PENDING_KEY, fallback: [] }),
+      stamps,
+      latest: readStored<Record<string, number>>({
+        key: STAMPS_KEY,
+        fallback: {},
+      }),
+      savedOk: saved.error === null,
+      settingsOk: settings.error === null,
+    }),
   })
   return saved.error === null && settings.error === null
+}
+
+function readGames(key: string) {
+  return readStored<SyncedEntry[]>({ key, fallback: [] })
 }
 
 async function syncOnce(client: SupabaseClient) {

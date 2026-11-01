@@ -9,12 +9,16 @@ import {
   entryStampKey,
   isEmailAddress,
   mergeGames,
+  mergePulled,
   mergeSettings,
   parseStampKey,
   pulledUpTo,
   pullSince,
+  pushRows,
   recordChanges,
   settingsStampKey,
+  stillPending,
+  syncableOnly,
   syncedKey,
 } from '@/common/sync.functions'
 
@@ -268,5 +272,110 @@ describe('deleteAccountThenSignOut', () => {
     })
     expect(deleted).toBe(false)
     expect(calls).toEqual([])
+  })
+})
+
+describe('mergePulled', () => {
+  it('writes pulled entries and stamps local entries the server lacks', () => {
+    const merged = mergePulled({
+      rows: [
+        {
+          game: 'kakuro',
+          id: 'a',
+          data: { id: 'a' },
+          updated_at: '2026-01-01T00:00:00.000Z',
+          deleted: false,
+        },
+      ],
+      settingsRows: [],
+      stamps: {},
+      pending: [],
+      readGames: (key) => (key === 'kakuro.games' ? [{ id: 'b' }] : []),
+      readSettings: () => null,
+      now: () => 5,
+    })
+    expect(merged.changedKeys).toEqual(['kakuro.games'])
+    expect(merged.writes).toEqual([
+      { key: 'kakuro.games', value: [{ id: 'b' }, { id: 'a' }] },
+    ])
+    expect(merged.pending).toEqual(['kakuro.games/b'])
+    expect(merged.stamps).toEqual({
+      'kakuro.games/a': Date.parse('2026-01-01T00:00:00.000Z'),
+      'kakuro.games/b': 5,
+    })
+  })
+})
+
+describe('pushRows', () => {
+  it('builds a row per pending key, marking missing entries deleted', () => {
+    const rows = pushRows({
+      pending: ['kakuro.games/a', 'kakuro.games/gone', 'kakuro.settings'],
+      stamps: { 'kakuro.games/a': 0 },
+      readGames: () => [{ id: 'a' }],
+      readSettings: () => ({ dark: true }),
+      now: () => 1000,
+    })
+    expect(rows.savedRows).toEqual([
+      {
+        game: 'kakuro',
+        id: 'a',
+        data: { id: 'a' },
+        updated_at: '1970-01-01T00:00:00.000Z',
+        deleted: false,
+      },
+      {
+        game: 'kakuro',
+        id: 'gone',
+        data: {},
+        updated_at: '1970-01-01T00:00:01.000Z',
+        deleted: true,
+      },
+    ])
+    expect(rows.settingsRows).toEqual([
+      {
+        game: 'kakuro',
+        data: { dark: true },
+        updated_at: '1970-01-01T00:00:01.000Z',
+      },
+    ])
+  })
+})
+
+describe('stillPending', () => {
+  it('keeps keys that failed or changed while uploading', () => {
+    expect(
+      stillPending({
+        pushed: ['kakuro.games/a', 'kakuro.games/b', 'kakuro.settings'],
+        current: [
+          'kakuro.games/a',
+          'kakuro.games/b',
+          'kakuro.settings',
+          'kakuro.games/c',
+        ],
+        stamps: { 'kakuro.games/a': 1, 'kakuro.games/b': 1 },
+        latest: { 'kakuro.games/a': 1, 'kakuro.games/b': 2 },
+        savedOk: true,
+        settingsOk: false,
+      }),
+    ).toEqual(['kakuro.games/b', 'kakuro.settings', 'kakuro.games/c'])
+  })
+})
+
+describe('syncableOnly', () => {
+  it('drops entry keys whose id is not a uuid', () => {
+    const uuid = '0f8fad5b-d9cb-469f-a165-70867728950e'
+    expect(
+      syncableOnly({
+        pending: [
+          `kakuro.games/${uuid}`,
+          'kakuro.games/old',
+          'kakuro.settings',
+        ],
+        stamps: { [`kakuro.games/${uuid}`]: 1, 'kakuro.games/old': 2 },
+      }),
+    ).toEqual({
+      pending: [`kakuro.games/${uuid}`, 'kakuro.settings'],
+      stamps: { [`kakuro.games/${uuid}`]: 1 },
+    })
   })
 })

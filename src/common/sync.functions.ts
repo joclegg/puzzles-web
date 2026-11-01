@@ -120,6 +120,76 @@ export function mergeGames({
   return { games: [...byId.values()], stamps: nextStamps, changed, unstamped }
 }
 
+export function mergePulled({
+  rows,
+  settingsRows,
+  stamps,
+  pending,
+  readGames,
+  readSettings,
+  now,
+}: {
+  rows: SavedGameRow[]
+  settingsRows: SettingsRow[]
+  stamps: Record<string, number>
+  pending: string[]
+  readGames: (key: string) => SyncedEntry[]
+  readSettings: (key: string) => unknown
+  now: () => number
+}): {
+  stamps: Record<string, number>
+  pending: string[]
+  writes: { key: string; value: unknown }[]
+  changedKeys: string[]
+} {
+  let nextStamps = stamps
+  const nextPending = new Set(pending)
+  const writes: { key: string; value: unknown }[] = []
+  const changedKeys: string[] = []
+  for (const game of SYNCED_GAMES) {
+    const gamesKey = `${game}.${SYNC_KIND.GAMES}`
+    const mergedGames = mergeGames({
+      game,
+      games: readGames(gamesKey),
+      rows,
+      stamps: nextStamps,
+    })
+    nextStamps = mergedGames.stamps
+    for (const id of mergedGames.unstamped) {
+      const key = entryStampKey({ game, id })
+      nextStamps = { ...nextStamps, [key]: now() }
+      nextPending.add(key)
+    }
+    if (mergedGames.changed) {
+      writes.push({ key: gamesKey, value: mergedGames.games })
+      changedKeys.push(gamesKey)
+    }
+    const settingsKey = `${game}.${SYNC_KIND.SETTINGS}`
+    const mergedSettings = mergeSettings({
+      game,
+      settings: readSettings(settingsKey),
+      row: settingsRows.find((row) => row.game === game),
+      stamps: nextStamps,
+    })
+    nextStamps = mergedSettings.stamps
+    if (mergedSettings.unstamped) {
+      const key = settingsStampKey(game)
+      nextStamps = { ...nextStamps, [key]: now() }
+      nextPending.add(key)
+    }
+    if (mergedSettings.changed) {
+      writes.push({ key: settingsKey, value: mergedSettings.settings })
+      changedKeys.push(settingsKey)
+    }
+  }
+  return {
+    stamps: nextStamps,
+    pending: [...nextPending],
+    writes,
+    changedKeys,
+  }
+}
+
 export function mergeSettings({
   game,
   settings,
@@ -187,6 +257,46 @@ export function pullSince(cursor: string | null): string {
     : new Date(Date.parse(cursor) - PULL_OVERLAP_MS).toISOString()
 }
 
+export function pushRows({
+  pending,
+  stamps,
+  readGames,
+  readSettings,
+  now,
+}: {
+  pending: string[]
+  stamps: Record<string, number>
+  readGames: (key: string) => SyncedEntry[]
+  readSettings: (key: string) => unknown
+  now: () => number
+}): { savedRows: SavedGameRow[]; settingsRows: SettingsRow[] } {
+  const savedRows: SavedGameRow[] = []
+  const settingsRows: SettingsRow[] = []
+  for (const key of pending) {
+    const { game, kind, id } = parseStampKey(key)
+    const updatedAt = new Date(stamps[key] ?? now()).toISOString()
+    if (kind === SYNC_KIND.GAMES && id !== null) {
+      const entry = readGames(`${game}.${SYNC_KIND.GAMES}`).find(
+        (it) => it.id === id,
+      )
+      savedRows.push({
+        game,
+        id,
+        data: entry ?? {},
+        updated_at: updatedAt,
+        deleted: entry === undefined,
+      })
+    } else {
+      settingsRows.push({
+        game,
+        data: readSettings(`${game}.${SYNC_KIND.SETTINGS}`),
+        updated_at: updatedAt,
+      })
+    }
+  }
+  return { savedRows, settingsRows }
+}
+
 export function recordChanges({
   stamps,
   pending,
@@ -210,6 +320,44 @@ export function recordChanges({
 
 export function settingsStampKey(game: string) {
   return `${game}.${SYNC_KIND.SETTINGS}`
+}
+
+export function stillPending({
+  pushed,
+  current,
+  stamps,
+  latest,
+  savedOk,
+  settingsOk,
+}: {
+  pushed: string[]
+  current: string[]
+  stamps: Record<string, number>
+  latest: Record<string, number>
+  savedOk: boolean
+  settingsOk: boolean
+}): string[] {
+  const uploaded = pushed.filter((key) =>
+    parseStampKey(key).id === null ? settingsOk : savedOk,
+  )
+  return current.filter(
+    (key) => !uploaded.includes(key) || latest[key] !== stamps[key],
+  )
+}
+
+export function syncableOnly({
+  pending,
+  stamps,
+}: {
+  pending: string[]
+  stamps: Record<string, number>
+}): { pending: string[]; stamps: Record<string, number> } {
+  return {
+    pending: pending.filter(isSyncableKey),
+    stamps: Object.fromEntries(
+      Object.entries(stamps).filter(([key]) => isSyncableKey(key)),
+    ),
+  }
 }
 
 export function syncedKey(storageKey: string): SyncedKey | null {
