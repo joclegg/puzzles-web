@@ -12,7 +12,9 @@ import { useWordWheelGames } from '@/common/wordWheel/wordWheel.hooks'
 import type { Level } from '@/common/wordWheel/wordWheel.types'
 import { WordWheelStatsTable } from '@/components/WordWheelStatsTable/WordWheelStatsTable'
 import { WordWheelGameView } from '@/views/WordWheelGameView/WordWheelGameView'
-import { WordWheelHomeView } from '@/views/WordWheelHomeView/WordWheelHomeView'
+import { PuzzleHomeView } from '@/views/PuzzleHomeView/PuzzleHomeView'
+import { TITLE } from '@/common/wordWheel/wordWheelSaves.constants'
+import { WordWheelIcon } from '@/components/WordWheelIcon/WordWheelIcon'
 import { WordWheelSettingsView } from '@/views/WordWheelSettingsView/WordWheelSettingsView'
 import { PuzzleDailyView } from '@/views/PuzzleDailyView/PuzzleDailyView'
 import { PuzzleHistoryView } from '@/views/PuzzleHistoryView/PuzzleHistoryView'
@@ -31,7 +33,7 @@ const OPTIONS: PuzzleOptions<Level> = {
 }
 
 export function WordWheelView({ screen, id }: { screen: string; id: string }) {
-  const { games, openDaily } = useWordWheelGames()
+  const { games, openGame, startRandom, openDaily } = useWordWheelGames()
   if (screen === SCREEN.GAME) {
     return <WordWheelGameView key={id} id={id} />
   }
@@ -64,5 +66,21 @@ export function WordWheelView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <WordWheelSettingsView />
   }
-  return <WordWheelHomeView play={screen === SCREEN.PLAY ? id : undefined} />
+  return (
+    <PuzzleHomeView
+      definition={DEFINITION}
+      title={TITLE}
+      icon={<WordWheelIcon />}
+      tagline="Swipe the letters to fill the crossword"
+      options={OPTIONS}
+      dailyGridClass="grid grid-cols-3 gap-2"
+      usesBank={true}
+      play={screen === SCREEN.PLAY ? id : undefined}
+      playValue={(value) => value as Level}
+      games={games}
+      openGame={openGame}
+      startRandom={startRandom}
+      openDaily={({ date, value }) => openDaily({ date, level: value })}
+    />
+  )
 }

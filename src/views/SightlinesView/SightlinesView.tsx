@@ -7,7 +7,9 @@ import { SizeStatsTable } from '@/components/SizeStatsTable/SizeStatsTable'
 import { sizeStats } from '@/common/puzzleSaves.functions'
 import { sizeLabel } from '@/common/puzzleTitle.functions'
 import { SightlinesGameView } from '@/views/SightlinesGameView/SightlinesGameView'
-import { SightlinesHomeView } from '@/views/SightlinesHomeView/SightlinesHomeView'
+import { PuzzleHomeView } from '@/views/PuzzleHomeView/PuzzleHomeView'
+import { TITLE } from '@/common/sightlines/sightlinesSettings.constants'
+import { SightlinesIcon } from '@/components/SightlinesIcon/SightlinesIcon'
 import { SightlinesSettingsView } from '@/views/SightlinesSettingsView/SightlinesSettingsView'
 import { PuzzleDailyView } from '@/views/PuzzleDailyView/PuzzleDailyView'
 import { PuzzleHistoryView } from '@/views/PuzzleHistoryView/PuzzleHistoryView'
@@ -18,7 +20,7 @@ const DEFINITION = gameDefinition(GAME_ROUTE.SIGHTLINES)
 const OPTIONS = sizeOptions(SIZES)
 
 export function SightlinesView({ screen, id }: { screen: string; id: string }) {
-  const { games, openDaily } = useSightlinesGames()
+  const { games, openGame, startRandom, openDaily } = useSightlinesGames()
   if (screen === SCREEN.GAME) {
     return <SightlinesGameView key={id} id={id} />
   }
@@ -54,5 +56,21 @@ export function SightlinesView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <SightlinesSettingsView />
   }
-  return <SightlinesHomeView play={screen === SCREEN.PLAY ? id : undefined} />
+  return (
+    <PuzzleHomeView
+      definition={DEFINITION}
+      title={TITLE}
+      icon={<SightlinesIcon />}
+      tagline="Blue dots count what they can see"
+      options={OPTIONS}
+      dailyGridClass="grid grid-cols-5 gap-2"
+      usesBank={false}
+      play={screen === SCREEN.PLAY ? id : undefined}
+      playValue={(value) => Number(value)}
+      games={games}
+      openGame={openGame}
+      startRandom={startRandom}
+      openDaily={({ date, value }) => openDaily({ date, size: value })}
+    />
+  )
 }

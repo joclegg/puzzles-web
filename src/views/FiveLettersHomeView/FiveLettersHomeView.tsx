@@ -2,19 +2,11 @@ import {
   loadWords,
   useFiveLettersGames,
 } from '@/common/fiveLetters/fiveLetters.hooks'
-import {
-  BarChart3,
-  CalendarCheck,
-  Dumbbell,
-  Newspaper,
-  RotateCcw,
-  Settings,
-} from 'lucide-react'
+import { CalendarCheck, Dumbbell, Newspaper, RotateCcw } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { MEDAL } from '@/common/dailyMedal.constants'
 import { dailyResults } from '@/common/fiveLetters/fiveLettersSaves.functions'
-import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth } from '@/common/format.functions'
 import {
@@ -29,18 +21,16 @@ import {
   daily2Id,
   slotOf,
 } from '@/common/fiveLetters/fiveLettersSaves.functions'
-import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
-import { navigate, replaceRoute } from '@/common/route.hooks'
-import { Button } from '@/components/Button/Button'
-import { BUTTON_SIZE } from '@/components/Button/Button.constants'
+import { GAME_ROUTE } from '@/common/route.constants'
+import { replaceRoute } from '@/common/route.hooks'
 import { FiveLettersIcon } from '@/components/FiveLettersIcon/FiveLettersIcon'
-import { GameHero } from '@/components/GameHero/GameHero'
-import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
-import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { MenuSection } from '@/components/MenuSection/MenuSection'
 import { MenuTile } from '@/components/MenuTile/MenuTile'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { DAILY_RESULT_LABEL } from '@/views/FiveLettersHomeView/FiveLettersHomeView.constants'
+import { HomeScreen } from '@/components/HomeScreen/HomeScreen'
+import { gameDefinition } from '@/common/game.functions'
+
+const DEFINITION = gameDefinition(GAME_ROUTE.FIVE_LETTERS)
 
 export function FiveLettersHomeView({ play }: { play?: string }) {
   const { games, openGame, startAndOpen, startPractice, startDaily2 } =
@@ -93,33 +83,17 @@ export function FiveLettersHomeView({ play }: { play?: string }) {
   }, [daily, openGame, play, startAndOpen, today])
 
   return (
-    <MenuScreen accent={MENU_ACCENT.FIVE_LETTERS} className="min-h-dvh">
-      <ScreenHeader title="Five Letters" back={[]}>
-        <DailyCalendarButton
-          route={GAME_ROUTE.FIVE_LETTERS}
-          results={dailyResults(games)}
-          total={2}
-          firstMedal={MEDAL.SILVER}
-        />
-        <Button
-          size={BUTTON_SIZE.ICON}
-          aria-label="Stats"
-          onClick={() => navigate([GAME_ROUTE.FIVE_LETTERS, SCREEN.STATS])}
-        >
-          <BarChart3 className="size-5" />
-        </Button>
-        <Button
-          size={BUTTON_SIZE.ICON}
-          aria-label="Settings"
-          onClick={() => navigate([GAME_ROUTE.FIVE_LETTERS, SCREEN.SETTINGS])}
-        >
-          <Settings className="size-5" />
-        </Button>
-      </ScreenHeader>
-      <GameHero
-        icon={<FiveLettersIcon />}
-        tagline="Guess the word in six tries, a new one every day"
-      />
+    <HomeScreen
+      definition={DEFINITION}
+      title="Five Letters"
+      icon={<FiveLettersIcon />}
+      tagline="Guess the word in six tries, a new one every day"
+      dailyResults={dailyResults(games)}
+      dailyTotal={2}
+      firstMedal={MEDAL.SILVER}
+
+      className="min-h-dvh"
+    >
       <MenuSection title="Today" aside={formatDayMonth(today)}>
         <MenuTile
           label={`Today's word · #${dayNumber(today)}`}
@@ -176,6 +150,6 @@ export function FiveLettersHomeView({ play }: { play?: string }) {
         Everyone with Puzzles gets the same word each day, so you can compare
         grids.
       </p>
-    </MenuScreen>
+    </HomeScreen>
   )
 }

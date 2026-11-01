@@ -7,7 +7,9 @@ import { SizeStatsTable } from '@/components/SizeStatsTable/SizeStatsTable'
 import { sizeStats } from '@/common/puzzleSaves.functions'
 import { sizeLabel } from '@/common/puzzleTitle.functions'
 import { KakuroGameView } from '@/views/KakuroGameView/KakuroGameView'
-import { KakuroHomeView } from '@/views/KakuroHomeView/KakuroHomeView'
+import { PuzzleHomeView } from '@/views/PuzzleHomeView/PuzzleHomeView'
+import { TITLE } from '@/common/kakuro/kakuroSettings.constants'
+import { KakuroIcon } from '@/components/KakuroIcon/KakuroIcon'
 import { KakuroSettingsView } from '@/views/KakuroSettingsView/KakuroSettingsView'
 import { PuzzleDailyView } from '@/views/PuzzleDailyView/PuzzleDailyView'
 import { PuzzleHistoryView } from '@/views/PuzzleHistoryView/PuzzleHistoryView'
@@ -18,7 +20,7 @@ const DEFINITION = gameDefinition(GAME_ROUTE.KAKURO)
 const OPTIONS = sizeOptions(SIZES)
 
 export function KakuroView({ screen, id }: { screen: string; id: string }) {
-  const { games, openDaily } = useKakuroGames()
+  const { games, openGame, startRandom, openDaily } = useKakuroGames()
   if (screen === SCREEN.GAME) {
     return <KakuroGameView key={id} id={id} />
   }
@@ -54,5 +56,21 @@ export function KakuroView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <KakuroSettingsView />
   }
-  return <KakuroHomeView play={screen === SCREEN.PLAY ? id : undefined} />
+  return (
+    <PuzzleHomeView
+      definition={DEFINITION}
+      title={TITLE}
+      icon={<KakuroIcon />}
+      tagline="Cross sums: runs of different digits that add up"
+      options={OPTIONS}
+      dailyGridClass="grid grid-cols-5 gap-2"
+      usesBank={true}
+      play={screen === SCREEN.PLAY ? id : undefined}
+      playValue={(value) => Number(value)}
+      games={games}
+      openGame={openGame}
+      startRandom={startRandom}
+      openDaily={({ date, value }) => openDaily({ date, size: value })}
+    />
+  )
 }

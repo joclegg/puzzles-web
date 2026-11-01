@@ -11,7 +11,9 @@ import { useSlideOutGames } from '@/common/slideOut/slideOut.hooks'
 import type { Level } from '@/common/slideOut/slideOut.types'
 import { SlideOutStatsTable } from '@/components/SlideOutStatsTable/SlideOutStatsTable'
 import { SlideOutGameView } from '@/views/SlideOutGameView/SlideOutGameView'
-import { SlideOutHomeView } from '@/views/SlideOutHomeView/SlideOutHomeView'
+import { PuzzleHomeView } from '@/views/PuzzleHomeView/PuzzleHomeView'
+import { TITLE } from '@/common/slideOut/slideOutSaves.constants'
+import { SlideOutIcon } from '@/components/SlideOutIcon/SlideOutIcon'
 import { SlideOutSettingsView } from '@/views/SlideOutSettingsView/SlideOutSettingsView'
 import { PuzzleDailyView } from '@/views/PuzzleDailyView/PuzzleDailyView'
 import { PuzzleHistoryView } from '@/views/PuzzleHistoryView/PuzzleHistoryView'
@@ -30,7 +32,7 @@ const OPTIONS: PuzzleOptions<Level> = {
 }
 
 export function SlideOutView({ screen, id }: { screen: string; id: string }) {
-  const { games, openDaily } = useSlideOutGames()
+  const { games, openGame, startRandom, openDaily } = useSlideOutGames()
   if (screen === SCREEN.GAME) {
     return <SlideOutGameView key={id} id={id} />
   }
@@ -63,5 +65,21 @@ export function SlideOutView({ screen, id }: { screen: string; id: string }) {
   if (screen === SCREEN.SETTINGS) {
     return <SlideOutSettingsView />
   }
-  return <SlideOutHomeView play={screen === SCREEN.PLAY ? id : undefined} />
+  return (
+    <PuzzleHomeView
+      definition={DEFINITION}
+      title={TITLE}
+      icon={<SlideOutIcon />}
+      tagline="Slide the blocks to free the red one"
+      options={OPTIONS}
+      dailyGridClass="grid grid-cols-3 gap-2"
+      usesBank={true}
+      play={screen === SCREEN.PLAY ? id : undefined}
+      playValue={(value) => value as Level}
+      games={games}
+      openGame={openGame}
+      startRandom={startRandom}
+      openDaily={({ date, value }) => openDaily({ date, level: value })}
+    />
+  )
 }

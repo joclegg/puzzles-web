@@ -1,11 +1,10 @@
 import { BankLoader } from '@/components/BankLoader/BankLoader'
 import { BANK_LOAD } from '@/components/BankLoader/BankLoader.constants'
 import { useBankLoader } from '@/components/BankLoader/BankLoader.hooks'
-import { BarChart3, History, PenLine, Settings } from 'lucide-react'
+import { PenLine } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { dailyResults } from '@/common/sudoku/sudokuSaves.functions'
-import { DailyCalendarButton } from '@/components/DailyCalendarButton/DailyCalendarButton'
 import { todayIso } from '@/common/date.functions'
 import { formatDayMonth, formatDuration } from '@/common/format.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
@@ -29,21 +28,18 @@ import { sudokuTitle } from '@/common/sudoku/sudokuSaves.functions'
 import type { SavedSudoku } from '@/common/sudoku/sudokuSaves.types'
 import { AppDialog } from '@/components/AppDialog/AppDialog'
 import { Button } from '@/components/Button/Button'
-import {
-  BUTTON_SIZE,
-  BUTTON_VARIANT,
-} from '@/components/Button/Button.constants'
+import { BUTTON_VARIANT } from '@/components/Button/Button.constants'
 import { OptionGroup } from '@/components/OptionGroup/OptionGroup'
 import { ContinueCard } from '@/components/ContinueCard/ContinueCard'
 import { DailyTile } from '@/components/DailyTile/DailyTile'
-import { GameHero } from '@/components/GameHero/GameHero'
 import { LevelDots } from '@/components/LevelDots/LevelDots'
-import { MenuScreen } from '@/components/MenuScreen/MenuScreen'
-import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 import { MenuSection } from '@/components/MenuSection/MenuSection'
 import { MenuTile } from '@/components/MenuTile/MenuTile'
-import { ScreenHeader } from '@/components/ScreenHeader/ScreenHeader'
 import { SudokuIcon } from '@/components/SudokuIcon/SudokuIcon'
+import { HomeScreen } from '@/components/HomeScreen/HomeScreen'
+import { gameDefinition } from '@/common/game.functions'
+
+const DEFINITION = gameDefinition(GAME_ROUTE.SUDOKU)
 
 export function SudokuHomeView({ play }: { play?: string }) {
   const { games, openGame, startLevel, openDaily } = useSudokuGames()
@@ -99,39 +95,16 @@ export function SudokuHomeView({ play }: { play?: string }) {
   }, [bank, openDaily, play, today])
 
   return (
-    <MenuScreen accent={MENU_ACCENT.SUDOKU}>
-      <ScreenHeader title={TITLE} back={[]}>
-        <DailyCalendarButton
-          route={GAME_ROUTE.SUDOKU}
-          results={dailyResults(games)}
-          total={GAME_MODES.flatMap((each) => LEVELS[each]).length}
-        />
-        <Button
-          size={BUTTON_SIZE.ICON}
-          aria-label="Best times"
-          onClick={() => navigate([GAME_ROUTE.SUDOKU, SCREEN.STATS])}
-        >
-          <BarChart3 className="size-5" />
-        </Button>
-        <Button
-          size={BUTTON_SIZE.ICON}
-          aria-label="History"
-          onClick={() => navigate([GAME_ROUTE.SUDOKU, SCREEN.HISTORY])}
-        >
-          <History className="size-5" />
-        </Button>
-        <Button
-          size={BUTTON_SIZE.ICON}
-          aria-label="Settings"
-          onClick={() => navigate([GAME_ROUTE.SUDOKU, SCREEN.SETTINGS])}
-        >
-          <Settings className="size-5" />
-        </Button>
-      </ScreenHeader>
-      <GameHero
-        icon={<SudokuIcon />}
-        tagline="Classic and killer, from 6x6 to evil"
-      />
+    <HomeScreen
+      definition={DEFINITION}
+      title={TITLE}
+      icon={<SudokuIcon />}
+      tagline="Classic and killer, from 6x6 to evil"
+      dailyResults={dailyResults(games)}
+      dailyTotal={GAME_MODES.flatMap((each) => LEVELS[each]).length}
+
+      statsLabel="Best times"
+    >
       {latest && (
         <ContinueCard
           detail={`${sudokuTitle(latest)} · ${formatDuration(latest.elapsedMs)}`}
@@ -229,6 +202,6 @@ export function SudokuHomeView({ play }: { play?: string }) {
         </p>
       </AppDialog>
       <BankLoader load={bank} />
-    </MenuScreen>
+    </HomeScreen>
   )
 }
