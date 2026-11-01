@@ -3,14 +3,9 @@ import type {
   Card,
   DrawMode,
   PileKind,
-  Verdict,
 } from '@/common/solitaire/solitaire.types'
 
-export const ACE = 1
-
-export const JACK = 11
-
-export const QUEEN = 12
+const ACE = 1
 
 export const KING = 13
 
@@ -72,8 +67,6 @@ export const VERDICT = {
   UNWINNABLE: 'unwinnable',
   UNKNOWN: 'unknown',
 } as const
-
-export const VERDICT_NAMES: readonly Verdict[] = Object.values(VERDICT)
 
 export const DEFAULT_BUDGET = 200_000
 

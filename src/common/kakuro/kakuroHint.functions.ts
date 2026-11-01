@@ -73,12 +73,6 @@ export function findHint(game: KakuroGame): KakuroHint | null {
   }
 }
 
-export function listDigits(digits: number[]): string {
-  return digits.length <= 1
-    ? digits.join('')
-    : `${digits.slice(0, -1).join(', ')} or ${digits[digits.length - 1]}`
-}
-
 function assignable({
   cells,
   candidates,
@@ -113,6 +107,12 @@ function fittingMasks({ game, run }: { game: KakuroGame; run: Run }) {
   return masksFor({ length: run.cells.length, sum: run.sum }).filter(
     (mask) => (mask & placed) === placed,
   )
+}
+
+function listDigits(digits: number[]): string {
+  return digits.length <= 1
+    ? digits.join('')
+    : `${digits.slice(0, -1).join(', ')} or ${digits[digits.length - 1]}`
 }
 
 function narrowedCandidates({

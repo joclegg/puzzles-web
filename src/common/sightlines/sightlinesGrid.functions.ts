@@ -5,10 +5,6 @@ export function dotAt({ grid, cell }: { grid: Grid; cell: number }): Dot {
   return grid.dots[cell] as Dot
 }
 
-export function emptyGrid(size: number): Grid {
-  return { size, dots: DOT.EMPTY.repeat(size * size) }
-}
-
 export function isFull(grid: Grid): boolean {
   return !grid.dots.includes(DOT.EMPTY)
 }

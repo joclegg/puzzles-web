@@ -69,12 +69,6 @@ export function findHint(game: SudokuGame): SudokuHint | null {
   }
 }
 
-export function listDigits(digits: number[]): string {
-  return digits.length <= 1
-    ? digits.join('')
-    : `${digits.slice(0, -1).join(', ')} or ${digits[digits.length - 1]}`
-}
-
 function bitCount(mask: number) {
   return digitsOf(mask).length
 }
@@ -83,4 +77,10 @@ function digitsOf(mask: number) {
   return Array.from({ length: 31 }, (_, digit) => digit).filter(
     (digit) => digit > 0 && (mask & digitBit(digit)) !== 0,
   )
+}
+
+function listDigits(digits: number[]): string {
+  return digits.length <= 1
+    ? digits.join('')
+    : `${digits.slice(0, -1).join(', ')} or ${digits[digits.length - 1]}`
 }

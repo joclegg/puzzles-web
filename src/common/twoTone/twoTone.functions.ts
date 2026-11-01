@@ -70,10 +70,6 @@ export function hintTwin({
   return new Set(twin === null ? [] : cellsOf({ grid: game.grid, line: twin }))
 }
 
-export function isGiven({ puzzle, cell }: { puzzle: Puzzle; cell: number }) {
-  return tileAt({ grid: puzzle.givens, cell }) !== TILE.EMPTY
-}
-
 export function isSolved(game: TwoToneGame): boolean {
   return game.grid.tiles === game.puzzle.solution.tiles
 }
@@ -167,6 +163,10 @@ export function withHint(game: TwoToneGame): TwoToneGame {
       deduction,
     },
   }
+}
+
+function isGiven({ puzzle, cell }: { puzzle: Puzzle; cell: number }) {
+  return tileAt({ grid: puzzle.givens, cell }) !== TILE.EMPTY
 }
 
 function setTile({

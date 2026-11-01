@@ -4,7 +4,7 @@ import type { GameDefinition } from '@/common/game.types'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { MENU_ACCENT } from '@/components/MenuScreen/MenuScreen.constants'
 
-export const PUZZLE_SCREENS = [
+const PUZZLE_SCREENS = [
   SCREEN.HOME,
   SCREEN.PLAY,
   SCREEN.GAME,

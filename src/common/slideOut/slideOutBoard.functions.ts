@@ -71,20 +71,6 @@ export function movedTo({
     : { ...block, row: position }
 }
 
-export function occupied({
-  blocks,
-  except,
-}: {
-  blocks: Block[]
-  except?: number
-}): Set<number> {
-  return new Set(
-    blocks.flatMap((block, index) =>
-      index === except ? [] : blockCells(block),
-    ),
-  )
-}
-
 export function slideRange({
   blocks,
   index,
@@ -110,4 +96,18 @@ export function slideRange({
     high++
   }
   return { low, high }
+}
+
+function occupied({
+  blocks,
+  except,
+}: {
+  blocks: Block[]
+  except?: number
+}): Set<number> {
+  return new Set(
+    blocks.flatMap((block, index) =>
+      index === except ? [] : blockCells(block),
+    ),
+  )
 }

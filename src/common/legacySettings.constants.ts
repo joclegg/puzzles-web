@@ -46,14 +46,14 @@ import {
   SETTINGS_KEY as WORD_WHEEL_SETTINGS,
 } from '@/common/wordWheel/wordWheelSaves.constants'
 
-export const LEGACY_ASSISTS = {
+const LEGACY_ASSISTS = {
   showHints: true,
   showTutorial: true,
   allowReveal: true,
   hintStyle: HINT_STYLE.POINT,
 }
 
-export const LEGACY_SUDOKU_MODE = {
+const LEGACY_SUDOKU_MODE = {
   mistakeCheck: SUDOKU_MISTAKE_CHECK.SHOW_WRONG,
   showMistakeCount: true,
   highlightHouses: true,

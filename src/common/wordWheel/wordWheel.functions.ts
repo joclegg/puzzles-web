@@ -23,17 +23,6 @@ export function fits({ word, letters }: { word: string; letters: string }) {
   })
 }
 
-export function hiddenCells(game: WordWheelGame): string[] {
-  const shown = shownCells(game)
-  return [...letterAt(game.puzzle).keys()]
-    .filter((key) => !shown.has(key))
-    .sort((a, b) => {
-      const [rowA, colA] = a.split(',').map(Number)
-      const [rowB, colB] = b.split(',').map(Number)
-      return rowA - rowB || colA - colB
-    })
-}
-
 export function isSolved(game: WordWheelGame): boolean {
   return [...puzzleWords(game.puzzle)].every((word) =>
     game.found.includes(word),
@@ -134,6 +123,17 @@ export function validWords(text: string): Set<string> {
       .map((word) => word.trim().toUpperCase())
       .filter((word) => word.length > 0),
   )
+}
+
+function hiddenCells(game: WordWheelGame): string[] {
+  const shown = shownCells(game)
+  return [...letterAt(game.puzzle).keys()]
+    .filter((key) => !shown.has(key))
+    .sort((a, b) => {
+      const [rowA, colA] = a.split(',').map(Number)
+      const [rowB, colB] = b.split(',').map(Number)
+      return rowA - rowB || colA - colB
+    })
 }
 
 function judge({

@@ -14,28 +14,6 @@ import {
 } from '@/common/sudoku/sudokuPuzzle.functions'
 import { cageCombos } from '@/common/sudoku/sudokuSolver.functions'
 
-export function combinations<T>({
-  items,
-  size,
-}: {
-  items: T[]
-  size: number
-}): T[][] {
-  if (size === 0) {
-    return [[]]
-  }
-  const result: T[][] = []
-  for (let i = 0; i <= items.length - size; i++) {
-    for (const rest of combinations({
-      items: items.slice(i + 1),
-      size: size - 1,
-    })) {
-      result.push([items[i], ...rest])
-    }
-  }
-  return result
-}
-
 export function grade({
   givens,
   cages = [],
@@ -520,4 +498,20 @@ export function grade({
     score,
     solved,
   }
+}
+
+function combinations<T>({ items, size }: { items: T[]; size: number }): T[][] {
+  if (size === 0) {
+    return [[]]
+  }
+  const result: T[][] = []
+  for (let i = 0; i <= items.length - size; i++) {
+    for (const rest of combinations({
+      items: items.slice(i + 1),
+      size: size - 1,
+    })) {
+      result.push([items[i], ...rest])
+    }
+  }
+  return result
 }

@@ -114,10 +114,6 @@ export function isDigitDone({
   return needed > 0 && placed === needed
 }
 
-export function isGiven({ game, cell }: { game: KakuroGame; cell: number }) {
-  return game.puzzle.givens.has(cell)
-}
-
 export function isSolved(game: KakuroGame): boolean {
   return game.values.every(
     (value, cell) => value === game.puzzle.solution[cell],
@@ -348,31 +344,6 @@ export function undo(game: KakuroGame): KakuroGame {
   }
 }
 
-export function withInputMode({
-  game,
-  mode,
-}: {
-  game: KakuroGame
-  mode: InputMode
-}): KakuroGame {
-  return {
-    ...game,
-    inputMode: mode,
-    activeDigit: null,
-    eraserActive: false,
-    markActive: false,
-    rejected: null,
-  }
-}
-
-export function wrongCells(game: KakuroGame): Set<number> {
-  return new Set(
-    game.values.flatMap((value, cell) =>
-      value !== 0 && value !== game.puzzle.solution[cell] ? [cell] : [],
-    ),
-  )
-}
-
 function applyNotes({ notes, change }: { notes: number[]; change: Change }) {
   return change.clearedNotes.reduce(
     (all, other) =>
@@ -388,6 +359,10 @@ function applyNotes({ notes, change }: { notes: number[]; change: Change }) {
 function compareDigits({ a, b }: { a: number[]; b: number[] }): number {
   const index = a.findIndex((digit, at) => digit !== b[at])
   return index === -1 ? a.length - b.length : a[index] - b[index]
+}
+
+function isGiven({ game, cell }: { game: KakuroGame; cell: number }) {
+  return game.puzzle.givens.has(cell)
 }
 
 function place({
@@ -513,4 +488,12 @@ function toggleMark({ game, cell }: { game: KakuroGame; cell: number }) {
     marked.add(cell)
   }
   return { ...game, marked }
+}
+
+function wrongCells(game: KakuroGame): Set<number> {
+  return new Set(
+    game.values.flatMap((value, cell) =>
+      value !== 0 && value !== game.puzzle.solution[cell] ? [cell] : [],
+    ),
+  )
 }

@@ -40,7 +40,7 @@ export const DIGIT_COUNTS_LABEL: Record<DigitCounts, string> = {
   [DIGIT_COUNTS.OFF]: 'Off',
 }
 
-export const DEFAULT_MODE_SETTINGS: ModeSettings = {
+const DEFAULT_MODE_SETTINGS: ModeSettings = {
   ...DEFAULT_ASSISTS,
   mistakeCheck: MISTAKE_CHECK.OFF,
   showMistakeCount: false,

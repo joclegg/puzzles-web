@@ -113,21 +113,6 @@ export function deal(seed: bigint): Board {
   return dealDeck(shuffled({ items: DECK, random: createRandom(seed) }))
 }
 
-export function dealDeck(deck: Card[]): Board {
-  let next = 0
-  const tableau = Array.from({ length: COLUMNS }, (_, i) => {
-    const cards = deck.slice(next, next + i + 1)
-    next += i + 1
-    return newColumn({ cards })
-  })
-  return {
-    tableau,
-    stock: deck.slice(next),
-    waste: [],
-    foundations: Array.from({ length: FOUNDATIONS }, () => []),
-  }
-}
-
 export function draw({
   board,
   drawMode,
@@ -194,21 +179,6 @@ export function samePile({ a, b }: { a: Pile; b: Pile }): boolean {
   return a.kind === b.kind && a.index === b.index
 }
 
-export function stacksOnTableau({
-  card,
-  below,
-  order,
-}: {
-  card: Card
-  below: Card
-  order: BuildOrder
-}): boolean {
-  return (
-    card.rank + ORDER_RULES[order].step === below.rank &&
-    SUITS[card.suit].isRed !== SUITS[below.suit].isRed
-  )
-}
-
 function addCards({
   board,
   pile,
@@ -239,6 +209,21 @@ function addCards({
           }
         : column,
     ),
+  }
+}
+
+function dealDeck(deck: Card[]): Board {
+  let next = 0
+  const tableau = Array.from({ length: COLUMNS }, (_, i) => {
+    const cards = deck.slice(next, next + i + 1)
+    next += i + 1
+    return newColumn({ cards })
+  })
+  return {
+    tableau,
+    stock: deck.slice(next),
+    waste: [],
+    foundations: Array.from({ length: FOUNDATIONS }, () => []),
   }
 }
 
@@ -289,4 +274,19 @@ function removeCards({
       }
     }),
   }
+}
+
+function stacksOnTableau({
+  card,
+  below,
+  order,
+}: {
+  card: Card
+  below: Card
+  order: BuildOrder
+}): boolean {
+  return (
+    card.rank + ORDER_RULES[order].step === below.rank &&
+    SUITS[card.suit].isRed !== SUITS[below.suit].isRed
+  )
 }

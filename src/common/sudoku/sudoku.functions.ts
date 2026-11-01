@@ -71,13 +71,6 @@ export function digitCount({
   return game.values.filter((value) => value === digit).length
 }
 
-export function effectiveMistakeCheck(game: SudokuGame): MistakeCheck {
-  return game.mistakeCheck === MISTAKE_CHECK.SHOW_WRONG &&
-    game.puzzle.solution === null
-    ? MISTAKE_CHECK.BLOCK_CLASHES
-    : game.mistakeCheck
-}
-
 export function erase(game: SudokuGame): SudokuGame {
   if (isComplete(game)) {
     return game
@@ -92,14 +85,6 @@ export function erase(game: SudokuGame): SudokuGame {
     }
   }
   return game.selected === null ? game : clear({ game, cell: game.selected })
-}
-
-export function highlightDigit(game: SudokuGame): number | null {
-  if (game.inputMode === INPUT_MODE.DIGIT_FIRST) {
-    return game.activeDigit
-  }
-  const value = game.selected === null ? 0 : game.values[game.selected]
-  return value === 0 ? null : value
 }
 
 export function highlightOf({
@@ -154,10 +139,6 @@ export function isCageWrong({
   const digits = cage.cells.map((cell) => game.values[cell])
   const total = digits.reduce((sum, digit) => sum + digit, 0)
   return total !== cage.sum || new Set(digits).size !== digits.length
-}
-
-export function isChecking(game: SudokuGame): boolean {
-  return effectiveMistakeCheck(game) === MISTAKE_CHECK.SHOW_WRONG
 }
 
 export function isComplete(game: SudokuGame): boolean {
@@ -391,16 +372,6 @@ export function undo(game: SudokuGame): SudokuGame {
   }
 }
 
-export function withInputMode({
-  game,
-  mode,
-}: {
-  game: SudokuGame
-  mode: InputMode
-}) {
-  return { ...game, inputMode: mode, activeDigit: null, eraserActive: false }
-}
-
 function applied({
   game,
   move,
@@ -433,6 +404,13 @@ function clear({ game, cell }: { game: SudokuGame; cell: number }): SudokuGame {
       rejected: null,
     },
   })
+}
+
+function effectiveMistakeCheck(game: SudokuGame): MistakeCheck {
+  return game.mistakeCheck === MISTAKE_CHECK.SHOW_WRONG &&
+    game.puzzle.solution === null
+    ? MISTAKE_CHECK.BLOCK_CLASHES
+    : game.mistakeCheck
 }
 
 function enter({
@@ -507,6 +485,18 @@ function enter({
       lastPlaced: cell,
     },
   })
+}
+
+function highlightDigit(game: SudokuGame): number | null {
+  if (game.inputMode === INPUT_MODE.DIGIT_FIRST) {
+    return game.activeDigit
+  }
+  const value = game.selected === null ? 0 : game.values[game.selected]
+  return value === 0 ? null : value
+}
+
+function isChecking(game: SudokuGame): boolean {
+  return effectiveMistakeCheck(game) === MISTAKE_CHECK.SHOW_WRONG
 }
 
 function isHighlightedPeer({

@@ -71,10 +71,6 @@ export function gridFor(cells: number): Grid {
   return cells === FAST_GRID.cells ? FAST_GRID : STANDARD_GRID
 }
 
-export function isKiller(puzzle: Puzzle): boolean {
-  return puzzle.cages.length > 0
-}
-
 export function singleDigit(mask: number): number {
   return 31 - Math.clz32(mask & -mask)
 }

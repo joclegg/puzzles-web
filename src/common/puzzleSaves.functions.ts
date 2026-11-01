@@ -41,16 +41,6 @@ export function isDailyPuzzle(puzzleId: string): boolean {
   return puzzleId.startsWith(DAILY_PREFIX)
 }
 
-export function puzzleSlot({
-  puzzleId,
-  size,
-}: {
-  puzzleId: string
-  size: number
-}) {
-  return isDailyPuzzle(puzzleId) ? puzzleId : `size_${size}`
-}
-
 export function revealPuzzle({
   games,
   id,
@@ -183,4 +173,8 @@ export function updatePuzzle({
   patch: Partial<SavedPuzzle>
 }): SavedPuzzle[] {
   return games.map((game) => (game.id === id ? { ...game, ...patch } : game))
+}
+
+function puzzleSlot({ puzzleId, size }: { puzzleId: string; size: number }) {
+  return isDailyPuzzle(puzzleId) ? puzzleId : `size_${size}`
 }
