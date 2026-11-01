@@ -5,7 +5,7 @@ import easy from '@data/slideout/easy.txt?raw'
 import expert from '@data/slideout/expert.txt?raw'
 import hard from '@data/slideout/hard.txt?raw'
 import medium from '@data/slideout/medium.txt?raw'
-import { bankLines } from '@/common/slideOut/slideOutBank.functions'
+import { bankLines } from '@/common/bank.functions'
 import { decodePuzzle } from '@/common/slideOut/slideOutBoard.functions'
 import { shortestPath } from '@/common/slideOut/slideOutSolver.functions'
 

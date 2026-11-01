@@ -11,15 +11,14 @@ import type { PuzzleRef, SavedPuzzle } from '@/common/puzzleSaves.types'
 import { newSeed } from '@/common/random.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
-import { LEVELS } from '@/common/wordWheel/wordWheel.constants'
-import type { Level } from '@/common/wordWheel/wordWheel.types'
-import { fetchBank, useBank } from '@/common/bank.hooks'
-import { VALID_WORDS_PATH } from '@/common/wordWheel/wordWheelBank.constants'
 import {
-  bankLines,
-  dailyIndex,
-  randomIndex,
-} from '@/common/wordWheel/wordWheelBank.functions'
+  FIRST_DAY,
+  LEVELS,
+  VALID_WORDS_PATH,
+} from '@/common/wordWheel/wordWheel.constants'
+import type { Level } from '@/common/wordWheel/wordWheel.types'
+import { dailyIndex, randomIndex } from '@/common/bank.functions'
+import { fetchBankLines, useBank } from '@/common/bank.hooks'
 import { validWords } from '@/common/wordWheel/wordWheel.functions'
 import { GAMES_KEY } from '@/common/wordWheel/wordWheelSaves.constants'
 import { useStoredState } from '@/common/storage.hooks'
@@ -51,7 +50,7 @@ export function useWordWheelGames() {
   }
 
   async function startRandom(level: Level) {
-    const lines = bankLines(await fetchBank(`wordwheel/${level}.txt`))
+    const lines = await fetchBankLines(`wordwheel/${level}.txt`)
     const index = randomIndex({ count: lines.length, seed: newSeed() })
     startAndOpen({
       id: `bank_${level}_${index}`,
@@ -67,8 +66,13 @@ export function useWordWheelGames() {
       openGame(existing)
       return
     }
-    const lines = bankLines(await fetchBank(`wordwheel/${level}.txt`))
-    const index = dailyIndex({ count: lines.length, level, date })
+    const lines = await fetchBankLines(`wordwheel/${level}.txt`)
+    const index = dailyIndex({
+      count: lines.length,
+      orderSeed: LEVELS.indexOf(level),
+      firstDay: FIRST_DAY,
+      date,
+    })
     startAndOpen({ id, size: LEVELS.indexOf(level), puzzle: lines[index] })
   }
 

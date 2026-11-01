@@ -33,3 +33,4 @@ export const GUESS_MESSAGE: Record<Guess, string> = {
   [GUESS.NOT_A_WORD]: 'Not a word',
   [GUESS.TOO_SHORT]: 'Three letters or more',
 }
+export const VALID_WORDS_PATH = 'wordwheel/valid.txt'

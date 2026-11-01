@@ -1,6 +1,4 @@
 import { daysBetween } from '@/common/date.functions'
-import { FIRST_DAY, LEVELS } from '@/common/slideOut/slideOut.constants'
-import type { Level } from '@/common/slideOut/slideOut.types'
 import { createRandom, shuffled } from '@/common/random.functions'
 
 export function bankLines(text: string): string[] {
@@ -9,18 +7,20 @@ export function bankLines(text: string): string[] {
 
 export function dailyIndex({
   count,
-  level,
+  orderSeed,
+  firstDay,
   date,
 }: {
   count: number
-  level: Level
+  orderSeed: number
+  firstDay: string
   date: string
 }): number {
   const order = shuffled({
     items: Array.from({ length: count }, (_, i) => i),
-    random: createRandom(LEVELS.indexOf(level)),
+    random: createRandom(orderSeed),
   })
-  const day = daysBetween({ from: FIRST_DAY, to: date })
+  const day = daysBetween({ from: firstDay, to: date })
   return order[((day % count) + count) % count]
 }
 

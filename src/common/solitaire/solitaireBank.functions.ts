@@ -1,6 +1,7 @@
+import { bankLines } from '@/common/bank.functions'
 import { epochDay } from '@/common/date.functions'
 import { createRandom } from '@/common/random.functions'
-import { DAILY_SEED_LINES } from '@/common/solitaire/solitaireBank.constants'
+import { DAILY_SEED_LINES } from '@/common/solitaire/solitaire.constants'
 
 export function dailyWinnableSeed({
   seeds,
@@ -15,10 +16,7 @@ export function dailyWinnableSeed({
 }
 
 export function parseSeeds(text: string): bigint[] {
-  return text
-    .split('\n')
-    .filter((line) => line.trim().length > 0)
-    .map((line) => BigInt(line.trim()))
+  return bankLines(text).map((line) => BigInt(line.trim()))
 }
 
 export function randomWinnableSeed({

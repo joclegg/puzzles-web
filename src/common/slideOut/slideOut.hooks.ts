@@ -9,14 +9,10 @@ import type { PuzzleRef, SavedPuzzle } from '@/common/puzzleSaves.types'
 import { newSeed } from '@/common/random.functions'
 import { GAME_ROUTE, SCREEN } from '@/common/route.constants'
 import { navigate } from '@/common/route.hooks'
-import { LEVELS } from '@/common/slideOut/slideOut.constants'
+import { FIRST_DAY, LEVELS } from '@/common/slideOut/slideOut.constants'
 import type { Level } from '@/common/slideOut/slideOut.types'
-import { fetchBank } from '@/common/bank.hooks'
-import {
-  bankLines,
-  dailyIndex,
-  randomIndex,
-} from '@/common/slideOut/slideOutBank.functions'
+import { dailyIndex, randomIndex } from '@/common/bank.functions'
+import { fetchBankLines } from '@/common/bank.hooks'
 import { GAMES_KEY } from '@/common/slideOut/slideOutSaves.constants'
 import { useStoredState } from '@/common/storage.hooks'
 
@@ -42,7 +38,7 @@ export function useSlideOutGames() {
   }
 
   async function startRandom(level: Level) {
-    const lines = bankLines(await fetchBank(`slideout/${level}.txt`))
+    const lines = await fetchBankLines(`slideout/${level}.txt`)
     const index = randomIndex({ count: lines.length, seed: newSeed() })
     startAndOpen({
       id: `bank_${level}_${index}`,
@@ -58,8 +54,13 @@ export function useSlideOutGames() {
       openGame(existing)
       return
     }
-    const lines = bankLines(await fetchBank(`slideout/${level}.txt`))
-    const index = dailyIndex({ count: lines.length, level, date })
+    const lines = await fetchBankLines(`slideout/${level}.txt`)
+    const index = dailyIndex({
+      count: lines.length,
+      orderSeed: LEVELS.indexOf(level),
+      firstDay: FIRST_DAY,
+      date,
+    })
     startAndOpen({ id, size: LEVELS.indexOf(level), puzzle: lines[index] })
   }
 

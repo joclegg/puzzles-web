@@ -84,3 +84,4 @@ export const DAILY_SEED_SPREAD = 7919n
 export const DECK: readonly Card[] = SUITS.flatMap((_, suit) =>
   Array.from({ length: KING }, (_, i) => ({ rank: ACE + i, suit })),
 )
+export const DAILY_SEED_LINES = 1000
