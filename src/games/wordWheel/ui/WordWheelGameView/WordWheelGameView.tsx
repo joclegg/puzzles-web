@@ -1,3 +1,4 @@
+import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
@@ -88,6 +89,7 @@ export function WordWheelGameView({ id }: { id: string }) {
     setResult,
     solved,
     elapsedMs,
+    clock,
     save,
     reveal: revealSaved,
   } = usePuzzleGame({
@@ -179,11 +181,9 @@ export function WordWheelGameView({ id }: { id: string }) {
         <ScreenHeader
           title={wordWheelTitle(saved)}
           subtitle={[
-            settings.showTimer ? formatDuration(elapsedMs()) : null,
+            settings.showTimer ? <ElapsedTime clock={clock} /> : null,
             settings.showBonusCount ? `Bonus ${game.bonus.length}` : null,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
+          ]}
           back={[GAME_ROUTE.WORD_WHEEL]}
         >
           {settings.showHints && (

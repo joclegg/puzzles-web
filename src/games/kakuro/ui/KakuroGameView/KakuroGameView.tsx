@@ -1,3 +1,4 @@
+import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
@@ -96,6 +97,7 @@ export function KakuroGameView({ id }: { id: string }) {
     setResult,
     solved,
     elapsedMs,
+    clock,
     save,
     reveal: revealSaved,
   } = usePuzzleGame({
@@ -185,14 +187,12 @@ export function KakuroGameView({ id }: { id: string }) {
         <ScreenHeader
           title={puzzleTitle(saved)}
           subtitle={[
-            settings.showTimer ? formatDuration(elapsedMs()) : null,
+            settings.showTimer ? <ElapsedTime clock={clock} /> : null,
             settings.showMistakeCount &&
             current.mistakeCheck !== MISTAKE_CHECK.OFF
               ? `Mistakes ${current.mistakes}`
               : null,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
+          ]}
           back={[GAME_ROUTE.KAKURO]}
         >
           <Button
