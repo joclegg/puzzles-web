@@ -1,0 +1,59 @@
+import { ChevronRight, Medal as MedalIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
+
+import { MEDAL } from '@/shared/game/dailyMedal.constants'
+import type { Medal } from '@/shared/game/dailyMedal.types'
+import { MEDAL_ICON_CLASS } from '@/shared/screens/DailyCalendarButton/DailyCalendarButton.constants'
+import { MEDAL_LABEL } from '@/app/GameCard/GameCard.constants'
+import { cn } from '@/shared/lib/utils.functions'
+import { MENU_ACCENT_CLASS } from '@/shared/screens/MenuScreen/MenuScreen.constants'
+import type { MenuAccent } from '@/shared/screens/MenuScreen/MenuScreen.types'
+
+export function GameCard({
+  title,
+  detail,
+  href,
+  icon,
+  accent,
+  medal,
+}: {
+  title: string
+  detail: string
+  href: string
+  icon: ReactNode
+  accent: MenuAccent
+  medal: Medal
+}) {
+  return (
+    <a
+      href={href}
+      className={cn(
+        'group relative isolate flex items-center gap-4 overflow-hidden rounded-2xl bg-linear-to-br from-game/15 via-game/5 to-transparent p-4 text-card-foreground ring-1 ring-game/20 transition hover:ring-game/50 active:scale-[0.98]',
+        MENU_ACCENT_CLASS[accent],
+      )}
+    >
+      <span
+        aria-hidden
+        className="absolute -top-12 -right-10 -z-10 size-32 rounded-full bg-game/15 blur-3xl"
+      />
+      <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-card shadow-sm ring-1 ring-border">
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-lg font-semibold">{title}</span>
+        <span className="block text-sm text-muted-foreground">{detail}</span>
+      </span>
+      {medal !== MEDAL.NONE && (
+        <MedalIcon
+          role="img"
+          aria-label={`${MEDAL_LABEL[medal]} medal today`}
+          className={cn('size-6 shrink-0', MEDAL_ICON_CLASS[medal])}
+        />
+      )}
+      <ChevronRight
+        aria-hidden
+        className="size-5 shrink-0 text-game transition group-hover:translate-x-0.5"
+      />
+    </a>
+  )
+}

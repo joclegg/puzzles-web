@@ -13,11 +13,11 @@ const file = path.join(
 )
 const config = { root, resolve: { alias: { '@': path.join(root, 'src') } } }
 const { module: solver } = await runnerImport(
-  '/src/common/solitaire/solitaireSolver.functions.ts',
+  '/src/games/solitaire/engine/solitaireSolver.functions.ts',
   config,
 )
 const { module: random } = await runnerImport(
-  '/src/common/random.functions.ts',
+  '/src/shared/lib/random.functions.ts',
   config,
 )
 

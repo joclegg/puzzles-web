@@ -1,0 +1,21 @@
+import type { Assists } from '@/shared/game/assists.types'
+import type { Level } from '@/games/wordWheel/engine/wordWheel.types'
+
+export interface LevelStats {
+  level: Level
+  played: number
+  solved: number
+  bonusWords: number
+  bestMs: number | null
+}
+
+export interface Progress {
+  found: string[]
+  bonus: string[]
+  revealed: string[]
+}
+
+export interface WordWheelSettings extends Assists {
+  showTimer: boolean
+  showBonusCount: boolean
+}
