@@ -81,19 +81,13 @@ const TUTORIAL = [
 ]
 
 export function KakuroGameView({ id }: { id: string }) {
-  const {
-    games,
-    startRandom,
-    saveProgress,
-    finish,
-    reveal: revealSaved,
-  } = useKakuroGames()
-  const saved = games.find((game) => game.id === id)
+  const saves = useKakuroGames()
   const [settings] = useStoredState<KakuroSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
   const {
+    saved,
     game,
     setGame,
     revealing,
@@ -102,8 +96,11 @@ export function KakuroGameView({ id }: { id: string }) {
     setResult,
     solved,
     elapsedMs,
+    save,
+    reveal: revealSaved,
   } = usePuzzleGame({
-    saved,
+    saves,
+    id,
     load: (saved): KakuroGame => ({
       ...replay({
         game: newGame({ puzzle: decodePuzzle(saved.puzzle) }),
@@ -146,20 +143,10 @@ export function KakuroGameView({ id }: { id: string }) {
     ) {
       return
     }
-    const changes = encodeChanges(next.changes)
-    if (isSolved(next)) {
-      const newBest = finish({
-        id: saved.id,
-        elapsedMs: elapsedMs(),
-        changes,
-        mistakes: next.mistakes,
-      })
-      setResult({ newBest })
-      return
-    }
-    saveProgress({
-      id: saved.id,
-      patch: { changes, mistakes: next.mistakes, elapsedMs: elapsedMs() },
+    save({
+      next,
+      changes: encodeChanges(next.changes),
+      mistakes: next.mistakes,
     })
   }
 
@@ -177,13 +164,7 @@ export function KakuroGameView({ id }: { id: string }) {
   }
 
   function reveal() {
-    if (!saved) {
-      return
-    }
-    const next = revealSolution(current)
-    setGame(next)
-    setRevealing(false)
-    revealSaved({ id: saved.id, elapsedMs: elapsedMs() })
+    revealSaved(revealSolution(current))
   }
 
   const wrong = shownWrongCells(current)
@@ -256,7 +237,10 @@ export function KakuroGameView({ id }: { id: string }) {
                 label: 'Restart this puzzle',
                 onClick: () => !solved && move(restart),
               },
-              { label: 'New puzzle', onClick: () => startRandom(saved.size) },
+              {
+                label: 'New puzzle',
+                onClick: () => saves.startRandom(saved.size),
+              },
               ...(settings.allowReveal && !solved
                 ? [
                     {
@@ -372,7 +356,7 @@ export function KakuroGameView({ id }: { id: string }) {
         accent={MENU_ACCENT.KAKURO}
         route={GAME_ROUTE.KAKURO}
         newLabel={`${saved.size}×${saved.size}`}
-        onNew={() => startRandom(saved.size)}
+        onNew={() => saves.startRandom(saved.size)}
         newBest={result?.newBest ?? false}
         stats={[{ label: 'Time', value: formatDuration(elapsedMs()) }]}
         onClose={() => setResult(null)}
