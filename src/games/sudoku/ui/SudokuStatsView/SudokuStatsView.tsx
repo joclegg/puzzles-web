@@ -1,5 +1,6 @@
+import { DEFINITION } from '@/games/sudoku/definition'
+import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 import { formatDuration } from '@/shared/lib/format.functions'
-import { GAME_ROUTE } from '@/shared/lib/route.constants'
 import {
   DIFFICULTY_LABEL,
   GAME_MODE_LABEL,
@@ -13,10 +14,7 @@ import {
 } from '@/games/sudoku/engine/sudokuSaves.constants'
 import { bestTimes } from '@/games/sudoku/engine/sudokuSaves.functions'
 import type { SudokuSettings } from '@/games/sudoku/engine/sudokuSaves.types'
-import { MenuScreen } from '@/shared/screens/MenuScreen/MenuScreen'
-import { MENU_ACCENT } from '@/shared/screens/MenuScreen/MenuScreen.constants'
 import { Panel } from '@/shared/screens/Panel/Panel'
-import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
 
 export function SudokuStatsView() {
   const { games } = useSudokuGames()
@@ -27,8 +25,7 @@ export function SudokuStatsView() {
   const times = bestTimes({ games, pastBests: settings.pastBests })
 
   return (
-    <MenuScreen accent={MENU_ACCENT.SUDOKU}>
-      <ScreenHeader title="Best times" back={[GAME_ROUTE.SUDOKU]} />
+    <PuzzleStatsView definition={DEFINITION} title="Best times">
       {GAME_MODES.map((mode) => (
         <Panel key={mode} title={GAME_MODE_LABEL[mode]}>
           <table className="w-full text-sm">
@@ -66,6 +63,6 @@ export function SudokuStatsView() {
       <p className="text-sm text-muted-foreground">
         Custom puzzles show in History but don't count towards best times.
       </p>
-    </MenuScreen>
+    </PuzzleStatsView>
   )
 }

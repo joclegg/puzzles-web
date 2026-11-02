@@ -6,6 +6,7 @@ import {
   dailyDate,
   dailyPuzzleId,
   inProgressPuzzles,
+  puzzleHistoryDetail,
   sizeStats,
   solvePuzzle,
   startPuzzle,
@@ -141,5 +142,14 @@ describe('revealPuzzle', () => {
     })
 
     expect([revealed.status, revealed.finishedAt]).toEqual(['revealed', 9])
+  })
+})
+
+describe('puzzleHistoryDetail', () => {
+  it('shows the status and the hints used', () => {
+    const { game } = start({ games: [], id: 'random_1', size: 6, now: 1 })
+    expect(puzzleHistoryDetail({ ...game, hints: 2 })).toBe(
+      'In progress · 2 hints',
+    )
   })
 })

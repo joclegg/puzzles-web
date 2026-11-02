@@ -1,20 +1,30 @@
 import { useState } from 'react'
 
-import type { GameDefinition, PuzzleOptions } from '@/shared/game/game.types'
-import type { SavedPuzzle } from '@/shared/game/puzzleSaves.types'
+import type { GameDefinition } from '@/shared/game/game.types'
 import { FilterChip } from '@/shared/screens/FilterChip/FilterChip'
 import { MenuScreen } from '@/shared/screens/MenuScreen/MenuScreen'
 import { PuzzleHistoryList } from '@/shared/screens/PuzzleHistoryList/PuzzleHistoryList'
 import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
 
-export function PuzzleHistoryView<T extends number | string>({
+export function PuzzleHistoryView<
+  T extends number | string,
+  G extends { id: string; elapsedMs: number; startedAt: number },
+>({
   definition,
   games,
   options,
+  detail,
 }: {
   definition: GameDefinition
-  games: SavedPuzzle[]
-  options: PuzzleOptions<T>
+  games: G[]
+  options: {
+    filterName: string
+    values: readonly T[]
+    filterLabel: (value: T) => string
+    of: (game: G) => T
+    title: (game: G) => string
+  }
+  detail: (game: G) => string
 }) {
   const [filter, setFilter] = useState<T | null>(null)
   const shown = games
@@ -38,7 +48,7 @@ export function PuzzleHistoryView<T extends number | string>({
           />
         ))}
       </div>
-      <PuzzleHistoryList games={shown} title={options.title} />
+      <PuzzleHistoryList games={shown} title={options.title} detail={detail} />
     </MenuScreen>
   )
 }
