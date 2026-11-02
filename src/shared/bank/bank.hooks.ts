@@ -5,6 +5,8 @@ import { bankLines } from '@/shared/bank/bank.functions'
 
 const LOADED_BANKS = new Map<string, string>()
 
+const LOADED_LINES = new Map<string, string[]>()
+
 const PENDING_BANKS = new Map<string, Promise<string>>()
 
 export function fetchBank(path: string): Promise<string> {
@@ -32,7 +34,14 @@ export function fetchBank(path: string): Promise<string> {
 }
 
 export async function fetchBankLines(path: string): Promise<string[]> {
-  return bankLines(await fetchBank(path))
+  const text = await fetchBank(path)
+  const cached = LOADED_LINES.get(path)
+  if (cached !== undefined) {
+    return cached
+  }
+  const lines = bankLines(text)
+  LOADED_LINES.set(path, lines)
+  return lines
 }
 
 export function useBank(path: string): string | null {

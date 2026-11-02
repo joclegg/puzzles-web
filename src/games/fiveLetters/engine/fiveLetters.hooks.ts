@@ -32,15 +32,17 @@ import { navigate } from '@/shared/lib/route.hooks'
 import { readStored } from '@/shared/storage/storage.functions'
 import { useStoredState } from '@/shared/storage/storage.hooks'
 
+const LOADED_WORDS = new Map<
+  string,
+  { answers: string; guesses: string; words: Words }
+>()
+
 export async function loadWords(): Promise<Words> {
   const [answers, guesses] = await Promise.all([
     fetchBank(ANSWERS_PATH),
     fetchBank(GUESSES_PATH),
   ])
-  return createWords({
-    answers: answers.split('\n'),
-    guesses: guesses.split('\n'),
-  })
+  return wordsFor({ answers, guesses })
 }
 
 export function useFiveLettersGames() {
@@ -103,10 +105,7 @@ export function useWords(): Words | null {
     () =>
       answers === null || guesses === null
         ? null
-        : createWords({
-            answers: answers.split('\n'),
-            guesses: guesses.split('\n'),
-          }),
+        : wordsFor({ answers, guesses }),
     [answers, guesses],
   )
 }
@@ -118,4 +117,17 @@ async function fetchDaily2Word(date: string): Promise<string | null> {
   } catch {
     return null
   }
+}
+
+function wordsFor({ answers, guesses }: { answers: string; guesses: string }) {
+  const cached = LOADED_WORDS.get(ANSWERS_PATH)
+  if (cached?.answers === answers && cached.guesses === guesses) {
+    return cached.words
+  }
+  const words = createWords({
+    answers: answers.split('\n'),
+    guesses: guesses.split('\n'),
+  })
+  LOADED_WORDS.set(ANSWERS_PATH, { answers, guesses, words })
+  return words
 }
