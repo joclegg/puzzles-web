@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
-const TICK_MS = 500
+import { elapsedAt } from '@/shared/game/gameTimer.functions'
+import type { GameClock } from '@/shared/game/gameTimer.types'
 
 export function useGameTimer({
   initialMs,
@@ -8,28 +9,32 @@ export function useGameTimer({
 }: {
   initialMs: number
   running: boolean
-}): () => number {
-  const [timer, setTimer] = useState({ accumulated: initialMs, since: 0 })
-  const [, setTick] = useState(0)
+}): { elapsedMs: () => number; clock: GameClock } {
+  const [clock, setClock] = useState<GameClock>({
+    accumulatedMs: initialMs,
+    since: 0,
+  })
 
   useEffect(() => {
     if (!running) {
       return
     }
     function resume() {
-      setTimer((current) =>
+      setClock((current) =>
         current.since === 0
           ? { ...current, since: performance.now() }
           : current,
       )
     }
     function pause() {
-      setTimer((current) =>
+      setClock((current) =>
         current.since === 0
           ? current
           : {
-              accumulated:
-                current.accumulated + performance.now() - current.since,
+              accumulatedMs: elapsedAt({
+                clock: current,
+                now: performance.now(),
+              }),
               since: 0,
             },
       )
@@ -42,20 +47,15 @@ export function useGameTimer({
       }
     }
     resume()
-    const interval = window.setInterval(
-      () => setTick((tick) => tick + 1),
-      TICK_MS,
-    )
     document.addEventListener('visibilitychange', onVisibility)
     return () => {
-      window.clearInterval(interval)
       document.removeEventListener('visibilitychange', onVisibility)
       pause()
     }
   }, [running])
 
-  return () =>
-    timer.since === 0
-      ? timer.accumulated
-      : timer.accumulated + performance.now() - timer.since
+  return {
+    elapsedMs: () => elapsedAt({ clock, now: performance.now() }),
+    clock,
+  }
 }

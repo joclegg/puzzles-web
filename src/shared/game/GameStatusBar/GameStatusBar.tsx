@@ -1,12 +1,13 @@
-import { formatDuration } from '@/shared/lib/format.functions'
+import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
+import type { GameClock } from '@/shared/game/gameTimer.types'
 
 export function GameStatusBar({
-  elapsedMs,
+  clock,
   progressPercent,
   showTimer,
   showProgress,
 }: {
-  elapsedMs: number
+  clock: GameClock
   progressPercent: number | null
   showTimer: boolean
   showProgress: boolean
@@ -15,7 +16,7 @@ export function GameStatusBar({
     <p className="flex gap-3 text-sm text-muted-foreground tabular-nums">
       {showTimer && (
         <span role="timer" aria-label="Time">
-          {formatDuration(elapsedMs)}
+          <ElapsedTime clock={clock} />
         </span>
       )}
       {showProgress && progressPercent !== null && (

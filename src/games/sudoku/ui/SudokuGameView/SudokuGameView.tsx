@@ -1,3 +1,4 @@
+import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
 import {
@@ -139,7 +140,7 @@ export function SudokuGameView({ id }: { id: string }) {
   }
 
   const complete = game !== null && isComplete(game)
-  const elapsedMs = useGameTimer({
+  const { elapsedMs, clock } = useGameTimer({
     initialMs: saved?.elapsedMs ?? 0,
     running: game !== null && !complete && !finished,
   })
@@ -285,13 +286,11 @@ export function SudokuGameView({ id }: { id: string }) {
         <ScreenHeader
           title={sudokuTitle(saved)}
           subtitle={[
-            modeSettings.showTimer ? formatDuration(elapsedMs()) : null,
+            modeSettings.showTimer ? <ElapsedTime clock={clock} /> : null,
             modeSettings.showMistakeCount && countsMistakes(current)
               ? `Mistakes: ${current.mistakes}`
               : null,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
+          ]}
           back={[GAME_ROUTE.SUDOKU]}
         >
           <Button

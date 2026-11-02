@@ -1,3 +1,4 @@
+import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/shared/game/HowToPlay/HowToPlay'
@@ -126,7 +127,7 @@ export function SolitaireGameView({ id }: { id: string }) {
     return () => clearTimeout(timer)
   }, [finishing])
   const won = game !== null && gameWon(game)
-  const elapsedMs = useGameTimer({
+  const { elapsedMs, clock } = useGameTimer({
     initialMs: saved?.elapsedMs ?? 0,
     running: game !== null && !won,
   })
@@ -270,11 +271,9 @@ export function SolitaireGameView({ id }: { id: string }) {
         <ScreenHeader
           title={dealTitle(saved)}
           subtitle={[
-            settings.showTimer ? formatDuration(elapsedMs()) : null,
+            settings.showTimer ? <ElapsedTime clock={clock} /> : null,
             settings.showMoveCount ? `Moves ${current.moves.length}` : null,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
+          ]}
           back={[GAME_ROUTE.SOLITAIRE]}
         >
           <Button

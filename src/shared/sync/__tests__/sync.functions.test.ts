@@ -8,6 +8,7 @@ import {
   deleteAccountThenSignOut,
   entryStampKey,
   isEmailAddress,
+  keysetAfter,
   mergeGames,
   mergePulled,
   mergeSettings,
@@ -17,6 +18,7 @@ import {
   pushRows,
   recordChanges,
   settingsStampKey,
+  shouldLoadClient,
   stillPending,
   syncableOnly,
   syncedKey,
@@ -38,6 +40,58 @@ describe('changedEntryIds', () => {
         ],
       }),
     ).toEqual(['b', 'd', 'c'])
+  })
+
+  it('treats the same entry object as unchanged and compares copies by value', () => {
+    const kept = entry({ id: 'a', v: '1' })
+    expect(
+      changedEntryIds({
+        before: [kept, entry({ id: 'b', v: '1' })],
+        after: [kept, entry({ id: 'b', v: '1' })],
+      }),
+    ).toEqual([])
+  })
+})
+
+describe('keysetAfter', () => {
+  it('pages strictly after the last row by every key in order', () => {
+    expect(
+      keysetAfter({
+        row: { synced_at: 't', game: 'g', id: 'i' },
+        keys: ['synced_at', 'game', 'id'],
+      }),
+    ).toBe(
+      'synced_at.gt."t",and(synced_at.eq."t",game.gt."g"),and(synced_at.eq."t",game.eq."g",id.gt."i")',
+    )
+  })
+})
+
+describe('shouldLoadClient', () => {
+  const authKey = 'sb-ref-auth-token'
+
+  it.each([
+    { storageKeys: [authKey], search: '', hash: '', expected: true },
+    {
+      storageKeys: [`${authKey}-code-verifier`],
+      search: '',
+      hash: '',
+      expected: true,
+    },
+    { storageKeys: [], search: '?code=abc', hash: '', expected: true },
+    {
+      storageKeys: [],
+      search: '',
+      hash: '#access_token=x&type=magiclink',
+      expected: true,
+    },
+    {
+      storageKeys: ['sync.pending'],
+      search: '',
+      hash: '#/sudoku',
+      expected: false,
+    },
+  ])('is $expected for $storageKeys $search $hash', ({ expected, ...rest }) => {
+    expect(shouldLoadClient({ ...rest, authKey })).toBe(expected)
   })
 })
 

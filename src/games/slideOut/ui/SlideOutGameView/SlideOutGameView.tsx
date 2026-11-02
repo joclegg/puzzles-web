@@ -1,3 +1,4 @@
+import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
@@ -76,6 +77,7 @@ export function SlideOutGameView({ id }: { id: string }) {
     setResult,
     solved,
     elapsedMs,
+    clock,
     save,
     reveal,
   } = usePuzzleGame({
@@ -152,10 +154,8 @@ export function SlideOutGameView({ id }: { id: string }) {
           subtitle={[
             `Moves ${moveCount}`,
             settings.showPar ? `Par ${par}` : null,
-            settings.showTimer ? formatDuration(elapsedMs()) : null,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
+            settings.showTimer ? <ElapsedTime clock={clock} /> : null,
+          ]}
           back={[GAME_ROUTE.SLIDE_OUT]}
         >
           <Button

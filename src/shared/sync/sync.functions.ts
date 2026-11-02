@@ -19,12 +19,16 @@ export function changedEntryIds({
   before: SyncedEntry[]
   after: SyncedEntry[]
 }): string[] {
-  const previous = new Map(
-    before.map((entry) => [entry.id, JSON.stringify(entry)]),
-  )
+  const previous = new Map(before.map((entry) => [entry.id, entry]))
   const current = new Set(after.map((entry) => entry.id))
   const changed = after
-    .filter((entry) => previous.get(entry.id) !== JSON.stringify(entry))
+    .filter((entry) => {
+      const old = previous.get(entry.id)
+      return (
+        old !== entry &&
+        (old === undefined || JSON.stringify(old) !== JSON.stringify(entry))
+      )
+    })
     .map((entry) => entry.id)
   const removed = before
     .filter((entry) => !current.has(entry.id))
@@ -81,6 +85,24 @@ export function isProgressOnly({
 export function isSyncableKey(key: string): boolean {
   const { id } = parseStampKey(key)
   return id === null || isSyncableId(id)
+}
+
+export function keysetAfter({
+  row,
+  keys,
+}: {
+  row: Record<string, string>
+  keys: string[]
+}): string {
+  const clauses = keys.map((key, index) =>
+    [
+      ...keys.slice(0, index).map((it) => `${it}.eq."${row[it]}"`),
+      `${key}.gt."${row[key]}"`,
+    ].join(','),
+  )
+  return clauses
+    .map((clause, index) => (index === 0 ? clause : `and(${clause})`))
+    .join(',')
 }
 
 export function mergeGames({
@@ -320,6 +342,26 @@ export function recordChanges({
 
 export function settingsStampKey(game: string) {
   return `${game}.${SYNC_KIND.SETTINGS}`
+}
+
+export function shouldLoadClient({
+  storageKeys,
+  search,
+  hash,
+  authKey,
+}: {
+  storageKeys: string[]
+  search: string
+  hash: string
+  authKey: string
+}): boolean {
+  const params = new URLSearchParams(search)
+  return (
+    storageKeys.some((key) => key.startsWith(authKey)) ||
+    params.has('code') ||
+    params.has('error') ||
+    /(^#|&)(access_token|error)=/.test(hash)
+  )
 }
 
 export function stillPending({

@@ -29,7 +29,7 @@ export function usePuzzleGame<G>({
   const [revealing, setRevealing] = useState(false)
   const [result, setResult] = useState<{ newBest: boolean } | null>(null)
   const solved = game !== null && isSolved(game)
-  const elapsedMs = useGameTimer({
+  const { elapsedMs, clock } = useGameTimer({
     initialMs: saved?.elapsedMs ?? 0,
     running: game !== null && !solved,
   })
@@ -90,6 +90,7 @@ export function usePuzzleGame<G>({
     setResult,
     solved,
     elapsedMs,
+    clock,
     save,
     reveal,
   }

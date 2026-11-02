@@ -79,6 +79,7 @@ export function TwoToneGameView({ id }: { id: string }) {
     setResult,
     solved,
     elapsedMs,
+    clock,
     save,
     reveal,
   } = usePuzzleGame({
@@ -264,7 +265,7 @@ export function TwoToneGameView({ id }: { id: string }) {
         </ScreenHeader>
       </div>
       <GameStatusBar
-        elapsedMs={elapsedMs()}
+        clock={clock}
         progressPercent={progressPercent(game)}
         showTimer={settings.showTimer}
         showProgress={settings.showProgress}
