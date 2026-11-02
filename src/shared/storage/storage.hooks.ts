@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { readStored, writeStored } from '@/shared/storage/storage.functions'
+import {
+  readStoredWithRaw,
+  writeStored,
+} from '@/shared/storage/storage.functions'
 import { SYNCED_EVENT } from '@/shared/sync/sync.constants'
 
 export function useStoredState<T>({
@@ -10,16 +13,17 @@ export function useStoredState<T>({
   key: string
   fallback: T
 }): [T, (update: (current: T) => T) => void] {
-  const [value, setValue] = useState<T>(() => readStored({ key, fallback }))
-  const latestRef = useRef(value)
+  const [initial] = useState(() => readStoredWithRaw({ key, fallback }))
+  const [value, setValue] = useState<T>(initial.value)
+  const latestRef = useRef(initial)
   const fallbackRef = useRef(fallback)
 
   useEffect(() => {
     function onSynced(event: Event) {
       if (!(event as CustomEvent<string[]>).detail.includes(key)) return
-      const next = readStored({ key, fallback: fallbackRef.current })
+      const next = readStoredWithRaw({ key, fallback: fallbackRef.current })
       latestRef.current = next
-      setValue(next)
+      setValue(next.value)
     }
     window.addEventListener(SYNCED_EVENT, onSynced)
     return () => window.removeEventListener(SYNCED_EVENT, onSynced)
@@ -27,9 +31,9 @@ export function useStoredState<T>({
 
   const update = useCallback(
     (change: (current: T) => T) => {
-      const next = change(latestRef.current)
-      latestRef.current = next
-      writeStored({ key, value: next })
+      const next = change(latestRef.current.value)
+      const raw = writeStored({ key, value: next, previous: latestRef.current })
+      latestRef.current = { value: next, raw }
       setValue(next)
     },
     [key],

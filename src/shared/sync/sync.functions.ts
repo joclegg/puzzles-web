@@ -19,12 +19,16 @@ export function changedEntryIds({
   before: SyncedEntry[]
   after: SyncedEntry[]
 }): string[] {
-  const previous = new Map(
-    before.map((entry) => [entry.id, JSON.stringify(entry)]),
-  )
+  const previous = new Map(before.map((entry) => [entry.id, entry]))
   const current = new Set(after.map((entry) => entry.id))
   const changed = after
-    .filter((entry) => previous.get(entry.id) !== JSON.stringify(entry))
+    .filter((entry) => {
+      const old = previous.get(entry.id)
+      return (
+        old !== entry &&
+        (old === undefined || JSON.stringify(old) !== JSON.stringify(entry))
+      )
+    })
     .map((entry) => entry.id)
   const removed = before
     .filter((entry) => !current.has(entry.id))
