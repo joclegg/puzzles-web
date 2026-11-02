@@ -1,3 +1,4 @@
+export const AUTH_STORAGE_KEY = 'sb-nrlmaucpuesfmvqhtupe-auth-token'
 export const EMAIL_CODE_LENGTH = 8
 export const PAGE_SIZE = 1000
 export const PENDING_KEY = 'sync.pending'

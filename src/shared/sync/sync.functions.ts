@@ -87,6 +87,24 @@ export function isSyncableKey(key: string): boolean {
   return id === null || isSyncableId(id)
 }
 
+export function keysetAfter({
+  row,
+  keys,
+}: {
+  row: Record<string, string>
+  keys: string[]
+}): string {
+  const clauses = keys.map((key, index) =>
+    [
+      ...keys.slice(0, index).map((it) => `${it}.eq."${row[it]}"`),
+      `${key}.gt."${row[key]}"`,
+    ].join(','),
+  )
+  return clauses
+    .map((clause, index) => (index === 0 ? clause : `and(${clause})`))
+    .join(',')
+}
+
 export function mergeGames({
   game,
   games,
@@ -324,6 +342,26 @@ export function recordChanges({
 
 export function settingsStampKey(game: string) {
   return `${game}.${SYNC_KIND.SETTINGS}`
+}
+
+export function shouldLoadClient({
+  storageKeys,
+  search,
+  hash,
+  authKey,
+}: {
+  storageKeys: string[]
+  search: string
+  hash: string
+  authKey: string
+}): boolean {
+  const params = new URLSearchParams(search)
+  return (
+    storageKeys.some((key) => key.startsWith(authKey)) ||
+    params.has('code') ||
+    params.has('error') ||
+    /(^#|&)(access_token|error)=/.test(hash)
+  )
 }
 
 export function stillPending({
