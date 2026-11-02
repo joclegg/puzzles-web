@@ -6,7 +6,7 @@ import { Check, Lightbulb, Shuffle, X } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
 
 import { formatDuration } from '@/shared/lib/format.functions'
-import { useGameTimer } from '@/shared/game/gameTimer.hooks'
+import { usePuzzleGame } from '@/shared/game/puzzleGame.hooks'
 import {
   createRandom,
   newSeed,
@@ -72,31 +72,36 @@ const TUTORIAL = [
 ]
 
 export function WordWheelGameView({ id }: { id: string }) {
-  const { games, startRandom, saveProgress, finish, revealSaved } =
-    useWordWheelGames()
+  const saves = useWordWheelGames()
   const validWordList = useValidWords()
-  const saved = games.find((game) => game.id === id)
   const [settings] = useStoredState<WordWheelSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
-  const [game, setGame] = useState<WordWheelGame | null>(() =>
-    saved
-      ? newGame({
-          puzzle: decodePuzzle(saved.puzzle),
-          ...decodeProgress(saved.changes),
-        })
-      : null,
-  )
+  const {
+    saved,
+    game,
+    setGame,
+    revealing,
+    setRevealing,
+    result,
+    setResult,
+    solved,
+    elapsedMs,
+    save,
+    reveal: revealSaved,
+  } = usePuzzleGame({
+    saves,
+    id,
+    load: (saved): WordWheelGame =>
+      newGame({
+        puzzle: decodePuzzle(saved.puzzle),
+        ...decodeProgress(saved.changes),
+      }),
+    isSolved,
+  })
   const [random] = useState(() => createRandom(newSeed()))
   const [chosen, setChosen] = useState<number[]>([])
-  const [revealing, setRevealing] = useState(false)
-  const [result, setResult] = useState<{ newBest: boolean } | null>(null)
-  const solved = game !== null && isSolved(game)
-  const elapsedMs = useGameTimer({
-    initialMs: saved?.elapsedMs ?? 0,
-    running: game !== null && !solved,
-  })
 
   const onKey = useEffectEvent((event: KeyboardEvent) => {
     if (!game || event.ctrlKey || event.metaKey || event.altKey) {
@@ -144,36 +149,15 @@ export function WordWheelGameView({ id }: { id: string }) {
     ) {
       return
     }
-    const changes = encodeProgress(next)
-    if (isSolved(next)) {
-      setResult({
-        newBest: finish({
-          id: saved.id,
-          elapsedMs: elapsedMs(),
-          changes,
-          hints: next.revealed.length,
-        }),
-      })
-      return
-    }
-    saveProgress({
-      id: saved.id,
-      patch: {
-        changes,
-        hints: next.revealed.length,
-        elapsedMs: elapsedMs(),
-      },
-    })
+    save({ next, changes: encodeProgress(next), hints: next.revealed.length })
   }
 
   function onReveal() {
-    if (!game || !saved) {
+    if (!game) {
       return
     }
-    setGame(revealAll(game))
     setChosen([])
-    setRevealing(false)
-    revealSaved({ id: saved.id, elapsedMs: elapsedMs() })
+    revealSaved(revealAll(game))
   }
 
   function enter() {
@@ -239,7 +223,7 @@ export function WordWheelGameView({ id }: { id: string }) {
             items={[
               {
                 label: 'New puzzle',
-                onClick: () => startRandom(levelOf(saved)),
+                onClick: () => saves.startRandom(levelOf(saved)),
               },
               ...(settings.allowReveal && !solved
                 ? [
@@ -334,7 +318,7 @@ export function WordWheelGameView({ id }: { id: string }) {
         accent={MENU_ACCENT.WORD_WHEEL}
         route={GAME_ROUTE.WORD_WHEEL}
         newLabel={`${levelOf(saved)} letters`}
-        onNew={() => startRandom(levelOf(saved))}
+        onNew={() => saves.startRandom(levelOf(saved))}
         newBest={result?.newBest ?? false}
         stats={[
           { label: 'Time', value: formatDuration(elapsedMs()) },

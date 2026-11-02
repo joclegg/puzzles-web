@@ -61,14 +61,13 @@ const TUTORIAL = [
 ]
 
 export function SlideOutGameView({ id }: { id: string }) {
-  const { games, startRandom, saveProgress, finish, reveal } =
-    useSlideOutGames()
-  const saved = games.find((game) => game.id === id)
+  const saves = useSlideOutGames()
   const [settings] = useStoredState<SlideOutSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
   const {
+    saved,
     game,
     setGame,
     revealing,
@@ -77,8 +76,11 @@ export function SlideOutGameView({ id }: { id: string }) {
     setResult,
     solved,
     elapsedMs,
+    save,
+    reveal,
   } = usePuzzleGame({
-    saved,
+    saves,
+    id,
     load: (saved): SlideOutGame =>
       newGame({
         puzzle: decodePuzzle(saved.puzzle),
@@ -105,25 +107,7 @@ export function SlideOutGameView({ id }: { id: string }) {
     next: SlideOutGame
     hintCount: number
   }) {
-    if (!saved) {
-      return
-    }
-    const changes = encodeMoves(next.moves)
-    if (isSolved(next)) {
-      setResult({
-        newBest: finish({
-          id: saved.id,
-          elapsedMs: elapsedMs(),
-          changes,
-          hints: hintCount,
-        }),
-      })
-      return
-    }
-    saveProgress({
-      id: saved.id,
-      patch: { changes, hints: hintCount, elapsedMs: elapsedMs() },
-    })
+    save({ next, changes: encodeMoves(next.moves), hints: hintCount })
   }
 
   function move(change: (current: SlideOutGame) => SlideOutGame) {
@@ -138,12 +122,10 @@ export function SlideOutGameView({ id }: { id: string }) {
   }
 
   function onReveal() {
-    if (!game || !saved) {
+    if (!game) {
       return
     }
-    setGame(revealSolution(game))
-    setRevealing(false)
-    reveal({ id: saved.id, elapsedMs: elapsedMs() })
+    reveal(revealSolution(game))
   }
 
   function onHint() {
@@ -215,7 +197,7 @@ export function SlideOutGameView({ id }: { id: string }) {
               },
               {
                 label: 'New puzzle',
-                onClick: () => startRandom(levelOf(saved)),
+                onClick: () => saves.startRandom(levelOf(saved)),
               },
               ...(settings.allowReveal && !solved
                 ? [
@@ -256,7 +238,7 @@ export function SlideOutGameView({ id }: { id: string }) {
         }
         onNew={() => {
           replaceRoute([GAME_ROUTE.SLIDE_OUT])
-          startRandom(levelOf(saved))
+          saves.startRandom(levelOf(saved))
         }}
         newBest={result?.newBest ?? false}
         stats={[

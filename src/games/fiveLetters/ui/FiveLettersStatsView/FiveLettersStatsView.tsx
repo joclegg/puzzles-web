@@ -1,12 +1,10 @@
+import { DEFINITION } from '@/games/fiveLetters/definition'
+import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 import { GAMES_KEY } from '@/games/fiveLetters/engine/fiveLettersSaves.constants'
 import { statsOf } from '@/games/fiveLetters/engine/fiveLettersSaves.functions'
 import type { SavedGame } from '@/games/fiveLetters/engine/fiveLettersSaves.types'
-import { GAME_ROUTE } from '@/shared/lib/route.constants'
 import { useStoredState } from '@/shared/storage/storage.hooks'
-import { MenuScreen } from '@/shared/screens/MenuScreen/MenuScreen'
-import { MENU_ACCENT } from '@/shared/screens/MenuScreen/MenuScreen.constants'
 import { Panel } from '@/shared/screens/Panel/Panel'
-import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
 import { StatFigure } from '@/shared/screens/StatFigure/StatFigure'
 import { BAR_WIDTH_CLASS } from '@/games/fiveLetters/ui/FiveLettersStatsView/FiveLettersStatsView.constants'
 import { cn } from '@/shared/lib/utils.functions'
@@ -19,8 +17,7 @@ export function FiveLettersStatsView() {
     stats.played === 0 ? 0 : Math.floor((stats.won * 100) / stats.played)
 
   return (
-    <MenuScreen accent={MENU_ACCENT.FIVE_LETTERS}>
-      <ScreenHeader title="Stats" back={[GAME_ROUTE.FIVE_LETTERS]} />
+    <PuzzleStatsView definition={DEFINITION}>
       <Panel>
         <div className="flex py-2">
           <StatFigure value={stats.played} label="Played" />
@@ -49,6 +46,6 @@ export function FiveLettersStatsView() {
           ))}
         </ol>
       </Panel>
-    </MenuScreen>
+    </PuzzleStatsView>
   )
 }

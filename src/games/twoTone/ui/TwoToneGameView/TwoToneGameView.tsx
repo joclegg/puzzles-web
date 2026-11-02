@@ -6,12 +6,7 @@ import { formatDuration } from '@/shared/lib/format.functions'
 import { ArrowLeftRight, Lightbulb, Undo2, CircleDot } from 'lucide-react'
 import { useState } from 'react'
 
-import { useGameTimer } from '@/shared/game/gameTimer.hooks'
-import {
-  revealPuzzle,
-  solvePuzzle,
-  updatePuzzle,
-} from '@/shared/game/puzzleSaves.functions'
+import { usePuzzleGame } from '@/shared/game/puzzleGame.hooks'
 import { puzzleTitle } from '@/shared/game/puzzleTitle.functions'
 import { GAME_ROUTE, SCREEN } from '@/shared/lib/route.constants'
 import { navigate } from '@/shared/lib/route.hooks'
@@ -69,30 +64,36 @@ const TUTORIAL = [
 ]
 
 export function TwoToneGameView({ id }: { id: string }) {
-  const { games, setGames, startRandom } = useTwoToneGames()
-  const saved = games.find((game) => game.id === id)
+  const saves = useTwoToneGames()
   const [settings, setSettings] = useStoredState<TwoToneSettings>({
     key: SETTINGS_KEY,
     fallback: DEFAULT_SETTINGS,
   })
-  const [game, setGame] = useState<TwoToneGame | null>(() =>
-    saved
-      ? replay({
-          puzzle: decodePuzzle(saved.puzzle),
-          changes: decodeChanges(saved.changes),
-        })
-      : null,
-  )
+  const {
+    saved,
+    game,
+    setGame,
+    revealing,
+    setRevealing,
+    result,
+    setResult,
+    solved,
+    elapsedMs,
+    save,
+    reveal,
+  } = usePuzzleGame({
+    saves,
+    id,
+    load: (saved): TwoToneGame =>
+      replay({
+        puzzle: decodePuzzle(saved.puzzle),
+        changes: decodeChanges(saved.changes),
+      }),
+    isSolved,
+  })
   const [hints, setHints] = useState(saved?.hints ?? 0)
   const [colour, setColour] = useState<Tile>(TILE.RED)
   const [showGivens, setShowGivens] = useState(false)
-  const [revealing, setRevealing] = useState(false)
-  const [result, setResult] = useState<{ newBest: boolean } | null>(null)
-  const solved = game !== null && isSolved(game)
-  const elapsedMs = useGameTimer({
-    initialMs: saved?.elapsedMs ?? 0,
-    running: game !== null && !solved,
-  })
 
   if (!saved || !game) {
     return (
@@ -111,30 +112,7 @@ export function TwoToneGameView({ id }: { id: string }) {
     next: TwoToneGame
     hintCount: number
   }) {
-    if (!saved) {
-      return
-    }
-    const changes = encodeChanges(next.changes)
-    if (isSolved(next)) {
-      const finished = solvePuzzle({
-        games,
-        id: saved.id,
-        elapsedMs: elapsedMs(),
-        changes,
-        hints: hintCount,
-        now: Date.now(),
-      })
-      setGames(() => finished.games)
-      setResult({ newBest: finished.newBest })
-      return
-    }
-    setGames((current) =>
-      updatePuzzle({
-        games: current,
-        id: saved.id,
-        patch: { changes, hints: hintCount, elapsedMs: elapsedMs() },
-      }),
-    )
+    save({ next, changes: encodeChanges(next.changes), hints: hintCount })
   }
 
   function move(change: (current: TwoToneGame) => TwoToneGame) {
@@ -171,19 +149,10 @@ export function TwoToneGameView({ id }: { id: string }) {
   }
 
   function onReveal() {
-    if (!game || !saved) {
+    if (!game) {
       return
     }
-    setGame({ ...game, grid: game.puzzle.solution, hint: null })
-    setRevealing(false)
-    setGames((current) =>
-      revealPuzzle({
-        games: current,
-        id: saved.id,
-        elapsedMs: elapsedMs(),
-        now: Date.now(),
-      }),
-    )
+    reveal({ ...game, grid: game.puzzle.solution, hint: null })
   }
 
   function onRestart() {
@@ -274,7 +243,10 @@ export function TwoToneGameView({ id }: { id: string }) {
           <MoreMenu
             items={[
               { label: 'Restart this puzzle', onClick: onRestart },
-              { label: 'New puzzle', onClick: () => startRandom(saved.size) },
+              {
+                label: 'New puzzle',
+                onClick: () => saves.startRandom(saved.size),
+              },
               ...(settings.allowReveal && !solved
                 ? [
                     {
@@ -327,7 +299,7 @@ export function TwoToneGameView({ id }: { id: string }) {
         accent={MENU_ACCENT.TWO_TONE}
         route={GAME_ROUTE.TWO_TONE}
         newLabel={`${saved.size}×${saved.size}`}
-        onNew={() => startRandom(saved.size)}
+        onNew={() => saves.startRandom(saved.size)}
         newBest={result?.newBest ?? false}
         stats={[
           { label: 'Time', value: formatDuration(elapsedMs()) },

@@ -4,7 +4,10 @@ import { useTwoToneGames } from '@/games/twoTone/engine/twoTone.hooks'
 import { sizeOptions } from '@/shared/game/puzzleOptions.functions'
 import { GAME_ROUTE, SCREEN } from '@/shared/lib/route.constants'
 import { SizeStatsTable } from '@/shared/screens/SizeStatsTable/SizeStatsTable'
-import { sizeStats } from '@/shared/game/puzzleSaves.functions'
+import {
+  puzzleHistoryDetail,
+  sizeStats,
+} from '@/shared/game/puzzleSaves.functions'
 import { sizeLabel } from '@/shared/game/puzzleTitle.functions'
 import { TwoToneGameView } from '@/games/twoTone/ui/TwoToneGameView/TwoToneGameView'
 import { PuzzleHomeView } from '@/shared/screens/PuzzleHomeView/PuzzleHomeView'
@@ -40,6 +43,7 @@ export function TwoToneView({ screen, id }: { screen: string; id: string }) {
         definition={DEFINITION}
         games={games}
         options={OPTIONS}
+        detail={puzzleHistoryDetail}
       />
     )
   }

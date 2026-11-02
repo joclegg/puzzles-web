@@ -20,6 +20,7 @@ import { TITLE } from '@/games/wordWheel/engine/wordWheelSaves.constants'
 import { WordWheelIcon } from '@/games/wordWheel/ui/WordWheelIcon/WordWheelIcon'
 import { WordWheelSettingsView } from '@/games/wordWheel/ui/WordWheelSettingsView/WordWheelSettingsView'
 import { PuzzleDailyView } from '@/shared/screens/PuzzleDailyView/PuzzleDailyView'
+import { puzzleHistoryDetail } from '@/shared/game/puzzleSaves.functions'
 import { PuzzleHistoryView } from '@/shared/screens/PuzzleHistoryView/PuzzleHistoryView'
 import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 
@@ -53,6 +54,7 @@ export function WordWheelView({ screen, id }: { screen: string; id: string }) {
         definition={DEFINITION}
         games={games}
         options={OPTIONS}
+        detail={puzzleHistoryDetail}
       />
     )
   }

@@ -2,6 +2,7 @@ import type { DailyResult } from '@/shared/game/dailyMedal.types'
 import {
   DAILY_PREFIX,
   PUZZLE_STATUS,
+  PUZZLE_STATUS_LABEL,
 } from '@/shared/game/puzzleSaves.constants'
 import type {
   PuzzleRef,
@@ -42,6 +43,10 @@ export function inProgressPuzzles(games: SavedPuzzle[]): SavedPuzzle[] {
 
 export function isDailyPuzzle(puzzleId: string): boolean {
   return puzzleId.startsWith(DAILY_PREFIX)
+}
+
+export function puzzleHistoryDetail(game: SavedPuzzle): string {
+  return `${PUZZLE_STATUS_LABEL[game.status]} · ${game.hints} hints`
 }
 
 export function revealPuzzle({

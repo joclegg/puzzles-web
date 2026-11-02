@@ -1,14 +1,16 @@
 import { EmptyState } from '@/shared/screens/EmptyState/EmptyState'
 import { formatDateTime, formatDuration } from '@/shared/lib/format.functions'
-import { PUZZLE_STATUS_LABEL } from '@/shared/game/puzzleSaves.constants'
-import type { SavedPuzzle } from '@/shared/game/puzzleSaves.types'
 
-export function PuzzleHistoryList({
+export function PuzzleHistoryList<
+  G extends { id: string; elapsedMs: number; startedAt: number },
+>({
   games,
   title,
+  detail,
 }: {
-  games: SavedPuzzle[]
-  title: (game: SavedPuzzle) => string
+  games: G[]
+  title: (game: G) => string
+  detail: (game: G) => string
 }) {
   if (games.length === 0) {
     return <EmptyState message="No games yet." />
@@ -20,7 +22,7 @@ export function PuzzleHistoryList({
           <span className="flex-1">
             <span className="block font-medium">{title(game)}</span>
             <span className="block text-sm text-muted-foreground">
-              {PUZZLE_STATUS_LABEL[game.status]} · {game.hints} hints
+              {detail(game)}
             </span>
           </span>
           <span className="text-right text-sm">

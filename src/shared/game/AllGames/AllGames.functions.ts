@@ -11,8 +11,10 @@ import {
 } from '@/games/fiveLetters/engine/fiveLettersSaves.functions'
 import type { SavedGame } from '@/games/fiveLetters/engine/fiveLettersSaves.types'
 import { SIZES as KAKURO_SIZES } from '@/games/kakuro/engine/kakuro.constants'
-import { PUZZLE_STATUS_LABEL } from '@/shared/game/puzzleSaves.constants'
-import { dailyPuzzleResults } from '@/shared/game/puzzleSaves.functions'
+import {
+  dailyPuzzleResults,
+  puzzleHistoryDetail,
+} from '@/shared/game/puzzleSaves.functions'
 import type { SavedPuzzle } from '@/shared/game/puzzleSaves.types'
 import { puzzleTitle } from '@/shared/game/puzzleTitle.functions'
 import { GAME_ROUTE } from '@/shared/lib/route.constants'
@@ -173,7 +175,7 @@ function puzzleRows({
       route,
       game,
       title: title(game),
-      detail: `${PUZZLE_STATUS_LABEL[game.status]} · ${game.hints} hints`,
+      detail: puzzleHistoryDetail(game),
     }),
   )
 }

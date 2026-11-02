@@ -16,6 +16,7 @@ import { TITLE } from '@/games/slideOut/engine/slideOutSaves.constants'
 import { SlideOutIcon } from '@/games/slideOut/ui/SlideOutIcon/SlideOutIcon'
 import { SlideOutSettingsView } from '@/games/slideOut/ui/SlideOutSettingsView/SlideOutSettingsView'
 import { PuzzleDailyView } from '@/shared/screens/PuzzleDailyView/PuzzleDailyView'
+import { puzzleHistoryDetail } from '@/shared/game/puzzleSaves.functions'
 import { PuzzleHistoryView } from '@/shared/screens/PuzzleHistoryView/PuzzleHistoryView'
 import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 
@@ -49,6 +50,7 @@ export function SlideOutView({ screen, id }: { screen: string; id: string }) {
         definition={DEFINITION}
         games={games}
         options={OPTIONS}
+        detail={puzzleHistoryDetail}
       />
     )
   }
