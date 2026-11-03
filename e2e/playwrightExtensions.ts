@@ -5,6 +5,7 @@ import { AssistsPage } from '@e2e/assistsPage'
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { KakuroPage } from '@e2e/kakuroPage'
 import { LauncherPage } from '@e2e/launcherPage'
+import { LegalPage } from '@e2e/legalPage'
 import { SettingsPage } from '@e2e/settingsPage'
 import { SightlinesPage } from '@e2e/sightlinesPage'
 import { SlideOutPage } from '@e2e/slideOutPage'
@@ -21,6 +22,7 @@ export const test = base.extend<{
   assistsPage: AssistsPage
   settingsPage: SettingsPage
   launcherPage: LauncherPage
+  legalPage: LegalPage
   fiveLettersPage: FiveLettersPage
   twoTonePage: TwoTonePage
   sightlinesPage: SightlinesPage
@@ -57,6 +59,9 @@ export const test = base.extend<{
   },
   settingsPage: async ({ page }, use) => {
     await use(new SettingsPage(page))
+  },
+  legalPage: async ({ page }, use) => {
+    await use(new LegalPage(page))
   },
   launcherPage: async ({ page }, use) => {
     const launcherPage = new LauncherPage(page)

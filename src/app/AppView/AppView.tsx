@@ -6,8 +6,10 @@ import { useRoute } from '@/shared/lib/route.hooks'
 import type { SignInProvider } from '@/shared/sync/sync.types'
 import { useSync } from '@/shared/sync/sync.hooks'
 import { AllHistoryView } from '@/app/AllHistoryView/AllHistoryView'
+import { DeleteAccountView } from '@/app/DeleteAccountView/DeleteAccountView'
 import { GeneralSettingsView } from '@/app/GeneralSettingsView/GeneralSettingsView'
 import { LauncherView } from '@/app/LauncherView/LauncherView'
+import { PrivacyView } from '@/app/PrivacyView/PrivacyView'
 
 export function AppView() {
   const {
@@ -75,6 +77,20 @@ function routeView({
   }
   if (game === LAUNCHER_ROUTE.HISTORY) {
     return <AllHistoryView />
+  }
+  if (game === LAUNCHER_ROUTE.PRIVACY) {
+    return <PrivacyView />
+  }
+  if (game === LAUNCHER_ROUTE.DELETE_ACCOUNT) {
+    return (
+      <DeleteAccountView
+        account={account}
+        onSignIn={onSignIn}
+        onSendEmailLink={onSendEmailLink}
+        onVerifyEmailCode={onVerifyEmailCode}
+        onSignOut={onSignOut}
+      />
+    )
   }
   return (
     <LauncherView
