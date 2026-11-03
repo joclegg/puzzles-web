@@ -23,4 +23,8 @@ export const SCREEN = {
 export const LAUNCHER_ROUTE = {
   HISTORY: 'history',
   SETTINGS: 'settings',
+  PRIVACY: 'privacy',
+  DELETE_ACCOUNT: 'delete-account',
 } as const
+
+export const CONTACT_URL = 'https://github.com/joclegg/puzzles-web/issues'
