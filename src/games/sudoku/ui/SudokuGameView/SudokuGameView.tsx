@@ -22,6 +22,7 @@ import {
   INPUT_MODE,
 } from '@/games/sudoku/engine/sudoku.constants'
 import {
+  cageCombinations,
   countsMistakes,
   digitCount,
   erase,
@@ -72,6 +73,7 @@ import { MoreMenu } from '@/shared/ui/MoreMenu/MoreMenu'
 import { NumberPad } from '@/shared/game/NumberPad/NumberPad'
 import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
 import { SudokuBoard } from '@/games/sudoku/ui/SudokuBoard/SudokuBoard'
+import { CombinationList } from '@/shared/game/CombinationList/CombinationList'
 
 const TUTORIAL = [
   {
@@ -184,6 +186,9 @@ export function SudokuGameView({ id }: { id: string }) {
   const digitFirst = current.inputMode === INPUT_MODE.DIGIT_FIRST
   const size = current.puzzle.grid.size
   const digits = Array.from({ length: size }, (_, i) => i + 1)
+  const combinations = modeSettings.showCombinations
+    ? cageCombinations({ game: current, order: modeSettings.combinationOrder })
+    : null
 
   function persist({
     next,
@@ -358,6 +363,7 @@ export function SudokuGameView({ id }: { id: string }) {
         boldPlacedDigits={modeSettings.boldPlacedDigits}
         onCell={(cell) => update((state) => tapCell({ game: state, cell }))}
       />
+      {combinations !== null && <CombinationList lines={[combinations]} />}
       <p className="h-6 text-sm font-semibold" role="status">
         {hint?.message ?? ''}
       </p>

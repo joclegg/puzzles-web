@@ -30,6 +30,10 @@ import { AssistSettings } from '@/shared/screens/AssistSettings/AssistSettings'
 import { OptionGroup } from '@/shared/ui/OptionGroup/OptionGroup'
 import { SettingsScreen } from '@/shared/screens/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/shared/screens/SettingRow/SettingRow'
+import {
+  COMBINATION_ORDER,
+  COMBINATION_ORDER_LABEL,
+} from '@/shared/game/combinations.constants'
 
 export function SudokuSettingsView() {
   const [stored, setStored] = useStoredState<SudokuSettings>({
@@ -174,6 +178,23 @@ export function SudokuSettingsView() {
         onChange={(showTimer) => set({ showTimer })}
       />
       <AssistSettings assists={current} hintStyles onChange={set} />
+      {mode === GAME_MODE.KILLER && (
+        <SettingRow
+          label="Sum helper"
+          detail="List the digit combinations that still fit the selected cell's cage."
+          checked={current.showCombinations}
+          onChange={(showCombinations) => set({ showCombinations })}
+        />
+      )}
+      {mode === GAME_MODE.KILLER && current.showCombinations && (
+        <OptionGroup
+          label="Combination order"
+          options={Object.values(COMBINATION_ORDER)}
+          value={current.combinationOrder}
+          labels={COMBINATION_ORDER_LABEL}
+          onChange={(combinationOrder) => set({ combinationOrder })}
+        />
+      )}
     </SettingsScreen>
   )
 }

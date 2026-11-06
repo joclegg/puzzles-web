@@ -66,7 +66,7 @@ export function TwoToneBoard({
               hinted
                 ? 'ring-3 ring-tt-hint-target'
                 : hintTwin.has(cell)
-                  ? 'ring-3 ring-tt-hint-target/50'
+                  ? 'ring-3 ring-tt-hint-target'
                   : broken.has(cell) && 'ring-3 ring-tt-broken',
             )}
           >

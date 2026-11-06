@@ -1,10 +1,10 @@
 import { DEFAULT_ASSISTS } from '@/shared/game/assists.constants'
 import {
-  COMBINATION_ORDER,
   INPUT_MODE,
   MISTAKE_CHECK,
 } from '@/games/kakuro/engine/kakuro.constants'
 import type { KakuroSettings } from '@/games/kakuro/engine/kakuroSaves.types'
+import { COMBINATION_ORDER } from '@/shared/game/combinations.constants'
 
 export const GAMES_KEY = 'kakuro.games'
 

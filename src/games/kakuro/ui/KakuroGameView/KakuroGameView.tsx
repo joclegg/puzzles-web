@@ -61,6 +61,7 @@ import { KakuroBoard } from '@/games/kakuro/ui/KakuroBoard/KakuroBoard'
 import { MoreMenu } from '@/shared/ui/MoreMenu/MoreMenu'
 import { NumberPad } from '@/shared/game/NumberPad/NumberPad'
 import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
+import { CombinationList } from '@/shared/game/CombinationList/CombinationList'
 
 const TUTORIAL = [
   {
@@ -269,38 +270,12 @@ export function KakuroGameView({ id }: { id: string }) {
         onCell={(cell) => move((state) => tapCell({ game: state, cell }))}
       />
       {settings.showCombinations && (
-        <ul
-          className="w-full max-w-md text-sm text-muted-foreground"
-          aria-label="Combinations"
-        >
-          {combinationLines({
+        <CombinationList
+          lines={combinationLines({
             game: current,
             order: settings.combinationOrder,
-          }).map((line) => (
-            <li key={line.label}>
-              {line.label}:{' '}
-              {line.options.length === 0
-                ? 'none fit'
-                : line.options.map((option) => (
-                    <span
-                      key={option.map((it) => it.digit).join('')}
-                      className="mr-3"
-                    >
-                      {option.map((it) => (
-                        <span
-                          key={it.digit}
-                          className={
-                            it.placed ? 'font-bold text-foreground' : undefined
-                          }
-                        >
-                          {it.digit}
-                        </span>
-                      ))}
-                    </span>
-                  ))}
-            </li>
-          ))}
-        </ul>
+          })}
+        />
       )}
       <p className="h-6 text-sm font-semibold" role="status">
         {hint?.message ?? ''}

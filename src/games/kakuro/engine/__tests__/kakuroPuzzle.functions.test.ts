@@ -3,10 +3,9 @@ import { describe, expect, it } from 'vitest'
 import {
   createPuzzle,
   decodePuzzle,
-  digitsOf,
   encodePuzzle,
-  masksFor,
 } from '@/games/kakuro/engine/kakuroPuzzle.functions'
+import { digitsOf, masksFor } from '@/shared/game/combinations.functions'
 
 describe('createPuzzle', () => {
   it('finds the across and down runs with their clues', () => {

@@ -3,11 +3,7 @@ import type {
   KakuroHint,
   Run,
 } from '@/games/kakuro/engine/kakuro.types'
-import {
-  bit,
-  digitsOf,
-  masksFor,
-} from '@/games/kakuro/engine/kakuroPuzzle.functions'
+import { bit, digitsOf, masksFor } from '@/shared/game/combinations.functions'
 
 const ALL_DIGITS = Array.from({ length: 9 }, (_, i) => bit(i + 1)).reduce(
   (a, b) => a | b,

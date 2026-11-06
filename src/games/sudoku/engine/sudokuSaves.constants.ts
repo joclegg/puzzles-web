@@ -9,6 +9,7 @@ import type {
   ModeSettings,
   SudokuSettings,
 } from '@/games/sudoku/engine/sudokuSaves.types'
+import { COMBINATION_ORDER } from '@/shared/game/combinations.constants'
 
 export const GAMES_KEY = 'sudoku.games'
 
@@ -55,6 +56,8 @@ const DEFAULT_MODE_SETTINGS: ModeSettings = {
   boldPlacedDigits: true,
   highlightLastPlaced: false,
   greyGivenCells: true,
+  showCombinations: false,
+  combinationOrder: COMBINATION_ORDER.INCREASING,
 }
 
 export const DEFAULT_SETTINGS: SudokuSettings = {
