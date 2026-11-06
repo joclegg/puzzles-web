@@ -1,10 +1,10 @@
 import { cn } from '@/shared/lib/utils.functions'
 import type { Puzzle } from '@/games/kakuro/engine/kakuro.types'
-import { bit } from '@/games/kakuro/engine/kakuroPuzzle.functions'
 import {
   GRID_COLUMNS_CLASS,
   NOTE_POSITIONS,
 } from '@/games/kakuro/ui/KakuroBoard/KakuroBoard.constants'
+import { bit } from '@/shared/game/combinations.functions'
 
 export function KakuroBoard({
   puzzle,

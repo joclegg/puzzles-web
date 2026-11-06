@@ -1,5 +1,4 @@
 import type {
-  COMBINATION_ORDER,
   INPUT_MODE,
   MISTAKE_CHECK,
 } from '@/games/kakuro/engine/kakuro.constants'
@@ -12,19 +11,6 @@ export interface Change {
   toNotes: number
   clearedNotes: number[]
 }
-
-export interface CombinationDigit {
-  digit: number
-  placed: boolean
-}
-
-export interface CombinationLine {
-  label: string
-  options: CombinationDigit[][]
-}
-
-export type CombinationOrder =
-  (typeof COMBINATION_ORDER)[keyof typeof COMBINATION_ORDER]
 
 export type InputMode = (typeof INPUT_MODE)[keyof typeof INPUT_MODE]
 

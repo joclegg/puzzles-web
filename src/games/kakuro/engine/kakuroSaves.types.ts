@@ -1,9 +1,9 @@
 import type { Assists } from '@/shared/game/assists.types'
 import type {
-  CombinationOrder,
   InputMode,
   MistakeCheck,
 } from '@/games/kakuro/engine/kakuro.types'
+import type { CombinationOrder } from '@/shared/game/combinations.types'
 
 export interface KakuroSettings extends Assists {
   inputMode: InputMode

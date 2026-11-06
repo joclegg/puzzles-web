@@ -1,11 +1,4 @@
-import { DIGITS, MAX_DIGIT } from '@/games/kakuro/engine/kakuro.constants'
 import type { Puzzle, Run } from '@/games/kakuro/engine/kakuro.types'
-
-const MASKS_BY_RUN = groupMasks()
-
-export function bit(digit: number): number {
-  return 1 << (digit - 1)
-}
 
 export function createPuzzle({
   size,
@@ -54,25 +47,9 @@ export function decodePuzzle(text: string): Puzzle {
   })
 }
 
-export function digitsOf(mask: number): number[] {
-  return DIGITS.filter((digit) => (mask & bit(digit)) !== 0)
-}
-
 export function encodePuzzle(puzzle: Puzzle): string {
   const givens = [...puzzle.givens].sort((a, b) => a - b).join(',')
   return `${puzzle.size};${puzzle.solution.join('')};${givens}`
-}
-
-export function masksFor({ length, sum }: { length: number; sum: number }) {
-  return MASKS_BY_RUN.get(`${length}:${sum}`) ?? []
-}
-
-function bitCount(mask: number): number {
-  let count = 0
-  for (let rest = mask; rest !== 0; rest &= rest - 1) {
-    count++
-  }
-  return count
 }
 
 function findRuns({
@@ -97,16 +74,6 @@ function findRuns({
       }))
     }).flat(),
   )
-}
-
-function groupMasks(): Map<string, number[]> {
-  const groups = new Map<string, number[]>()
-  for (let mask = 1; mask < 1 << MAX_DIGIT; mask++) {
-    const sum = digitsOf(mask).reduce((total, digit) => total + digit, 0)
-    const key = `${bitCount(mask)}:${sum}`
-    groups.set(key, [...(groups.get(key) ?? []), mask])
-  }
-  return groups
 }
 
 function segments({

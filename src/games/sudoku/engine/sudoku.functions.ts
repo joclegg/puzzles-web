@@ -18,6 +18,45 @@ import type {
   SudokuHint,
 } from '@/games/sudoku/engine/sudoku.types'
 import { digitBit, gridFor } from '@/games/sudoku/engine/sudokuPuzzle.functions'
+import {
+  bit,
+  combinationOptions,
+  digitsOf,
+  masksFor,
+} from '@/shared/game/combinations.functions'
+import type {
+  CombinationLine,
+  CombinationOrder,
+} from '@/shared/game/combinations.types'
+
+export function cageCombinations({
+  game,
+  order,
+}: {
+  game: SudokuGame
+  order: CombinationOrder
+}): CombinationLine | null {
+  const cell = game.selected
+  if (cell === null) {
+    return null
+  }
+  const cage = game.puzzle.cages[game.puzzle.cageIndexByCell[cell]]
+  if (cage === undefined) {
+    return null
+  }
+  const placed = cage.cells
+    .filter((other) => game.values[other] !== 0)
+    .reduce((mask, other) => mask | bit(game.values[other]), 0)
+  const masks = masksFor({ length: cage.cells.length, sum: cage.sum }).filter(
+    (mask) =>
+      (mask & placed) === placed &&
+      digitsOf(mask).every((digit) => digit <= game.puzzle.grid.size),
+  )
+  return {
+    label: `Cage ${cage.sum} in ${cage.cells.length}`,
+    options: combinationOptions({ masks, placed, order }),
+  }
+}
 
 export function conflicts({
   values,

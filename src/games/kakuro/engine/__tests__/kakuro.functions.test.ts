@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
 import {
-  COMBINATION_ORDER,
   INPUT_MODE,
   MISTAKE_CHECK,
 } from '@/games/kakuro/engine/kakuro.constants'
@@ -20,10 +19,9 @@ import {
   undo,
 } from '@/games/kakuro/engine/kakuro.functions'
 import type { KakuroGame } from '@/games/kakuro/engine/kakuro.types'
-import {
-  createPuzzle,
-  digitsOf,
-} from '@/games/kakuro/engine/kakuroPuzzle.functions'
+import { createPuzzle } from '@/games/kakuro/engine/kakuroPuzzle.functions'
+import { COMBINATION_ORDER } from '@/shared/game/combinations.constants'
+import { digitsOf } from '@/shared/game/combinations.functions'
 
 const SMALL = createPuzzle({ size: 3, solution: [0, 0, 0, 0, 1, 2, 0, 3, 4] })
 

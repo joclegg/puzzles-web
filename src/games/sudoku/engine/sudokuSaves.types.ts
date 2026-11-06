@@ -10,6 +10,7 @@ import type {
   DIGIT_COUNTS,
   SUDOKU_STATUS,
 } from '@/games/sudoku/engine/sudokuSaves.constants'
+import type { CombinationOrder } from '@/shared/game/combinations.types'
 
 export interface BestTime {
   mode: GameMode
@@ -35,6 +36,8 @@ export interface ModeSettings extends Assists {
   boldPlacedDigits: boolean
   highlightLastPlaced: boolean
   greyGivenCells: boolean
+  showCombinations: boolean
+  combinationOrder: CombinationOrder
 }
 
 export interface PastBest {

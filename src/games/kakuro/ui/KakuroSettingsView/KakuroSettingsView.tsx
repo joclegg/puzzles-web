@@ -1,7 +1,5 @@
 import { AssistSettings } from '@/shared/screens/AssistSettings/AssistSettings'
 import {
-  COMBINATION_ORDER,
-  COMBINATION_ORDER_LABEL,
   INPUT_MODE,
   INPUT_MODE_LABEL,
   MISTAKE_CHECK,
@@ -17,6 +15,10 @@ import { useStoredState } from '@/shared/storage/storage.hooks'
 import { OptionGroup } from '@/shared/ui/OptionGroup/OptionGroup'
 import { SettingsScreen } from '@/shared/screens/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/shared/screens/SettingRow/SettingRow'
+import {
+  COMBINATION_ORDER,
+  COMBINATION_ORDER_LABEL,
+} from '@/shared/game/combinations.constants'
 
 export function KakuroSettingsView() {
   const [settings, setSettings] = useStoredState<KakuroSettings>({
