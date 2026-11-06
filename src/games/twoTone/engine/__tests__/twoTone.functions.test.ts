@@ -4,6 +4,7 @@ import { HINT_KIND, TILE } from '@/games/twoTone/engine/twoTone.constants'
 import {
   decodeChanges,
   encodeChanges,
+  hintTwin,
   isSolved,
   newGame,
   paint,
@@ -18,6 +19,7 @@ import {
   parseGrid,
   withTile,
 } from '@/games/twoTone/engine/twoToneGrid.functions'
+import { nextDeduction } from '@/games/twoTone/engine/twoToneSolver.functions'
 
 const SOLUTION = parseGrid({ size: 4, text: 'RBBR BRRB RBRB BRBR' })
 
@@ -105,6 +107,25 @@ describe('withHint', () => {
     const hint = withHint(game).hint
 
     expect([hint?.kind, hint?.deduction?.cells]).toEqual([HINT_KIND.NEXT, [2]])
+  })
+})
+
+describe('hintTwin', () => {
+  it('outlines both lines of a duplicate-line hint', () => {
+    const grid = parseGrid({
+      size: 6,
+      text: 'RBBRBR ...... ...... ...... ...... R.BRB.',
+    })
+    const game = newGame({ givens: grid, solution: grid })
+
+    const cells = hintTwin({
+      game,
+      hint: { kind: HINT_KIND.NEXT, cells: [], deduction: nextDeduction(grid) },
+    })
+
+    expect([...cells].sort((a, b) => a - b)).toEqual([
+      0, 1, 2, 3, 4, 5, 30, 31, 32, 33, 34, 35,
+    ])
   })
 })
 

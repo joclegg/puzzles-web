@@ -66,8 +66,15 @@ export function hintTwin({
   game: TwoToneGame
   hint: Hint | null
 }): Set<number> {
-  const twin = hint?.deduction?.twin ?? null
-  return new Set(twin === null ? [] : cellsOf({ grid: game.grid, line: twin }))
+  const deduction = hint?.deduction ?? null
+  const twin = deduction?.twin ?? null
+  if (deduction === null || twin === null) {
+    return new Set()
+  }
+  return new Set([
+    ...cellsOf({ grid: game.grid, line: deduction.line }),
+    ...cellsOf({ grid: game.grid, line: twin }),
+  ])
 }
 
 export function isSolved(game: TwoToneGame): boolean {
