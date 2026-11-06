@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { ChevronRight } from 'lucide-react'
 import type { KeyboardEvent, PointerEvent } from 'react'
 
 import { cn } from '@/shared/lib/utils.functions'
@@ -37,7 +38,14 @@ export function SlideOutBoard({
   } | null>(null)
 
   function cellSize() {
-    return (boardRef.current?.getBoundingClientRect().width ?? SIZE) / SIZE
+    const board = boardRef.current
+    if (board === null) {
+      return 1
+    }
+    const style = getComputedStyle(board)
+    const padding =
+      parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+    return (board.clientWidth - padding) / SIZE
   }
 
   function onPointerDown({
@@ -128,7 +136,7 @@ export function SlideOutBoard({
       ref={boardRef}
       role="group"
       aria-label="Board"
-      className="relative grid aspect-square w-full max-w-md touch-none grid-cols-6 grid-rows-6 rounded-xl bg-so-board p-1 lg:max-w-[min(100%,calc(100dvh-16rem))]"
+      className="relative grid aspect-square w-full max-w-md touch-none grid-cols-6 grid-rows-6 rounded-xl border-[3px] border-so-block bg-so-board p-1 lg:max-w-[min(100%,calc(100dvh-16rem))]"
     >
       {SLOTS.map((cell) => (
         <span
@@ -141,11 +149,19 @@ export function SlideOutBoard({
         />
       ))}
       <span
+        aria-hidden="true"
         className={cn(
-          'col-start-6 -mr-1 w-1.5 justify-self-end rounded-sm bg-so-exit',
+          'relative col-start-6 -my-1 -mr-[7px] w-[7px] justify-self-end bg-background',
           ROW_START_CLASS[EXIT_ROW],
         )}
-      />
+      >
+        <span className="absolute top-0 right-0 h-1 w-[3px] rounded-b-sm bg-so-exit" />
+        <span className="absolute right-0 bottom-0 h-1 w-[3px] rounded-t-sm bg-so-exit" />
+        <ChevronRight
+          strokeWidth={3}
+          className="absolute top-1/2 left-full size-4 -translate-y-1/2 text-so-exit"
+        />
+      </span>
       {blocks.map((block, index) => {
         const target = index === 0
         return (
