@@ -88,14 +88,9 @@ export function finishDeal({
     .map((game) => game.elapsedMs)
   const status = won ? DEAL_STATUS.WON : DEAL_STATUS.LOST
   return {
-    games: trimSteps({
-      games: games.map((game) =>
-        game.id === id ? { ...game, status, finishedAt: now } : game,
-      ),
-      groupOf: (game) =>
-        `${isDailyDeal(game.dealId) ? 'daily' : 'level'}_${game.drawMode}_${game.order}`,
-      strip: (game) => ({ ...game, moves: '' }),
-    }),
+    games: games.map((game) =>
+      game.id === id ? { ...game, status, finishedAt: now } : game,
+    ),
     newBest:
       won &&
       finished !== undefined &&
@@ -135,6 +130,15 @@ export function startDeal({
     finishedAt: null,
   }
   return { games: [...kept, game], game }
+}
+
+export function trimDealSteps(games: SavedDeal[]): SavedDeal[] {
+  return trimSteps({
+    games,
+    groupOf: (game) =>
+      `${isDailyDeal(game.dealId) ? 'daily' : 'level'}_${game.drawMode}_${game.order}`,
+    strip: (game) => ({ ...game, moves: '' }),
+  })
 }
 
 function slotOf(dealId: string): string {

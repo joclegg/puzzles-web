@@ -82,14 +82,9 @@ export function finishSudoku({
   patch: Partial<SavedSudoku>
   now: number
 }): { games: SavedSudoku[]; newBest: boolean } {
-  const updated = trimSteps({
-    games: games.map((game) =>
-      game.id === id ? { ...game, ...patch, status, finishedAt: now } : game,
-    ),
-    groupOf: (game) =>
-      `${game.custom}_${parseDailyId(game.puzzleId) !== null}_${game.mode}_${game.difficulty}`,
-    strip: (game) => ({ ...game, moves: '' }),
-  })
+  const updated = games.map((game) =>
+    game.id === id ? { ...game, ...patch, status, finishedAt: now } : game,
+  )
   const finished = updated.find((game) => game.id === id)
   if (
     finished === undefined ||
@@ -189,6 +184,15 @@ export function sudokuTitle(
 
 export function toStoredSettings(settings: SudokuSettings): SudokuSettings {
   return { ...settings, ...modeAssists(settings.classic) }
+}
+
+export function trimSudokuSteps(games: SavedSudoku[]): SavedSudoku[] {
+  return trimSteps({
+    games,
+    groupOf: (game) =>
+      `${game.custom}_${parseDailyId(game.puzzleId) !== null}_${game.mode}_${game.difficulty}`,
+    strip: (game) => ({ ...game, moves: '' }),
+  })
 }
 
 function modeAssists(mode: ModeSettings): Assists {

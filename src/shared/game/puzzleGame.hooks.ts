@@ -106,8 +106,8 @@ export function usePuzzleGames({
   route: GameRoute
   strip?: (game: SavedPuzzle) => SavedPuzzle
 }) {
-  function trim(all: SavedPuzzle[]) {
-    return trimPuzzleSteps({ games: all, strip })
+  function trimLater() {
+    setTimeout(() => setGames((all) => trimPuzzleSteps({ games: all, strip })))
   }
   const [games, setGames] = useStoredState<SavedPuzzle[]>({
     key,
@@ -169,14 +169,16 @@ export function usePuzzleGames({
       mistakes,
       now: Date.now(),
     })
-    setGames(() => trim(finished.games))
+    setGames(() => finished.games)
+    trimLater()
     return finished.newBest
   }
 
   function reveal({ id, elapsedMs }: { id: string; elapsedMs: number }) {
     setGames((all) =>
-      trim(revealPuzzle({ games: all, id, elapsedMs, now: Date.now() })),
+      revealPuzzle({ games: all, id, elapsedMs, now: Date.now() }),
     )
+    trimLater()
   }
 
   return {

@@ -18,6 +18,7 @@ import {
 } from '@/games/sudoku/engine/sudokuSaves.constants'
 import {
   finishSudoku,
+  trimSudokuSteps,
   playedIds,
   startSudoku,
 } from '@/games/sudoku/engine/sudokuSaves.functions'
@@ -129,6 +130,7 @@ export function useSudokuGames() {
   }): boolean {
     const result = finishSudoku({ games, id, status, patch, now: Date.now() })
     setGames(() => result.games)
+    setTimeout(() => setGames((all) => trimSudokuSteps(all)))
     return result.newBest
   }
 
