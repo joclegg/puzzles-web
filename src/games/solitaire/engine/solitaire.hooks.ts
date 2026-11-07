@@ -28,6 +28,7 @@ import {
 } from '@/games/solitaire/engine/solitaireSaves.constants'
 import {
   finishDeal,
+  trimDealSteps,
   startDeal,
 } from '@/games/solitaire/engine/solitaireSaves.functions'
 import type {
@@ -141,6 +142,7 @@ export function useSolitaireGames() {
       now: Date.now(),
     })
     setGames(() => result.games)
+    setTimeout(() => setGames((all) => trimDealSteps(all)))
     return result.newBest
   }
 

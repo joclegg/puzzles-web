@@ -1,3 +1,4 @@
+import { trimSteps } from '@/shared/game/savedSteps.functions'
 import type { DailyResult } from '@/shared/game/dailyMedal.types'
 import { formatDayMonth } from '@/shared/lib/format.functions'
 import {
@@ -129,6 +130,15 @@ export function startDeal({
     finishedAt: null,
   }
   return { games: [...kept, game], game }
+}
+
+export function trimDealSteps(games: SavedDeal[]): SavedDeal[] {
+  return trimSteps({
+    games,
+    groupOf: (game) =>
+      `${isDailyDeal(game.dealId) ? 'daily' : 'level'}_${game.drawMode}_${game.order}`,
+    strip: (game) => ({ ...game, moves: '' }),
+  })
 }
 
 function slotOf(dealId: string): string {

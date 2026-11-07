@@ -1,3 +1,4 @@
+import { trimSteps } from '@/shared/game/savedSteps.functions'
 import type { Assists } from '@/shared/game/assists.types'
 import type { DailyResult } from '@/shared/game/dailyMedal.types'
 import { formatDayMonth } from '@/shared/lib/format.functions'
@@ -183,6 +184,15 @@ export function sudokuTitle(
 
 export function toStoredSettings(settings: SudokuSettings): SudokuSettings {
   return { ...settings, ...modeAssists(settings.classic) }
+}
+
+export function trimSudokuSteps(games: SavedSudoku[]): SavedSudoku[] {
+  return trimSteps({
+    games,
+    groupOf: (game) =>
+      `${game.custom}_${parseDailyId(game.puzzleId) !== null}_${game.mode}_${game.difficulty}`,
+    strip: (game) => ({ ...game, moves: '' }),
+  })
 }
 
 function modeAssists(mode: ModeSettings): Assists {

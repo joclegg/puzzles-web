@@ -29,16 +29,25 @@ export function levelStats(games: SavedPuzzle[]): LevelStats[] {
       played: finished.length,
       solved: solved.length,
       atPar: solved.filter(
-        (game) =>
-          decodeMoves(game.changes).length <= decodePuzzle(game.puzzle).par,
+        (game) => moveCountOf(game) <= decodePuzzle(game.puzzle).par,
       ).length,
       bestMs: times.length > 0 ? Math.min(...times) : null,
     }
   })
 }
 
+export function moveCountOf(game: SavedPuzzle): number {
+  return game.moveCount ?? decodeMoves(game.changes).length
+}
+
 export function slideOutTitle(game: { puzzleId: string; size: number }) {
   const label = LEVEL_LABEL[levelOf(game)]
   const date = dailyDate(game.puzzleId)
   return date === null ? label : `Daily · ${formatDayMonth(date)} · ${label}`
+}
+
+export function stripMoves(game: SavedPuzzle): SavedPuzzle {
+  return game.changes.length === 0
+    ? game
+    : { ...game, moveCount: moveCountOf(game), changes: '' }
 }

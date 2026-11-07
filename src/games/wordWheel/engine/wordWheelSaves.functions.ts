@@ -61,6 +61,13 @@ export function levelStats(games: SavedPuzzle[]): LevelStats[] {
   })
 }
 
+export function stripFoundWords(game: SavedPuzzle): SavedPuzzle {
+  return {
+    ...game,
+    changes: encodeProgress({ ...decodeProgress(game.changes), found: [] }),
+  }
+}
+
 export function wordWheelTitle(game: { puzzleId: string; size: number }) {
   const label = levelLabel(levelOf(game))
   const date = dailyDate(game.puzzleId)

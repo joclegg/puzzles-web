@@ -311,7 +311,6 @@ export function FiveLettersGameView({ id }: { id: string }) {
         onClose={() => setResultClosed(true)}
         actions={
           <>
-            <Button onClick={() => setResultClosed(true)}>Close</Button>
             <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onShare}>
               {copied ? 'Copied' : 'Share'}
             </Button>

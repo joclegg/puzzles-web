@@ -13,6 +13,7 @@ import type { Level } from '@/games/wordWheel/engine/wordWheel.types'
 import { dailyIndex, randomIndex } from '@/shared/bank/bank.functions'
 import { fetchBankLines, useBank } from '@/shared/bank/bank.hooks'
 import { validWords } from '@/games/wordWheel/engine/wordWheel.functions'
+import { stripFoundWords } from '@/games/wordWheel/engine/wordWheelSaves.functions'
 import { GAMES_KEY } from '@/games/wordWheel/engine/wordWheelSaves.constants'
 
 export function useValidWords(): Set<string> | null {
@@ -24,6 +25,7 @@ export function useWordWheelGames() {
   const saves = usePuzzleGames({
     key: GAMES_KEY,
     route: GAME_ROUTE.WORD_WHEEL,
+    strip: stripFoundWords,
   })
 
   async function startRandom(level: Level) {
