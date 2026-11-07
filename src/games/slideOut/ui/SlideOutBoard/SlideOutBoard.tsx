@@ -37,6 +37,7 @@ export function SlideOutBoard({
     element: HTMLButtonElement
     startX: number
     startY: number
+    delta: number
   } | null>(null)
 
   function cellSize() {
@@ -67,63 +68,59 @@ export function SlideOutBoard({
       element: event.currentTarget,
       startX: event.clientX,
       startY: event.clientY,
+      delta: 0,
     }
   }
 
-  function endDrag() {
-    const drag = dragRef.current
-    if (drag !== null) {
-      drag.element.style.transform = ''
-      dragRef.current = null
-    }
-  }
-
-  function dragDelta(event: PointerEvent<HTMLButtonElement>) {
+  function trackDrag(event: PointerEvent<HTMLButtonElement>) {
     const drag = dragRef.current
     if (drag === null || event.pointerId !== drag.pointerId) {
       return null
     }
     const block = blocks[drag.index]
-    return {
-      element: drag.element,
-      block,
-      index: drag.index,
-      delta: block.horizontal
-        ? event.clientX - drag.startX
-        : event.clientY - drag.startY,
-      range: slideRange({ blocks, index: drag.index }),
-    }
+    drag.delta = block.horizontal
+      ? event.clientX - drag.startX
+      : event.clientY - drag.startY
+    return drag
   }
 
   function onPointerMove(event: PointerEvent<HTMLButtonElement>) {
-    const drag = dragDelta(event)
+    const drag = trackDrag(event)
     if (drag === null) {
       return
     }
+    const block = blocks[drag.index]
     const offset = dragOffset({
-      start: blockPosition(drag.block),
+      start: blockPosition(block),
       delta: drag.delta,
       cellSize: cellSize(),
-      ...drag.range,
+      ...slideRange({ blocks, index: drag.index }),
     })
-    drag.element.style.transform = drag.block.horizontal
+    drag.element.style.transform = block.horizontal
       ? `translateX(${offset}px)`
       : `translateY(${offset}px)`
   }
 
   function onPointerUp(event: PointerEvent<HTMLButtonElement>) {
-    const drag = dragDelta(event)
-    if (drag === null) {
+    trackDrag(event)
+    endDrag(event)
+  }
+
+  function endDrag(event: PointerEvent<HTMLButtonElement>) {
+    const drag = dragRef.current
+    if (drag === null || event.pointerId !== drag.pointerId) {
       return
     }
-    endDrag()
+    drag.element.style.transform = ''
+    dragRef.current = null
+    const block = blocks[drag.index]
     const position = dragPosition({
-      start: blockPosition(drag.block),
+      start: blockPosition(block),
       delta: drag.delta,
       cellSize: cellSize(),
-      ...drag.range,
+      ...slideRange({ blocks, index: drag.index }),
     })
-    if (position !== blockPosition(drag.block)) {
+    if (position !== blockPosition(block)) {
       onSlide({ block: drag.index, position })
     }
   }
@@ -195,19 +192,11 @@ export function SlideOutBoard({
             onPointerDown={(event) => onPointerDown({ event, index })}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
-            onPointerCancel={(event) => {
-              if (event.pointerId === dragRef.current?.pointerId) {
-                endDrag()
-              }
-            }}
-            onLostPointerCapture={(event) => {
-              if (event.pointerId === dragRef.current?.pointerId) {
-                endDrag()
-              }
-            }}
+            onPointerCancel={endDrag}
+            onLostPointerCapture={endDrag}
             onKeyDown={(event) => onKeyDown({ event, index })}
             className={cn(
-              'z-10 m-0.5 cursor-grab rounded-lg border-b-4 outline-none focus-visible:ring-3 focus-visible:ring-ring',
+              'z-10 m-0.5 cursor-grab touch-none rounded-lg border-b-4 outline-none select-none [-webkit-touch-callout:none] focus-visible:ring-3 focus-visible:ring-ring',
               ROW_START_CLASS[block.row],
               COL_START_CLASS[block.col],
               block.horizontal
