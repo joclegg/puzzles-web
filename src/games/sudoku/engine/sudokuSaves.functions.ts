@@ -87,9 +87,7 @@ export function finishSudoku({
       game.id === id ? { ...game, ...patch, status, finishedAt: now } : game,
     ),
     groupOf: (game) =>
-      game.custom
-        ? 'custom'
-        : `${parseDailyId(game.puzzleId) !== null ? 'daily' : 'level'}_${game.mode}_${game.difficulty}`,
+      `${game.custom}_${parseDailyId(game.puzzleId) !== null}_${game.mode}_${game.difficulty}`,
     strip: (game) => ({ ...game, moves: '' }),
   })
   const finished = updated.find((game) => game.id === id)
