@@ -33,6 +33,8 @@ export function SlideOutBoard({
   const boardRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{
     index: number
+    pointerId: number
+    element: HTMLButtonElement
     startX: number
     startY: number
   } | null>(null)
@@ -55,17 +57,35 @@ export function SlideOutBoard({
     event: PointerEvent<HTMLButtonElement>
     index: number
   }) {
+    if (dragRef.current !== null || event.button !== 0) {
+      return
+    }
     event.currentTarget.setPointerCapture(event.pointerId)
-    dragRef.current = { index, startX: event.clientX, startY: event.clientY }
+    dragRef.current = {
+      index,
+      pointerId: event.pointerId,
+      element: event.currentTarget,
+      startX: event.clientX,
+      startY: event.clientY,
+    }
+  }
+
+  function endDrag() {
+    const drag = dragRef.current
+    if (drag !== null) {
+      drag.element.style.transform = ''
+      dragRef.current = null
+    }
   }
 
   function dragDelta(event: PointerEvent<HTMLButtonElement>) {
     const drag = dragRef.current
-    if (drag === null) {
+    if (drag === null || event.pointerId !== drag.pointerId) {
       return null
     }
     const block = blocks[drag.index]
     return {
+      element: drag.element,
       block,
       index: drag.index,
       delta: block.horizontal
@@ -86,18 +106,17 @@ export function SlideOutBoard({
       cellSize: cellSize(),
       ...drag.range,
     })
-    event.currentTarget.style.transform = drag.block.horizontal
+    drag.element.style.transform = drag.block.horizontal
       ? `translateX(${offset}px)`
       : `translateY(${offset}px)`
   }
 
   function onPointerUp(event: PointerEvent<HTMLButtonElement>) {
     const drag = dragDelta(event)
-    event.currentTarget.style.transform = ''
-    dragRef.current = null
     if (drag === null) {
       return
     }
+    endDrag()
     const position = dragPosition({
       start: blockPosition(drag.block),
       delta: drag.delta,
@@ -177,8 +196,14 @@ export function SlideOutBoard({
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             onPointerCancel={(event) => {
-              event.currentTarget.style.transform = ''
-              dragRef.current = null
+              if (event.pointerId === dragRef.current?.pointerId) {
+                endDrag()
+              }
+            }}
+            onLostPointerCapture={(event) => {
+              if (event.pointerId === dragRef.current?.pointerId) {
+                endDrag()
+              }
             }}
             onKeyDown={(event) => onKeyDown({ event, index })}
             className={cn(
