@@ -16,6 +16,7 @@ import { GAMES_KEY as SUDOKU_KEY } from '@/games/sudoku/engine/sudokuSaves.const
 import { GAMES_KEY as TWO_TONE_KEY } from '@/games/twoTone/engine/twoToneSaves.constants'
 import { cn } from '@/shared/lib/utils.functions'
 import { GAMES_KEY as WORD_WHEEL_KEY } from '@/games/wordWheel/engine/wordWheelSaves.constants'
+import { Button } from '@/shared/ui/Button/Button'
 import { AllGoldsBanner } from '@/shared/screens/AllGoldsBanner/AllGoldsBanner'
 import { dailiesLeft } from '@/shared/screens/DailiesLeft/DailiesLeft.functions'
 import type { DailyLeft } from '@/shared/screens/DailiesLeft/DailiesLeft.types'
@@ -153,6 +154,9 @@ export function WinDialog({
             </nav>
           )}
           <div className="mt-5 flex flex-wrap justify-end gap-2 px-5 pb-5">
+            <Button onClick={onClose} data-testid="win_view_board">
+              View board
+            </Button>
             {actions}
           </div>
         </Dialog.Popup>
