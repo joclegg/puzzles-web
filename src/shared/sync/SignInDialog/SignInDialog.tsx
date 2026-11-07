@@ -151,7 +151,8 @@ export function SignInDialog({
       }
     >
       <p>
-        Sync your games and settings with other browsers and the Android app.
+        Sync your games and settings with other browsers and the Android and
+        iPhone apps.
       </p>
       <div className="grid gap-2 pt-2">
         <ProviderButton
@@ -161,6 +162,10 @@ export function SignInDialog({
         <ProviderButton
           provider={SIGN_IN_PROVIDER.MICROSOFT}
           onClick={() => onSignIn(SIGN_IN_PROVIDER.MICROSOFT)}
+        />
+        <ProviderButton
+          provider={SIGN_IN_PROVIDER.APPLE}
+          onClick={() => onSignIn(SIGN_IN_PROVIDER.APPLE)}
         />
       </div>
       <div className="flex items-center gap-3 py-1 text-xs">
