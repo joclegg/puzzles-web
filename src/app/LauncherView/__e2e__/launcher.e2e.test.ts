@@ -12,7 +12,7 @@ test('opens a game and comes back', async ({ launcherPage }) => {
   await expect(launcherPage.heading).toBeVisible()
 })
 
-test('offers Google, Microsoft and email to sign in', async ({
+test('offers Google, Microsoft, Apple and email to sign in', async ({
   launcherPage,
 }) => {
   await launcherPage.openSignIn()

@@ -15,6 +15,7 @@ export const PUSH_DELAY_MS = 1000
 export const SIGN_IN_PROVIDER = {
   GOOGLE: 'google',
   MICROSOFT: 'azure',
+  APPLE: 'apple',
 } as const
 
 export const SIGN_IN_STEP = {

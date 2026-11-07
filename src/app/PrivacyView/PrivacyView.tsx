@@ -24,9 +24,10 @@ export function PrivacyView() {
         <section className="grid gap-2">
           <h2 className="text-base font-semibold">If you sign in</h2>
           <p>
-            Signing in is optional. You can sign in with Google, Microsoft or a
-            link sent to your email, to sync your saved games and settings
-            between devices through Supabase. When you are signed in we store:
+            Signing in is optional. You can sign in with Google, Microsoft,
+            Apple or a link sent to your email, to sync your saved games and
+            settings between devices through Supabase. When you are signed in we
+            store:
           </p>
           <ul className="list-disc pl-5">
             <li>your email address</li>

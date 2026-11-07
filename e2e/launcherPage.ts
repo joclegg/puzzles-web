@@ -74,6 +74,9 @@ export class LauncherPage {
     await expect(
       dialog.getByRole('button', { name: 'Sign in with Microsoft' }),
     ).toBeVisible()
+    await expect(
+      dialog.getByRole('button', { name: 'Sign in with Apple' }),
+    ).toBeVisible()
     await expect(dialog.getByRole('textbox', { name: 'Email' })).toBeVisible()
   }
 
