@@ -1,3 +1,4 @@
+import { trimSteps } from '@/shared/game/savedSteps.functions'
 import type { Assists } from '@/shared/game/assists.types'
 import type { DailyResult } from '@/shared/game/dailyMedal.types'
 import { formatDayMonth } from '@/shared/lib/format.functions'
@@ -81,9 +82,16 @@ export function finishSudoku({
   patch: Partial<SavedSudoku>
   now: number
 }): { games: SavedSudoku[]; newBest: boolean } {
-  const updated = games.map((game) =>
-    game.id === id ? { ...game, ...patch, status, finishedAt: now } : game,
-  )
+  const updated = trimSteps({
+    games: games.map((game) =>
+      game.id === id ? { ...game, ...patch, status, finishedAt: now } : game,
+    ),
+    groupOf: (game) =>
+      game.custom
+        ? 'custom'
+        : `${parseDailyId(game.puzzleId) !== null ? 'daily' : 'level'}_${game.mode}_${game.difficulty}`,
+    strip: (game) => ({ ...game, moves: '' }),
+  })
   const finished = updated.find((game) => game.id === id)
   if (
     finished === undefined ||

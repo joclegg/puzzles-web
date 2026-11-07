@@ -1,3 +1,4 @@
+import { trimSteps } from '@/shared/game/savedSteps.functions'
 import type { DailyResult } from '@/shared/game/dailyMedal.types'
 import {
   DAILY_PREFIX,
@@ -169,6 +170,21 @@ export function startPuzzle({
     finishedAt: null,
   }
   return { games: [...kept, game], game }
+}
+
+export function trimPuzzleSteps({
+  games,
+  strip = (game) => ({ ...game, changes: '' }),
+}: {
+  games: SavedPuzzle[]
+  strip?: (game: SavedPuzzle) => SavedPuzzle
+}): SavedPuzzle[] {
+  return trimSteps({
+    games,
+    groupOf: (game) =>
+      `${isDailyPuzzle(game.puzzleId) ? 'daily' : 'level'}_${game.size}`,
+    strip,
+  })
 }
 
 export function updatePuzzle({

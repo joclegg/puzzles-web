@@ -4,6 +4,7 @@ import { useGameTimer } from '@/shared/game/gameTimer.hooks'
 import {
   revealPuzzle,
   solvePuzzle,
+  trimPuzzleSteps,
   startPuzzle,
   updatePuzzle,
 } from '@/shared/game/puzzleSaves.functions'
@@ -99,10 +100,15 @@ export function usePuzzleGame<G>({
 export function usePuzzleGames({
   key,
   route,
+  strip,
 }: {
   key: string
   route: GameRoute
+  strip?: (game: SavedPuzzle) => SavedPuzzle
 }) {
+  function trim(all: SavedPuzzle[]) {
+    return trimPuzzleSteps({ games: all, strip })
+  }
   const [games, setGames] = useStoredState<SavedPuzzle[]>({
     key,
     fallback: [],
@@ -163,13 +169,13 @@ export function usePuzzleGames({
       mistakes,
       now: Date.now(),
     })
-    setGames(() => finished.games)
+    setGames(() => trim(finished.games))
     return finished.newBest
   }
 
   function reveal({ id, elapsedMs }: { id: string; elapsedMs: number }) {
     setGames((all) =>
-      revealPuzzle({ games: all, id, elapsedMs, now: Date.now() }),
+      trim(revealPuzzle({ games: all, id, elapsedMs, now: Date.now() })),
     )
   }
 

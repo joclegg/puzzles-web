@@ -1,3 +1,4 @@
+import { trimSteps } from '@/shared/game/savedSteps.functions'
 import type { DailyResult } from '@/shared/game/dailyMedal.types'
 import { formatDayMonth } from '@/shared/lib/format.functions'
 import {
@@ -87,9 +88,14 @@ export function finishDeal({
     .map((game) => game.elapsedMs)
   const status = won ? DEAL_STATUS.WON : DEAL_STATUS.LOST
   return {
-    games: games.map((game) =>
-      game.id === id ? { ...game, status, finishedAt: now } : game,
-    ),
+    games: trimSteps({
+      games: games.map((game) =>
+        game.id === id ? { ...game, status, finishedAt: now } : game,
+      ),
+      groupOf: (game) =>
+        `${isDailyDeal(game.dealId) ? 'daily' : 'level'}_${game.drawMode}_${game.order}`,
+      strip: (game) => ({ ...game, moves: '' }),
+    }),
     newBest:
       won &&
       finished !== undefined &&

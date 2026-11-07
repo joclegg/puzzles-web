@@ -1,3 +1,4 @@
+import { stripMoves } from '@/games/slideOut/engine/slideOutSaves.functions'
 import { DAILY_PREFIX } from '@/shared/game/puzzleSaves.constants'
 import { usePuzzleGames } from '@/shared/game/puzzleGame.hooks'
 import { newSeed } from '@/shared/lib/random.functions'
@@ -9,7 +10,11 @@ import { fetchBankLines } from '@/shared/bank/bank.hooks'
 import { GAMES_KEY } from '@/games/slideOut/engine/slideOutSaves.constants'
 
 export function useSlideOutGames() {
-  const saves = usePuzzleGames({ key: GAMES_KEY, route: GAME_ROUTE.SLIDE_OUT })
+  const saves = usePuzzleGames({
+    key: GAMES_KEY,
+    route: GAME_ROUTE.SLIDE_OUT,
+    strip: stripMoves,
+  })
 
   async function startRandom(level: Level) {
     const lines = await fetchBankLines(`slideout/${level}.txt`)
