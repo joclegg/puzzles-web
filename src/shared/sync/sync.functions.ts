@@ -420,15 +420,15 @@ export function syncedKey(storageKey: string): SyncedKey | null {
   return null
 }
 
+function isSyncableId(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    id,
+  )
+}
+
 function normalStampKey(key: string): string {
   const slash = key.indexOf('/')
   return slash === -1
     ? key
     : key.slice(0, slash + 1) + key.slice(slash + 1).toLowerCase()
-}
-
-function isSyncableId(id: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    id,
-  )
 }
