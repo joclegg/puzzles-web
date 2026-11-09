@@ -433,3 +433,47 @@ describe('syncableOnly', () => {
     })
   })
 })
+
+describe('mixed-case ids', () => {
+  it('pushes one row per game id whatever its case', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const { savedRows } = pushRows({
+      pending: [`twoTone.games/${id}`, `twoTone.games/${id.toUpperCase()}`],
+      stamps: {},
+      readGames: () => [{ id: id.toUpperCase(), status: 'solved' }],
+      readSettings: () => ({}),
+      now: () => 0,
+    })
+    expect(savedRows).toHaveLength(1)
+    expect(savedRows[0]).toMatchObject({ id, deleted: false })
+  })
+
+  it('merges a pulled row into the local entry with an upper-case id', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const merged = mergeGames({
+      game: 'twoTone',
+      games: [{ id: id.toUpperCase(), status: 'inProgress' }],
+      rows: [
+        {
+          game: 'twoTone',
+          id,
+          data: { id, status: 'solved' },
+          updated_at: '2026-11-09T00:00:00Z',
+          deleted: false,
+        },
+      ],
+      stamps: {},
+    })
+    expect(merged.games).toHaveLength(1)
+  })
+
+  it('folds upper-case pending keys into lower case', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const kept = syncableOnly({
+      pending: [`twoTone.games/${id}`, `twoTone.games/${id.toUpperCase()}`],
+      stamps: { [`twoTone.games/${id.toUpperCase()}`]: 5 },
+    })
+    expect(kept.pending).toEqual([`twoTone.games/${id}`])
+    expect(kept.stamps).toEqual({ [`twoTone.games/${id}`]: 5 })
+  })
+})
