@@ -9,6 +9,7 @@ import {
   entryStampKey,
   isEmailAddress,
   keysetAfter,
+  isFixtureEntry,
   mergeGames,
   mergePulled,
   mergeSettings,
@@ -475,5 +476,49 @@ describe('mixed-case ids', () => {
     })
     expect(kept.pending).toEqual([`twoTone.games/${id}`])
     expect(kept.stamps).toEqual({ [`twoTone.games/${id}`]: 5 })
+  })
+})
+
+describe('fixture puzzles', () => {
+  it('recognises fixture puzzle ids', () => {
+    expect(
+      isFixtureEntry({ puzzleId: 'fixture_two_tone_duplicate_line' }),
+    ).toBe(true)
+    expect(isFixtureEntry({ puzzleId: 'fixture:killer_one_cage' })).toBe(true)
+    expect(isFixtureEntry({ puzzleId: 'daily_2026-11-09_4' })).toBe(false)
+    expect(isFixtureEntry({})).toBe(false)
+  })
+
+  it('does not push fixture games', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const { savedRows } = pushRows({
+      pending: [`twoTone.games/${id}`],
+      stamps: {},
+      readGames: () => [
+        { id, status: 'solved', puzzleId: 'fixture_two_tone' } as never,
+      ],
+      readSettings: () => ({}),
+      now: () => 0,
+    })
+    expect(savedRows).toEqual([])
+  })
+
+  it('ignores pulled fixture games', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const merged = mergeGames({
+      game: 'twoTone',
+      games: [],
+      rows: [
+        {
+          game: 'twoTone',
+          id,
+          data: { id, status: 'solved', puzzleId: 'fixture_two_tone' },
+          updated_at: '2026-11-09T00:00:00Z',
+          deleted: false,
+        },
+      ],
+      stamps: {},
+    })
+    expect(merged.games).toEqual([])
   })
 })

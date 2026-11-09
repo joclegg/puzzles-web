@@ -65,6 +65,16 @@ export function isEmailAddress(input: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim())
 }
 
+export function isFixtureEntry(data: unknown): boolean {
+  if (typeof data !== 'object' || data === null) return false
+  const record = data as Record<string, unknown>
+  return ['puzzleId', 'wordId', 'dealId'].some(
+    (key) =>
+      typeof record[key] === 'string' &&
+      (record[key] as string).startsWith('fixture'),
+  )
+}
+
 export function isProgressOnly({
   before,
   after,
@@ -130,6 +140,7 @@ export function mergeGames({
     const remoteMs = Date.parse(row.updated_at)
     if (remoteMs <= (nextStamps[key] ?? -1)) continue
     nextStamps[key] = remoteMs
+    if (isFixtureEntry(row.data)) continue
     if (row.deleted) {
       changed = byId.delete(rowId) || changed
     } else {
@@ -306,6 +317,7 @@ export function pushRows({
       const entry = readGames(`${game}.${SYNC_KIND.GAMES}`).find(
         (it) => it.id.toLowerCase() === id.toLowerCase(),
       )
+      if (entry !== undefined && isFixtureEntry(entry)) continue
       savedRows.push({
         game,
         id: id.toLowerCase(),
