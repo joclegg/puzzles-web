@@ -58,11 +58,21 @@ export async function deleteAccountThenSignOut({
 }
 
 export function entryStampKey({ game, id }: { game: string; id: string }) {
-  return `${game}.${SYNC_KIND.GAMES}/${id}`
+  return `${game}.${SYNC_KIND.GAMES}/${id.toLowerCase()}`
 }
 
 export function isEmailAddress(input: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim())
+}
+
+export function isFixtureEntry(data: unknown): boolean {
+  if (typeof data !== 'object' || data === null) return false
+  const record = data as Record<string, unknown>
+  return ['puzzleId', 'wordId', 'dealId'].some(
+    (key) =>
+      typeof record[key] === 'string' &&
+      (record[key] as string).startsWith('fixture'),
+  )
 }
 
 export function isProgressOnly({
@@ -121,18 +131,20 @@ export function mergeGames({
   changed: boolean
   unstamped: string[]
 } {
-  const byId = new Map(games.map((entry) => [entry.id, entry]))
+  const byId = new Map(games.map((entry) => [entry.id.toLowerCase(), entry]))
   const nextStamps = { ...stamps }
   let changed = false
   for (const row of rows.filter((it) => it.game === game)) {
-    const key = entryStampKey({ game, id: row.id })
+    const rowId = row.id.toLowerCase()
+    const key = entryStampKey({ game, id: rowId })
     const remoteMs = Date.parse(row.updated_at)
     if (remoteMs <= (nextStamps[key] ?? -1)) continue
     nextStamps[key] = remoteMs
+    if (isFixtureEntry(row.data)) continue
     if (row.deleted) {
-      changed = byId.delete(row.id) || changed
+      changed = byId.delete(rowId) || changed
     } else {
-      byId.set(row.id, row.data as SyncedEntry)
+      byId.set(rowId, row.data as SyncedEntry)
       changed = true
     }
   }
@@ -294,16 +306,21 @@ export function pushRows({
 }): { savedRows: SavedGameRow[]; settingsRows: SettingsRow[] } {
   const savedRows: SavedGameRow[] = []
   const settingsRows: SettingsRow[] = []
+  const seen = new Set<string>()
   for (const key of pending) {
     const { game, kind, id } = parseStampKey(key)
+    const rowKey = `${game}/${kind}/${id?.toLowerCase() ?? ''}`
+    if (seen.has(rowKey)) continue
+    seen.add(rowKey)
     const updatedAt = new Date(stamps[key] ?? now()).toISOString()
     if (kind === SYNC_KIND.GAMES && id !== null) {
       const entry = readGames(`${game}.${SYNC_KIND.GAMES}`).find(
-        (it) => it.id === id,
+        (it) => it.id.toLowerCase() === id.toLowerCase(),
       )
+      if (entry !== undefined && isFixtureEntry(entry)) continue
       savedRows.push({
         game,
-        id,
+        id: id.toLowerCase(),
         data: entry ?? {},
         updated_at: updatedAt,
         deleted: entry === undefined,
@@ -394,11 +411,15 @@ export function syncableOnly({
   pending: string[]
   stamps: Record<string, number>
 }): { pending: string[]; stamps: Record<string, number> } {
+  const nextStamps: Record<string, number> = {}
+  for (const [key, ms] of Object.entries(stamps)) {
+    if (!isSyncableKey(key)) continue
+    const normal = normalStampKey(key)
+    nextStamps[normal] = Math.max(ms, nextStamps[normal] ?? ms)
+  }
   return {
-    pending: pending.filter(isSyncableKey),
-    stamps: Object.fromEntries(
-      Object.entries(stamps).filter(([key]) => isSyncableKey(key)),
-    ),
+    pending: [...new Set(pending.filter(isSyncableKey).map(normalStampKey))],
+    stamps: nextStamps,
   }
 }
 
@@ -415,4 +436,11 @@ function isSyncableId(id: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
     id,
   )
+}
+
+function normalStampKey(key: string): string {
+  const slash = key.indexOf('/')
+  return slash === -1
+    ? key
+    : key.slice(0, slash + 1) + key.slice(slash + 1).toLowerCase()
 }

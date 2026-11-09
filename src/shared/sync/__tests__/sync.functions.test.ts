@@ -9,6 +9,7 @@ import {
   entryStampKey,
   isEmailAddress,
   keysetAfter,
+  isFixtureEntry,
   mergeGames,
   mergePulled,
   mergeSettings,
@@ -431,5 +432,93 @@ describe('syncableOnly', () => {
       pending: [`kakuro.games/${uuid}`, 'kakuro.settings'],
       stamps: { [`kakuro.games/${uuid}`]: 1 },
     })
+  })
+})
+
+describe('mixed-case ids', () => {
+  it('pushes one row per game id whatever its case', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const { savedRows } = pushRows({
+      pending: [`twoTone.games/${id}`, `twoTone.games/${id.toUpperCase()}`],
+      stamps: {},
+      readGames: () => [{ id: id.toUpperCase(), status: 'solved' }],
+      readSettings: () => ({}),
+      now: () => 0,
+    })
+    expect(savedRows).toHaveLength(1)
+    expect(savedRows[0]).toMatchObject({ id, deleted: false })
+  })
+
+  it('merges a pulled row into the local entry with an upper-case id', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const merged = mergeGames({
+      game: 'twoTone',
+      games: [{ id: id.toUpperCase(), status: 'inProgress' }],
+      rows: [
+        {
+          game: 'twoTone',
+          id,
+          data: { id, status: 'solved' },
+          updated_at: '2026-11-09T00:00:00Z',
+          deleted: false,
+        },
+      ],
+      stamps: {},
+    })
+    expect(merged.games).toHaveLength(1)
+  })
+
+  it('folds upper-case pending keys into lower case', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const kept = syncableOnly({
+      pending: [`twoTone.games/${id}`, `twoTone.games/${id.toUpperCase()}`],
+      stamps: { [`twoTone.games/${id.toUpperCase()}`]: 5 },
+    })
+    expect(kept.pending).toEqual([`twoTone.games/${id}`])
+    expect(kept.stamps).toEqual({ [`twoTone.games/${id}`]: 5 })
+  })
+})
+
+describe('fixture puzzles', () => {
+  it('recognises fixture puzzle ids', () => {
+    expect(
+      isFixtureEntry({ puzzleId: 'fixture_two_tone_duplicate_line' }),
+    ).toBe(true)
+    expect(isFixtureEntry({ puzzleId: 'fixture:killer_one_cage' })).toBe(true)
+    expect(isFixtureEntry({ puzzleId: 'daily_2026-11-09_4' })).toBe(false)
+    expect(isFixtureEntry({})).toBe(false)
+  })
+
+  it('does not push fixture games', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const { savedRows } = pushRows({
+      pending: [`twoTone.games/${id}`],
+      stamps: {},
+      readGames: () => [
+        { id, status: 'solved', puzzleId: 'fixture_two_tone' } as never,
+      ],
+      readSettings: () => ({}),
+      now: () => 0,
+    })
+    expect(savedRows).toEqual([])
+  })
+
+  it('ignores pulled fixture games', () => {
+    const id = '996d4266-219f-4cd8-925c-cb58b37b7d52'
+    const merged = mergeGames({
+      game: 'twoTone',
+      games: [],
+      rows: [
+        {
+          game: 'twoTone',
+          id,
+          data: { id, status: 'solved', puzzleId: 'fixture_two_tone' },
+          updated_at: '2026-11-09T00:00:00Z',
+          deleted: false,
+        },
+      ],
+      stamps: {},
+    })
+    expect(merged.games).toEqual([])
   })
 })
