@@ -1,6 +1,6 @@
 # Puzzles
 
-Eight offline puzzle games for the browser, served at https://joclegg.github.io/puzzles-web/. The same games ship as the Android and iOS Puzzles apps, and all three behave alike.
+Nine offline puzzle games for the browser, served at https://joclegg.github.io/puzzles-web/. The same games ship as the Android and iOS Puzzles apps, and all three behave alike.
 
 - **Sudoku**: classic and killer, from a 6x6 Fast level to Evil, graded by the solving techniques a puzzle needs. Notes, undo and redo, mistake checking, a daily puzzle with medals, best times and history, and custom puzzle entry.
 - **Solitaire**: Klondike, Draw 1 or Draw 3, with an optional reverse mode. One tap to move, unlimited undo, winnable deals, a daily deal, stats and history.
@@ -10,6 +10,7 @@ Eight offline puzzle games for the browser, served at https://joclegg.github.io/
 - **Kakuro**: cross sums from 6x6 to 12x12, with notes, an optional sum helper and a daily puzzle per size.
 - **Slide Out**: slide the blocks to free the red one. Beginner to Expert, graded by the fewest moves, with par, hints and undo.
 - **Word Wheel**: swipe the letters on the wheel to fill a small crossword. Bonus words, shuffle and letter hints.
+- **Crossword**: British quick crosswords, Small, Medium and Large, typed with your own keyboard. A daily puzzle per size, optional mistake marking and reveals.
 
 No ads, and no account needed: progress stays in your browser. Sign in with Google, Microsoft or email on the launcher to sync your games and settings with other browsers and the mobile apps. Puzzle banks load from [puzzles-data](https://github.com/joclegg/puzzles-data); the only other call out is Five Letters' Daily puzzle 2, which fetches that day's word from the Puzzles daily word service.
 
@@ -44,3 +45,5 @@ GitHub Actions builds and tests every pull request, and deploys `main` to GitHub
 ## Credits
 
 Word Wheel's word lists come from 12dicts by Alan Beale (public domain), with frequency data derived from AGID, Copyright 2000 by Kevin Atkinson. See [the notice](https://github.com/joclegg/puzzles-data/blob/main/wordwheel/NOTICE.md).
+
+The crossword answers also come from 12dicts; the clues were written by Claude. See [the notice](https://github.com/joclegg/puzzles-data/blob/main/crossword/NOTICE.md).

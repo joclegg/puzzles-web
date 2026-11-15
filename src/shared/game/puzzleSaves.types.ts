@@ -14,6 +14,7 @@ export interface SavedPuzzle {
   size: number
   puzzle: string
   changes: string
+  entries?: string
   moveCount?: number
   elapsedMs: number
   hints: number

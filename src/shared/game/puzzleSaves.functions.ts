@@ -54,17 +54,24 @@ export function revealPuzzle({
   games,
   id,
   elapsedMs,
+  entries,
   now,
 }: {
   games: SavedPuzzle[]
   id: string
   elapsedMs: number
+  entries?: string
   now: number
 }): SavedPuzzle[] {
   return updatePuzzle({
     games,
     id,
-    patch: { elapsedMs, status: PUZZLE_STATUS.REVEALED, finishedAt: now },
+    patch: {
+      elapsedMs,
+      ...(entries === undefined ? {} : { entries }),
+      status: PUZZLE_STATUS.REVEALED,
+      finishedAt: now,
+    },
   })
 }
 
@@ -100,6 +107,7 @@ export function solvePuzzle({
   id,
   elapsedMs,
   changes,
+  entries,
   hints,
   mistakes = 0,
   now,
@@ -108,6 +116,7 @@ export function solvePuzzle({
   id: string
   elapsedMs: number
   changes: string
+  entries?: string
   hints: number
   mistakes?: number
   now: number
@@ -128,6 +137,7 @@ export function solvePuzzle({
       patch: {
         elapsedMs,
         changes,
+        ...(entries === undefined ? {} : { entries }),
         hints,
         mistakes,
         status: PUZZLE_STATUS.SOLVED,

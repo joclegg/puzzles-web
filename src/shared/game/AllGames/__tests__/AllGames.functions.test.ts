@@ -20,6 +20,7 @@ const NONE: AllSaves = {
   kakuro: [],
   slideOut: [],
   wordWheel: [],
+  crossword: [],
 }
 
 const WON_DEAL = {

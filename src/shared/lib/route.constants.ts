@@ -7,6 +7,7 @@ export const GAME_ROUTE = {
   KAKURO: 'kakuro',
   SLIDE_OUT: 'slide-out',
   WORD_WHEEL: 'word-wheel',
+  CROSSWORD: 'crossword',
 } as const
 
 export const SCREEN = {

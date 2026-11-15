@@ -2,6 +2,7 @@ import { test as base } from '@playwright/test'
 
 import { LEGACY_SETTINGS } from '@/shared/storage/legacySettings.constants'
 import { AssistsPage } from '@e2e/assistsPage'
+import { CrosswordPage } from '@e2e/crosswordPage'
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { KakuroPage } from '@e2e/kakuroPage'
 import { LauncherPage } from '@e2e/launcherPage'
@@ -29,6 +30,7 @@ export const test = base.extend<{
   kakuroPage: KakuroPage
   slideOutPage: SlideOutPage
   wordWheelPage: WordWheelPage
+  crosswordPage: CrosswordPage
   solitairePage: SolitairePage
   sudokuPage: SudokuPage
   helpers: boolean
@@ -97,6 +99,11 @@ export const test = base.extend<{
     const wordWheelPage = new WordWheelPage(page)
     await wordWheelPage.open()
     await use(wordWheelPage)
+  },
+  crosswordPage: async ({ page }, use) => {
+    const crosswordPage = new CrosswordPage(page)
+    await crosswordPage.open()
+    await use(crosswordPage)
   },
   solitairePage: async ({ page }, use) => {
     const solitairePage = new SolitairePage(page)

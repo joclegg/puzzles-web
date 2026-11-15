@@ -2,7 +2,7 @@
 
 ## Structure
 
-Puzzles for the web: eight offline puzzle games (Sudoku, Solitaire, Two Tone, Sightlines, Five Letters, Kakuro, Slide Out and Word Wheel) served at https://joclegg.github.io/puzzles-web/. Vite, React with the React Compiler, strict TypeScript, Tailwind CSS on Base UI, Vitest, Playwright, ESLint and Prettier. `README.md` lists the npm scripts.
+Puzzles for the web: nine offline puzzle games (Sudoku, Solitaire, Two Tone, Sightlines, Five Letters, Kakuro, Slide Out, Word Wheel and Crossword) served at https://joclegg.github.io/puzzles-web/. Vite, React with the React Compiler, strict TypeScript, Tailwind CSS on Base UI, Vitest, Playwright, ESLint and Prettier. `README.md` lists the npm scripts.
 
 - `src/main.tsx`: entry point. `src/index.css`: Tailwind, the theme tokens and each game's colours (`--<prefix>-accent` and friends, each with a dark value).
 - `src/app/`: the shell. `AppView` is the hash router: it finds the game for `#/<game>/<screen>/<id>` in the registry and renders that game's lazy `View`. Also `LauncherView` (the game picker), `GameCard`, `GeneralSettingsView` (`#/settings`: theme and account) and `AllHistoryView`.
@@ -37,7 +37,7 @@ Rules marked (lint) are enforced by `npm run lint`.
 - MUST import from `src` using the `@/` alias (lint), and from `e2e` using the `@e2e/` alias.
 - MUST NOT write comments. (lint)
 - MUST NOT replace the `typescript` package (the TypeScript 6 API, kept only for typescript-eslint; `tsc` is TypeScript 7) until typescript-eslint supports TypeScript 7.
-- MUST keep the eight games behaving the same as in puzzles-android and puzzles-ios.
+- MUST keep the nine games behaving the same as in puzzles-android and puzzles-ios.
 - MUST NOT change `localStorage` keys, saved data formats, sync payloads, routes or `data-testid` values without the same change in the other apps.
 
 ### Files

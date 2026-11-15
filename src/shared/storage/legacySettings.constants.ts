@@ -1,4 +1,5 @@
 import { HINT_STYLE } from '@/shared/game/assists.constants'
+import { GAMES_KEY as CROSSWORD_GAMES } from '@/games/crossword/engine/crosswordSaves.constants'
 import {
   DEFAULT_SETTINGS as FIVE_LETTERS_DEFAULTS,
   GAMES_KEY as FIVE_LETTERS_GAMES,
@@ -75,6 +76,7 @@ export const GAMES_KEYS = [
   KAKURO_GAMES,
   SLIDE_OUT_GAMES,
   WORD_WHEEL_GAMES,
+  CROSSWORD_GAMES,
 ]
 
 export const LEGACY_SETTINGS: Record<string, object> = {

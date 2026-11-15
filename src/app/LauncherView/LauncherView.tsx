@@ -21,6 +21,7 @@ import { AccountButton } from '@/shared/sync/AccountButton/AccountButton'
 import { FiveLettersIcon } from '@/games/fiveLetters/ui/FiveLettersIcon/FiveLettersIcon'
 import { KakuroIcon } from '@/games/kakuro/ui/KakuroIcon/KakuroIcon'
 import { SlideOutIcon } from '@/games/slideOut/ui/SlideOutIcon/SlideOutIcon'
+import { CrosswordIcon } from '@/games/crossword/ui/CrosswordIcon/CrosswordIcon'
 import { WordWheelIcon } from '@/games/wordWheel/ui/WordWheelIcon/WordWheelIcon'
 import { SolitaireIcon } from '@/games/solitaire/ui/SolitaireIcon/SolitaireIcon'
 import { SudokuIcon } from '@/games/sudoku/ui/SudokuIcon/SudokuIcon'
@@ -158,6 +159,14 @@ export function LauncherView({
         accent={MENU_ACCENT.WORD_WHEEL}
         medal={medals[GAME_ROUTE.WORD_WHEEL]}
         icon={<WordWheelIcon />}
+      />
+      <GameCard
+        title="Crossword"
+        detail="A British quick crossword, small to large"
+        href={routeHash([GAME_ROUTE.CROSSWORD])}
+        accent={MENU_ACCENT.CROSSWORD}
+        medal={medals[GAME_ROUTE.CROSSWORD]}
+        icon={<CrosswordIcon />}
       />
     </main>
   )

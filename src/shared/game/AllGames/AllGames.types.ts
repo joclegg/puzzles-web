@@ -13,6 +13,7 @@ export interface AllSaves {
   kakuro: SavedPuzzle[]
   slideOut: SavedPuzzle[]
   wordWheel: SavedPuzzle[]
+  crossword: SavedPuzzle[]
 }
 
 export interface HistoryRow {

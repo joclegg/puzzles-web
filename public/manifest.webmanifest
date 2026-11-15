@@ -1,7 +1,7 @@
 {
   "name": "Puzzles",
   "short_name": "Puzzles",
-  "description": "Eight offline puzzle games: Sudoku, Solitaire, Two Tone, Sightlines, Five Letters, Kakuro, Slide Out and Word Wheel.",
+  "description": "Nine offline puzzle games: Sudoku, Solitaire, Two Tone, Sightlines, Five Letters, Kakuro, Slide Out, Word Wheel and Crossword.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

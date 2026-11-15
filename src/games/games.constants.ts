@@ -6,6 +6,7 @@ import { DEFINITION as FIVE_LETTERS } from '@/games/fiveLetters/definition'
 import { DEFINITION as KAKURO } from '@/games/kakuro/definition'
 import { DEFINITION as SLIDE_OUT } from '@/games/slideOut/definition'
 import { DEFINITION as WORD_WHEEL } from '@/games/wordWheel/definition'
+import { DEFINITION as CROSSWORD } from '@/games/crossword/definition'
 import type { GameDefinition } from '@/shared/game/game.types'
 
 export const GAMES: readonly GameDefinition[] = [
@@ -17,4 +18,5 @@ export const GAMES: readonly GameDefinition[] = [
   KAKURO,
   SLIDE_OUT,
   WORD_WHEEL,
+  CROSSWORD,
 ]

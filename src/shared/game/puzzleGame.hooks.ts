@@ -19,11 +19,13 @@ export function usePuzzleGame<G>({
   id,
   load,
   isSolved,
+  entriesOf,
 }: {
   saves: ReturnType<typeof usePuzzleGames>
   id: string
   load: (saved: SavedPuzzle) => G
   isSolved: (game: G) => boolean
+  entriesOf?: (game: G) => string
 }) {
   const saved = saves.games.find((game) => game.id === id)
   const [game, setGame] = useState<G | null>(() => (saved ? load(saved) : null))
@@ -49,12 +51,14 @@ export function usePuzzleGame<G>({
     if (!saved) {
       return
     }
+    const entries = entriesOf?.(next)
     if (isSolved(next)) {
       setResult({
         newBest: saves.finish({
           id: saved.id,
           elapsedMs: elapsedMs(),
           changes,
+          entries,
           hints: hints ?? 0,
           mistakes,
         }),
@@ -65,6 +69,7 @@ export function usePuzzleGame<G>({
       id: saved.id,
       patch: {
         changes,
+        ...(entries === undefined ? {} : { entries }),
         elapsedMs: elapsedMs(),
         ...(hints === undefined ? {} : { hints }),
         ...(mistakes === undefined ? {} : { mistakes }),
@@ -78,7 +83,11 @@ export function usePuzzleGame<G>({
     }
     setGame(next)
     setRevealing(false)
-    saves.reveal({ id: saved.id, elapsedMs: elapsedMs() })
+    saves.reveal({
+      id: saved.id,
+      elapsedMs: elapsedMs(),
+      entries: entriesOf?.(next),
+    })
   }
 
   return {
@@ -151,12 +160,14 @@ export function usePuzzleGames({
     id,
     elapsedMs,
     changes,
+    entries,
     hints,
     mistakes,
   }: {
     id: string
     elapsedMs: number
     changes: string
+    entries?: string
     hints: number
     mistakes?: number
   }): boolean {
@@ -165,6 +176,7 @@ export function usePuzzleGames({
       id,
       elapsedMs,
       changes,
+      entries,
       hints,
       mistakes,
       now: Date.now(),
@@ -174,9 +186,17 @@ export function usePuzzleGames({
     return finished.newBest
   }
 
-  function reveal({ id, elapsedMs }: { id: string; elapsedMs: number }) {
+  function reveal({
+    id,
+    elapsedMs,
+    entries,
+  }: {
+    id: string
+    elapsedMs: number
+    entries?: string
+  }) {
     setGames((all) =>
-      revealPuzzle({ games: all, id, elapsedMs, now: Date.now() }),
+      revealPuzzle({ games: all, id, elapsedMs, entries, now: Date.now() }),
     )
     trimLater()
   }

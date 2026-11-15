@@ -9,6 +9,7 @@ export const MENU_ACCENT = {
   KAKURO: 'kakuro',
   SLIDE_OUT: 'slideOut',
   WORD_WHEEL: 'wordWheel',
+  CROSSWORD: 'crossword',
 } as const
 
 export const MENU_ACCENT_CLASS: Record<MenuAccent, string> = {
@@ -20,4 +21,5 @@ export const MENU_ACCENT_CLASS: Record<MenuAccent, string> = {
   [MENU_ACCENT.KAKURO]: '[--game:var(--kk-accent)]',
   [MENU_ACCENT.SLIDE_OUT]: '[--game:var(--so-accent)]',
   [MENU_ACCENT.WORD_WHEEL]: '[--game:var(--ww-accent)]',
+  [MENU_ACCENT.CROSSWORD]: '[--game:var(--cw-accent)]',
 }

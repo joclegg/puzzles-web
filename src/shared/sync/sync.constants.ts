@@ -24,6 +24,7 @@ export const SIGN_IN_STEP = {
 } as const
 
 export const SYNCED_GAMES = [
+  'crossword',
   'fiveLetters',
   'kakuro',
   'sightlines',

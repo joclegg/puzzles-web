@@ -23,6 +23,7 @@ const NONE: DailySaves = {
   kakuro: [],
   slideOut: [],
   wordWheel: [],
+  crossword: [],
   sudoku: [],
   solitaire: [],
   fiveLetters: [],

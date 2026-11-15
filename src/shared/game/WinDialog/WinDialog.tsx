@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 
 import { todayIso } from '@/shared/lib/date.functions'
 import { GAMES_KEY as FIVE_LETTERS_KEY } from '@/games/fiveLetters/engine/fiveLettersSaves.constants'
+import { GAMES_KEY as CROSSWORD_KEY } from '@/games/crossword/engine/crosswordSaves.constants'
 import { GAMES_KEY as KAKURO_KEY } from '@/games/kakuro/engine/kakuroSaves.constants'
 import { SCREEN } from '@/shared/lib/route.constants'
 import { routeHash } from '@/shared/lib/route.functions'
@@ -175,5 +176,6 @@ function readSaves() {
     sudoku: readStored({ key: SUDOKU_KEY, fallback: [] }),
     solitaire: readStored({ key: SOLITAIRE_KEY, fallback: [] }),
     fiveLetters: readStored({ key: FIVE_LETTERS_KEY, fallback: [] }),
+    crossword: readStored({ key: CROSSWORD_KEY, fallback: [] }),
   }
 }
