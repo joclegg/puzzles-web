@@ -1,6 +1,12 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const DRAW_ONE_DOWN = '733151820757464953'
+
 test('deals the daily game', async ({ solitairePage }) => {
+  await solitairePage.useBank({
+    path: 'solitaire/drawOne_down.txt',
+    lines: [DRAW_ONE_DOWN],
+  })
   await solitairePage.openDaily()
 
   await expect(solitairePage.card('King of spades')).toBeVisible()
@@ -8,6 +14,10 @@ test('deals the daily game', async ({ solitairePage }) => {
 })
 
 test('draws from the stock and undoes it', async ({ solitairePage }) => {
+  await solitairePage.useBank({
+    path: 'solitaire/drawOne_down.txt',
+    lines: [DRAW_ONE_DOWN],
+  })
   await solitairePage.openDaily()
 
   await solitairePage.draw()
@@ -20,6 +30,10 @@ test('draws from the stock and undoes it', async ({ solitairePage }) => {
 test('sends a card to the best place with one tap', async ({
   solitairePage,
 }) => {
+  await solitairePage.useBank({
+    path: 'solitaire/drawOne_down.txt',
+    lines: [DRAW_ONE_DOWN],
+  })
   await solitairePage.openDaily()
 
   await solitairePage.tapCard('Ace of diamonds')
@@ -30,6 +44,10 @@ test('sends a card to the best place with one tap', async ({
 })
 
 test('keeps the game after a reload', async ({ solitairePage }) => {
+  await solitairePage.useBank({
+    path: 'solitaire/drawOne_down.txt',
+    lines: [DRAW_ONE_DOWN],
+  })
   await solitairePage.openDaily()
   await solitairePage.draw()
 

@@ -1,9 +1,40 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const SMALL =
+  '11;SIDLE#FIFTHO#O#X#O#E#YBEE#AUSTEREE###M#T#L#NRATE#RETINA##W#J#R#N##PREFAB#UGLYL#L#B#H###OAFFABLE#WOKZ#T#E#R#A#EABHOR#BAGEL'
+const CLUES = [
+  'ABHOR;Loathe',
+  'AFFABLE;Genial',
+  'AUSTERE;Severe',
+  'BAGEL;Ring-shaped roll',
+  'BEE;Honey maker',
+  'DOE;Female deer',
+  'EXAM;Test',
+  'FEELING;Sensation',
+  'FIFTH;After fourth',
+  'FOSTER;Nurture',
+  'HERB;Thyme or sage',
+  'HYENA;Laughing scavenger',
+  'JABBER;Chatter',
+  'PLAZA;Square',
+  'PREFAB;Kit-built house',
+  'RATE;Speed',
+  'RETINA;Part of the eye',
+  'SIDLE;Edge furtively',
+  'SOBER;Not drunk',
+  'TWELFTH;Ordinal after eleventh',
+  'UGLY;Unsightly',
+  'WAG;Joker',
+  'WOK;Chinese pan',
+  'YOKEL;Bumpkin',
+]
+
 test(
   'types letters along the word',
   { tag: '@desktop' },
   async ({ crosswordPage }) => {
+    await crosswordPage.useBank({ path: 'crossword/small.txt', lines: [SMALL] })
+    await crosswordPage.useBank({ path: 'crossword/clues.txt', lines: CLUES })
     await crosswordPage.openDaily('Small')
 
     await crosswordPage.typeLetters('sid')
@@ -20,6 +51,8 @@ test(
   'clears one letter per backspace, moving back',
   { tag: '@desktop' },
   async ({ crosswordPage }) => {
+    await crosswordPage.useBank({ path: 'crossword/small.txt', lines: [SMALL] })
+    await crosswordPage.useBank({ path: 'crossword/clues.txt', lines: CLUES })
     await crosswordPage.openDaily('Small')
     await crosswordPage.typeLetters('BEE')
     await crosswordPage.tapCell({ row: 3, column: 1 })
@@ -39,6 +72,8 @@ test(
   'moves to the next clue when a word is done',
   { tag: '@desktop' },
   async ({ crosswordPage }) => {
+    await crosswordPage.useBank({ path: 'crossword/small.txt', lines: [SMALL] })
+    await crosswordPage.useBank({ path: 'crossword/clues.txt', lines: CLUES })
     await crosswordPage.openDaily('Small')
 
     await crosswordPage.typeLetters('SIDLE')
@@ -52,6 +87,8 @@ test(
   'moves with the arrow keys, Tab and Space',
   { tag: '@desktop' },
   async ({ crosswordPage }) => {
+    await crosswordPage.useBank({ path: 'crossword/small.txt', lines: [SMALL] })
+    await crosswordPage.useBank({ path: 'crossword/clues.txt', lines: CLUES })
     await crosswordPage.openDaily('Small')
 
     await crosswordPage.pressKey('ArrowDown')
@@ -70,6 +107,8 @@ test(
   'types and deletes through the mobile keyboard',
   { tag: '@mobile' },
   async ({ crosswordPage }) => {
+    await crosswordPage.useBank({ path: 'crossword/small.txt', lines: [SMALL] })
+    await crosswordPage.useBank({ path: 'crossword/clues.txt', lines: CLUES })
     await crosswordPage.openDaily('Small')
     await crosswordPage.tapCell({ row: 1, column: 1 })
 

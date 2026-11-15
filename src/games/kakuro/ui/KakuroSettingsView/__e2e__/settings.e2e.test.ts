@@ -1,5 +1,7 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const BANK_6 = '6;000000001200098700015623000512000130;13'
+
 test('offers the combination order only with the sum helper on', async ({
   settingsPage,
 }) => {
@@ -15,6 +17,7 @@ test('lists combinations in decreasing order', async ({
   settingsPage,
   kakuroPage,
 }) => {
+  await kakuroPage.useBank({ path: 'kakuro/6.txt', lines: [BANK_6] })
   await settingsPage.open('kakuro')
   await settingsPage.toggle('Sum helper')
   await settingsPage.choose('Decreasing')

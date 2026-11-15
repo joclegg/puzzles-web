@@ -19,8 +19,7 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@e2e/*": ["./e2e/*"],
-      "@data/*": ["./puzzles-data/*"]
+      "@e2e/*": ["./e2e/*"]
     },
     "strict": true
   },

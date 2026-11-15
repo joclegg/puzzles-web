@@ -29,7 +29,6 @@ npm run dev
 - `npm run lint`: ESLint, including the folder and naming rules
 - `npm run format`: Prettier
 - `npm run build`: type-check and build to `dist`
-- `npm run data`: download the published puzzle banks into `puzzles-data/` for the tests
 
 ## Test
 

@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test'
+import { serveBank } from '@e2e/banks'
 
 export class CrosswordPage {
   readonly page: Page
@@ -13,6 +14,10 @@ export class CrosswordPage {
     this.input = page.getByRole('textbox', { name: 'Type letters' })
     this.clue = page.getByLabel('Current clue')
     this.dialog = page.getByRole('dialog')
+  }
+
+  async useBank({ path, lines }: { path: string; lines: string[] }) {
+    await serveBank({ page: this.page, path, lines })
   }
 
   async open() {

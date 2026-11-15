@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest'
 
-import clues from '@data/crossword/clues.txt?raw'
-import large from '@data/crossword/large.txt?raw'
-import medium from '@data/crossword/medium.txt?raw'
-import small from '@data/crossword/small.txt?raw'
 import {
   clueLabel,
   createPuzzle,
@@ -11,7 +7,43 @@ import {
   parseClues,
 } from '@/games/crossword/engine/crosswordPuzzle.functions'
 
-const CLUES = parseClues(clues)
+const SMALL =
+  '11;SIDLE#FIFTHO#O#X#O#E#YBEE#AUSTEREE###M#T#L#NRATE#RETINA##W#J#R#N##PREFAB#UGLYL#L#B#H###OAFFABLE#WOKZ#T#E#R#A#EABHOR#BAGEL'
+
+const MEDIUM =
+  '13;TRY#WEARINESSR#O#H#B#N#M#OACUTELY#FRAUDN#R#N#S#O#N##SUSPENSE#CARPP###V###J#T#EINN#EERIE#ERRR#O#R###T###SEMIT#SUITABLE##S#M#T#I#E#VALIBI#ESSENCEM#L#N#R#O#C#RPHYSICIAN#HUE'
+
+const LARGE =
+  '15;LANDLOCKED#BOILO#I#O#L#A#S#S#UWRESTLING#UTTERB#C#S#E#L#B#R#IREEF#UNDERSTANDO###D#T###T#C#LWEBSITE#SHAKILY##R#S#L#I#N#S##REISSUE#DECIMALA#E#E###E#E###EINFINITELY#IDEAN#C#T#I#I#F#A#RBRAKE#MANNEQUINO#S#R#E#E#A#N#EWHEW#FRUSTRATED'
+
+const SMALL_CLUES = parseClues(
+  [
+    'ABHOR;Loathe',
+    'AFFABLE;Genial',
+    'AUSTERE;Severe',
+    'BAGEL;Ring-shaped roll',
+    'BEE;Honey maker',
+    'DOE;Female deer',
+    'EXAM;Test',
+    'FEELING;Sensation',
+    'FIFTH;After fourth',
+    'FOSTER;Nurture',
+    'HERB;Thyme or sage',
+    'HYENA;Laughing scavenger',
+    'JABBER;Chatter',
+    'PLAZA;Square',
+    'PREFAB;Kit-built house',
+    'RATE;Speed',
+    'RETINA;Part of the eye',
+    'SIDLE;Edge furtively',
+    'SOBER;Not drunk',
+    'TWELFTH;Ordinal after eleventh',
+    'UGLY;Unsightly',
+    'WAG;Joker',
+    'WOK;Chinese pan',
+    'YOKEL;Bumpkin',
+  ].join('\n'),
+)
 
 describe('createPuzzle', () => {
   it('numbers the words in reading order, across then down', () => {
@@ -33,26 +65,21 @@ describe('createPuzzle', () => {
 
 describe('decodePuzzle', () => {
   it.each([
-    ['small', small, 11],
-    ['medium', medium, 13],
-    ['large', large, 15],
-  ])('reads the first %s grid', (_, bank, size) => {
-    const puzzle = decodePuzzle(bank.split('\n')[0])
+    ['small', SMALL, 11],
+    ['medium', MEDIUM, 13],
+    ['large', LARGE, 15],
+  ])('reads a %s grid', (_, line, size) => {
+    const puzzle = decodePuzzle(line)
 
     expect(puzzle.size).toBe(size)
     expect(puzzle.solution).toHaveLength(size * size)
     expect(puzzle.words.every((word) => word.cells.length >= 2)).toBe(true)
   })
 
-  it('finds a clue for every answer in the first grids', () => {
-    const answers = [small, medium, large].flatMap((bank) =>
-      bank
-        .split('\n')
-        .slice(0, 20)
-        .flatMap((line) => decodePuzzle(line).words.map((word) => word.answer)),
-    )
+  it('finds a clue for every answer in a grid', () => {
+    const answers = decodePuzzle(SMALL).words.map((word) => word.answer)
 
-    expect(answers.filter((answer) => !CLUES.has(answer))).toEqual([])
+    expect(answers.filter((answer) => !SMALL_CLUES.has(answer))).toEqual([])
   })
 })
 

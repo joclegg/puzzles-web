@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import answersText from '@data/words/answers.txt?raw'
-import guessesText from '@data/words/guesses.txt?raw'
 import { addDays } from '@/shared/lib/date.functions'
 import {
   MARK,
   REJECTION,
+  SHUFFLED_ANSWER_COUNT,
 } from '@/games/fiveLetters/engine/fiveLetters.constants'
 import {
   createWords,
@@ -32,10 +31,17 @@ const WORDS = createWords({
   guesses: ['adieu', 'audio', 'crate', 'react', 'stale'],
 })
 
-const REAL_WORDS = createWords({
-  answers: answersText.split('\n'),
-  guesses: guessesText.split('\n'),
-})
+const ANSWERS = Array.from({ length: SHUFFLED_ANSWER_COUNT }, (_, index) =>
+  answerWord(index),
+)
+
+const BANK_WORDS = createWords({ answers: ANSWERS, guesses: ['adieu'] })
+
+function answerWord(index: number) {
+  return [...index.toString(26).padStart(5, '0')]
+    .map((digit) => String.fromCharCode(97 + parseInt(digit, 26)))
+    .join('')
+}
 
 function enter({ game, word }: { game: FiveLettersGame; word: string }) {
   const typed = [...word].reduce(
@@ -159,42 +165,42 @@ describe('dailyWord', () => {
   it('picks a fixed word for each day', () => {
     const days = Array.from({ length: 10 }, (_, i) =>
       dailyWord({
-        words: REAL_WORDS,
+        words: BANK_WORDS,
         date: addDays({ date: '2026-10-25', days: i }),
       }),
     )
 
     expect(days).toEqual([
-      'TEMPO',
-      'OZONE',
-      'HEART',
-      'STAFF',
-      'QUEST',
-      'SETUP',
-      'SMART',
-      'WITCH',
-      'THANK',
-      'DEPOT',
+      'AABFF',
+      'AAAUL',
+      'AAAOU',
+      'AABCX',
+      'AAAWZ',
+      'AAAZW',
+      'AABBO',
+      'AABJL',
+      'AABFJ',
+      'AAAIR',
     ])
-    expect(dailyWord({ words: REAL_WORDS, date: '2026-10-22' })).toBe('AGENT')
+    expect(dailyWord({ words: BANK_WORDS, date: '2026-10-22' })).toBe('AAAAK')
   })
 
   it('keeps every daily word when an answer is appended', () => {
     const appended = createWords({
-      answers: [...answersText.split('\n'), 'zesty'],
-      guesses: guessesText.split('\n'),
+      answers: [...ANSWERS, 'zesty'],
+      guesses: ['adieu'],
     })
-    const dates = Array.from({ length: 944 }, (_, i) =>
+    const dates = Array.from({ length: SHUFFLED_ANSWER_COUNT }, (_, i) =>
       addDays({ date: '2026-10-25', days: i }),
     )
 
     expect(dates.map((date) => dailyWord({ words: appended, date }))).toEqual(
-      dates.map((date) => dailyWord({ words: REAL_WORDS, date })),
+      dates.map((date) => dailyWord({ words: BANK_WORDS, date })),
     )
     expect(
       dailyWord({
         words: appended,
-        date: addDays({ date: '2026-10-25', days: 944 }),
+        date: addDays({ date: '2026-10-25', days: SHUFFLED_ANSWER_COUNT }),
       }),
     ).toBe('ZESTY')
   })
@@ -207,9 +213,9 @@ describe('dailyWord', () => {
 describe('randomWord', () => {
   it('picks a fixed practice word for each seed', () => {
     expect([
-      randomWord({ words: REAL_WORDS, seed: 123456789012345n }),
-      randomWord({ words: REAL_WORDS, seed: -7n }),
-    ]).toEqual(['SHEEP', 'CROSS'])
+      randomWord({ words: BANK_WORDS, seed: 123456789012345n }),
+      randomWord({ words: BANK_WORDS, seed: -7n }),
+    ]).toEqual(['AABAI', 'AAAHR'])
   })
 })
 

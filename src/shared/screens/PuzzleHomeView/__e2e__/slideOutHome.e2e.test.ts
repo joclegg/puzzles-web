@@ -1,5 +1,7 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const BEGINNER = '4;212H,313H,142H,022H,402V,103H,242V,132V,542H,513H'
+
 test('shows the levels and today’s puzzles', async ({ slideOutPage }) => {
   await expect(
     slideOutPage.page.getByRole('button', { name: 'Daily Beginner' }),
@@ -7,6 +9,10 @@ test('shows the levels and today’s puzzles', async ({ slideOutPage }) => {
 })
 
 test('counts a puzzle solved at par in the stats', async ({ slideOutPage }) => {
+  await slideOutPage.useBank({
+    path: 'slideout/beginner.txt',
+    lines: [BEGINNER],
+  })
   await slideOutPage.openDaily('Beginner')
   for (const move of [
     { block: 1, steps: -1 },

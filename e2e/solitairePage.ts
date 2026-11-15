@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test'
+import { serveBank } from '@e2e/banks'
 
 const RANKS = 'A23456789TJQ'
 
@@ -17,6 +18,10 @@ export class SolitairePage {
     this.stock = page.getByRole('button', { name: /^Stock/ })
     this.waste = page.getByRole('group', { name: 'Waste' })
     this.title = page.getByRole('heading', { level: 1 })
+  }
+
+  async useBank({ path, lines }: { path: string; lines: string[] }) {
+    await serveBank({ page: this.page, path, lines })
   }
 
   async open() {
