@@ -2,6 +2,8 @@ import { test as base } from '@playwright/test'
 
 import { LEGACY_SETTINGS } from '@/shared/storage/legacySettings.constants'
 import { AssistsPage } from '@e2e/assistsPage'
+import { refuseUndeclaredBanks } from '@e2e/banks'
+import { CrosswordPage } from '@e2e/crosswordPage'
 import { FiveLettersPage } from '@e2e/fiveLettersPage'
 import { KakuroPage } from '@e2e/kakuroPage'
 import { LauncherPage } from '@e2e/launcherPage'
@@ -16,8 +18,6 @@ import { WordWheelPage } from '@e2e/wordWheelPage'
 
 const FIXED_NOW = new Date('2026-10-25T10:00:00')
 
-const DATA_URL = 'https://joclegg.github.io/puzzles-data/'
-
 export const test = base.extend<{
   assistsPage: AssistsPage
   settingsPage: SettingsPage
@@ -29,6 +29,7 @@ export const test = base.extend<{
   kakuroPage: KakuroPage
   slideOutPage: SlideOutPage
   wordWheelPage: WordWheelPage
+  crosswordPage: CrosswordPage
   solitairePage: SolitairePage
   sudokuPage: SudokuPage
   helpers: boolean
@@ -45,14 +46,13 @@ export const test = base.extend<{
         }
       }, LEGACY_SETTINGS)
     }
-    await page.route(`${DATA_URL}**`, async (route) => {
-      const file = route.request().url().slice(DATA_URL.length)
-      await route.fulfill({
-        path: `puzzles-data/${file}`,
-        headers: { 'access-control-allow-origin': '*' },
-      })
-    })
+    const refused = await refuseUndeclaredBanks(page)
     await use(page)
+    if (refused.length > 0) {
+      throw new Error(
+        `The test did not declare these banks: ${refused.join(', ')}`,
+      )
+    }
   },
   assistsPage: async ({ page }, use) => {
     await use(new AssistsPage(page))
@@ -97,6 +97,11 @@ export const test = base.extend<{
     const wordWheelPage = new WordWheelPage(page)
     await wordWheelPage.open()
     await use(wordWheelPage)
+  },
+  crosswordPage: async ({ page }, use) => {
+    const crosswordPage = new CrosswordPage(page)
+    await crosswordPage.open()
+    await use(crosswordPage)
   },
   solitairePage: async ({ page }, use) => {
     const solitairePage = new SolitairePage(page)

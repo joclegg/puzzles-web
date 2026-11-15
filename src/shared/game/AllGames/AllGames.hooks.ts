@@ -1,3 +1,4 @@
+import { GAMES_KEY as CROSSWORD_KEY } from '@/games/crossword/engine/crosswordSaves.constants'
 import { GAMES_KEY as FIVE_LETTERS_KEY } from '@/games/fiveLetters/engine/fiveLettersSaves.constants'
 import type { SavedGame } from '@/games/fiveLetters/engine/fiveLettersSaves.types'
 import { GAMES_KEY as KAKURO_KEY } from '@/games/kakuro/engine/kakuroSaves.constants'
@@ -46,6 +47,10 @@ export function useAllSaves(): AllSaves {
     key: WORD_WHEEL_KEY,
     fallback: [],
   })
+  const [crossword] = useStoredState<SavedPuzzle[]>({
+    key: CROSSWORD_KEY,
+    fallback: [],
+  })
   return {
     sudoku,
     solitaire,
@@ -55,5 +60,6 @@ export function useAllSaves(): AllSaves {
     kakuro,
     slideOut,
     wordWheel,
+    crossword,
   }
 }

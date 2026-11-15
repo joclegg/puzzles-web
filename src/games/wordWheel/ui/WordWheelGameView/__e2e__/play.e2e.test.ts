@@ -1,6 +1,14 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const FIVE = 'TOHBR;BROTH@1,2,A|BOTH@1,2,D|ROB@0,4,D|ROT@3,0,A|HOT@1,6,D'
+const VALID_WORDS = ['BROTH', 'BOTH', 'ROB', 'ROT', 'HOT', 'ORB']
+
 test('solves the daily 5-letter puzzle', async ({ wordWheelPage }) => {
+  await wordWheelPage.useBank({ path: 'wordwheel/five.txt', lines: [FIVE] })
+  await wordWheelPage.useBank({
+    path: 'wordwheel/valid.txt',
+    lines: VALID_WORDS,
+  })
   await wordWheelPage.openDaily(5)
   await wordWheelPage.expectScreenshot('daily-start')
 
@@ -12,6 +20,11 @@ test('solves the daily 5-letter puzzle', async ({ wordWheelPage }) => {
 })
 
 test('fills a word by tapping letters', async ({ wordWheelPage }) => {
+  await wordWheelPage.useBank({ path: 'wordwheel/five.txt', lines: [FIVE] })
+  await wordWheelPage.useBank({
+    path: 'wordwheel/valid.txt',
+    lines: VALID_WORDS,
+  })
   await wordWheelPage.openDaily(5)
 
   await wordWheelPage.tapWord('HOT')
@@ -24,6 +37,11 @@ test(
   'fills a word by swiping',
   { tag: '@desktop' },
   async ({ wordWheelPage }) => {
+    await wordWheelPage.useBank({ path: 'wordwheel/five.txt', lines: [FIVE] })
+    await wordWheelPage.useBank({
+      path: 'wordwheel/valid.txt',
+      lines: VALID_WORDS,
+    })
     await wordWheelPage.openDaily(5)
 
     await wordWheelPage.swipeWord('ROB')
@@ -33,6 +51,11 @@ test(
 )
 
 test('counts other real words as bonus words', async ({ wordWheelPage }) => {
+  await wordWheelPage.useBank({ path: 'wordwheel/five.txt', lines: [FIVE] })
+  await wordWheelPage.useBank({
+    path: 'wordwheel/valid.txt',
+    lines: VALID_WORDS,
+  })
   await wordWheelPage.openDaily(5)
 
   await wordWheelPage.typeWord('ORB')
@@ -41,6 +64,11 @@ test('counts other real words as bonus words', async ({ wordWheelPage }) => {
 })
 
 test('refuses words that are not real', async ({ wordWheelPage }) => {
+  await wordWheelPage.useBank({ path: 'wordwheel/five.txt', lines: [FIVE] })
+  await wordWheelPage.useBank({
+    path: 'wordwheel/valid.txt',
+    lines: VALID_WORDS,
+  })
   await wordWheelPage.openDaily(5)
 
   await wordWheelPage.typeWord('THOB')
@@ -49,6 +77,11 @@ test('refuses words that are not real', async ({ wordWheelPage }) => {
 })
 
 test('shows a letter as a hint', async ({ wordWheelPage }) => {
+  await wordWheelPage.useBank({ path: 'wordwheel/five.txt', lines: [FIVE] })
+  await wordWheelPage.useBank({
+    path: 'wordwheel/valid.txt',
+    lines: VALID_WORDS,
+  })
   await wordWheelPage.openDaily(5)
 
   await wordWheelPage.showLetter()
@@ -57,6 +90,11 @@ test('shows a letter as a hint', async ({ wordWheelPage }) => {
 })
 
 test('keeps found words after a reload', async ({ wordWheelPage }) => {
+  await wordWheelPage.useBank({ path: 'wordwheel/five.txt', lines: [FIVE] })
+  await wordWheelPage.useBank({
+    path: 'wordwheel/valid.txt',
+    lines: VALID_WORDS,
+  })
   await wordWheelPage.openDaily(5)
   await wordWheelPage.typeWord('BROTH')
 

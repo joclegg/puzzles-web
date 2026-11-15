@@ -1,3 +1,5 @@
+import { SIZES as CROSSWORD_SIZES } from '@/games/crossword/engine/crossword.constants'
+import { crosswordTitle } from '@/games/crossword/engine/crosswordSaves.functions'
 import { MEDAL } from '@/shared/game/dailyMedal.constants'
 import { dailyDays } from '@/shared/game/dailyMedal.functions'
 import type { DailyResult, Medal } from '@/shared/game/dailyMedal.types'
@@ -89,6 +91,11 @@ export function historyRows(saves: AllSaves): HistoryRow[] {
       games: saves.wordWheel,
       title: wordWheelTitle,
     }),
+    ...puzzleRows({
+      route: GAME_ROUTE.CROSSWORD,
+      games: saves.crossword,
+      title: crosswordTitle,
+    }),
   ].sort((a, b) => b.startedAt - a.startedAt)
 }
 
@@ -148,6 +155,10 @@ export function todayMedals({
     [GAME_ROUTE.WORD_WHEEL]: medal({
       results: dailyPuzzleResults(saves.wordWheel),
       total: WORD_WHEEL_LEVELS.length,
+    }),
+    [GAME_ROUTE.CROSSWORD]: medal({
+      results: dailyPuzzleResults(saves.crossword),
+      total: CROSSWORD_SIZES.length,
     }),
   }
 }

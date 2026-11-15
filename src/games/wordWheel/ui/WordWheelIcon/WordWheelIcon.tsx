@@ -1,16 +1,19 @@
 export function WordWheelIcon() {
   return (
     <span
-      className="relative block size-11 rounded-full bg-ww-wheel text-[0.6rem] font-bold text-ww-letter-text"
+      className="relative block size-11 rounded-full bg-ww-wheel text-[0.55rem] leading-none font-bold text-ww-chosen-text"
       aria-hidden
     >
-      <span className="absolute top-0.5 left-1/2 flex size-4 -translate-x-1/2 items-center justify-center rounded-full bg-ww-chosen text-ww-chosen-text">
+      <span className="absolute top-[2px] left-[15px] flex size-3.5 items-center justify-center rounded-full bg-ww-chosen">
         W
       </span>
-      <span className="absolute bottom-1 left-1 flex size-4 items-center justify-center rounded-full bg-ww-letter">
+      <span className="absolute top-[15px] left-[28px] flex size-3.5 items-center justify-center rounded-full bg-ww-chosen">
         O
       </span>
-      <span className="absolute right-1 bottom-1 flex size-4 items-center justify-center rounded-full bg-ww-letter">
+      <span className="absolute top-[28px] left-[15px] flex size-3.5 items-center justify-center rounded-full bg-ww-chosen">
+        R
+      </span>
+      <span className="absolute top-[15px] left-[2px] flex size-3.5 items-center justify-center rounded-full bg-ww-chosen">
         D
       </span>
     </span>

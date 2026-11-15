@@ -1,5 +1,7 @@
 import { GAME_STATUS } from '@/games/fiveLetters/engine/fiveLettersSaves.constants'
 import { dailyId } from '@/games/fiveLetters/engine/fiveLettersSaves.functions'
+import { SIZES as CROSSWORD_SIZES } from '@/games/crossword/engine/crossword.constants'
+import { crosswordSizeLabel } from '@/games/crossword/engine/crosswordSaves.functions'
 import { SIZES as KAKURO_SIZES } from '@/games/kakuro/engine/kakuro.constants'
 import {
   DAILY_PREFIX,
@@ -134,6 +136,15 @@ export function dailiesLeft({
       route: GAME_ROUTE.WORD_WHEEL,
       play: level,
       label: `${capitalise(level)} letters`,
+    })),
+    ...unsolvedSizes({
+      games: saves.crossword,
+      sizes: CROSSWORD_SIZES,
+      today,
+    }).map((size) => ({
+      route: GAME_ROUTE.CROSSWORD,
+      play: String(size),
+      label: crosswordSizeLabel(size),
     })),
   ]
   return all.filter((daily) => daily.route === route)

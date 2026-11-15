@@ -1,6 +1,11 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const ANSWERS = ['tempo']
+const GUESSES = ['crane', 'topic']
+
 test('plays Daily puzzle 2 as its own daily', async ({ fiveLettersPage }) => {
+  await fiveLettersPage.useBank({ path: 'words/answers.txt', lines: ANSWERS })
+  await fiveLettersPage.useBank({ path: 'words/guesses.txt', lines: GUESSES })
   await fiveLettersPage.fakeDaily2Word('geeky')
   await fiveLettersPage.openDaily2()
 

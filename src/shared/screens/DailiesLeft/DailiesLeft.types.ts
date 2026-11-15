@@ -12,6 +12,7 @@ export interface DailySaves {
   kakuro: { puzzleId: string; status: string }[]
   slideOut: { puzzleId: string; status: string }[]
   wordWheel: { puzzleId: string; status: string }[]
+  crossword: { puzzleId: string; status: string }[]
   sudoku: { puzzleId: string; status: string }[]
   solitaire: { dealId: string; status: string }[]
   fiveLetters: { wordId: string; status: string }[]

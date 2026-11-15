@@ -2,7 +2,7 @@
 
 ## Structure
 
-Puzzles for the web: eight offline puzzle games (Sudoku, Solitaire, Two Tone, Sightlines, Five Letters, Kakuro, Slide Out and Word Wheel) served at https://joclegg.github.io/puzzles-web/. Vite, React with the React Compiler, strict TypeScript, Tailwind CSS on Base UI, Vitest, Playwright, ESLint and Prettier. `README.md` lists the npm scripts.
+Puzzles for the web: nine offline puzzle games (Sudoku, Solitaire, Two Tone, Sightlines, Five Letters, Kakuro, Slide Out, Word Wheel and Crossword) served at https://joclegg.github.io/puzzles-web/. Vite, React with the React Compiler, strict TypeScript, Tailwind CSS on Base UI, Vitest, Playwright, ESLint and Prettier. `README.md` lists the npm scripts.
 
 - `src/main.tsx`: entry point. `src/index.css`: Tailwind, the theme tokens and each game's colours (`--<prefix>-accent` and friends, each with a dark value).
 - `src/app/`: the shell. `AppView` is the hash router: it finds the game for `#/<game>/<screen>/<id>` in the registry and renders that game's lazy `View`. Also `LauncherView` (the game picker), `GameCard`, `GeneralSettingsView` (`#/settings`: theme and account) and `AllHistoryView`.
@@ -21,8 +21,7 @@ Puzzles for the web: eight offline puzzle games (Sudoku, Solitaire, Two Tone, Si
   - `ui/`: generic primitives: `Button`, `AppDialog`, `MoreMenu`, `OptionGroup`, `ScreenHeader`, `BackButton`, `ThemePicker` and `ThemeToggle`.
 - Synced data: `<game>.games` (an array of saves, each with a uuid `id`) and `<game>.settings`, shared with puzzles-android and puzzles-ios. Sudoku keeps the helpers (`showHints`, `allowReveal`, `showTutorial`, `hintStyle`) in both `classic` and `killer`, and also writes Classic's values at the top level for older app versions; `fromStoredSettings` reads each mode's own value, falling back to the top level, and `toStoredSettings` writes both.
 - `__tests__/`: Vitest unit tests, beside the files they test. `src/assets/`: data used only by tests, such as `sudoku-samples/`.
-- `e2e/`: shared Playwright code: `playwrightExtensions.ts` (the `test` fixture, which pins the clock and serves bank requests from `puzzles-data/`) and one page object class per view or game, e.g. `launcherPage.ts`, `fiveLettersPage.ts`.
-- `puzzles-data/`: a gitignored copy of the published banks, downloaded by `scripts/fetchData.mjs` (`npm run data`, which runs before the unit and e2e tests). Tests import them with the `@data/` alias, e.g. `@data/slideout/easy.txt?raw`.
+- `e2e/`: shared Playwright code: `playwrightExtensions.ts` (the `test` fixture, which pins the clock and refuses any bank request the test has not declared), `banks.ts` (`serveBank`, behind each page object's `useBank`, which serves a test's own bank lines) and one page object class per view or game, e.g. `launcherPage.ts`, `fiveLettersPage.ts`.
 - `scripts/solitaireBank.mjs`: appends winnable Solitaire deal seeds to `solitaire/<drawMode>_<order>.txt` in a puzzles-data clone, e.g. `PUZZLES_DATA=../puzzles-data node scripts/solitaireBank.mjs drawThree down 1000`. Winnable deals come only from that bank (a random line, or the day's line for the daily deal), so starting a game never runs the solver.
 - `public/`: the favicons, `apple-touch-icon.png` and `manifest.webmanifest` with its icons, drawn from the Android launcher icon.
 
@@ -37,7 +36,7 @@ Rules marked (lint) are enforced by `npm run lint`.
 - MUST import from `src` using the `@/` alias (lint), and from `e2e` using the `@e2e/` alias.
 - MUST NOT write comments. (lint)
 - MUST NOT replace the `typescript` package (the TypeScript 6 API, kept only for typescript-eslint; `tsc` is TypeScript 7) until typescript-eslint supports TypeScript 7.
-- MUST keep the eight games behaving the same as in puzzles-android and puzzles-ios.
+- MUST keep the nine games behaving the same as in puzzles-android and puzzles-ios.
 - MUST NOT change `localStorage` keys, saved data formats, sync payloads, routes or `data-testid` values without the same change in the other apps.
 
 ### Files
@@ -140,6 +139,7 @@ Rules marked (lint) are enforced by `npm run lint`.
 - MUST NOT read values out and assert on them, e.g. `expect(await locator.isVisible()).toBe(true)` or `expect(await locator.textContent())`. (lint)
 - MUST NOT wait with `waitForTimeout`, `waitForSelector`, `networkidle` or sleeps; wait by asserting on the state you expect. (lint)
 - MUST pin the clock with `page.clock` (the fixture does) so daily puzzles are deterministic.
+- MUST give every test exactly the puzzles it needs, inline in the test: unit tests as constants, Playwright tests through the page object's `useBank`. MUST NOT read the published banks in tests; a bank request a Playwright test has not declared fails it.
 - MUST NOT use `force`, element handles or `page.evaluate` in tests. (lint)
 - MUST name page object assertion methods `expect<Something>` and make them await web-first assertions, so lint counts them as assertions.
 - MUST NOT use conditionals or `test.skip` in tests; tag platform-only tests with `{ tag: '@desktop' }` or `{ tag: '@mobile' }`. (lint)

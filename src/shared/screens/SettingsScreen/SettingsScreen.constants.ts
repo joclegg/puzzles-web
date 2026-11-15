@@ -46,4 +46,9 @@ export const SETTINGS_TABS: readonly {
     label: 'Word Wheel',
     accent: MENU_ACCENT.WORD_WHEEL,
   },
+  {
+    route: GAME_ROUTE.CROSSWORD,
+    label: 'Crossword',
+    accent: MENU_ACCENT.CROSSWORD,
+  },
 ]

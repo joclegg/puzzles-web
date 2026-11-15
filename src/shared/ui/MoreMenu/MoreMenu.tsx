@@ -19,6 +19,7 @@ export function MoreMenu({ items }: { items: readonly MenuItem[] }) {
               <Menu.Item
                 key={item.label}
                 onClick={item.onClick}
+                data-testid={item.testId}
                 className="cursor-default rounded-md px-3 py-2 text-sm outline-none data-highlighted:bg-muted"
               >
                 {item.label}

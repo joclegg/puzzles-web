@@ -163,12 +163,11 @@ export function WordWheelGameView({ id }: { id: string }) {
   }
 
   function enter() {
-    if (!game || chosen.length === 0) {
+    if (!game || chosen.length === 0 || validWordList === null) {
       return
     }
     const word = chosen.map((index) => game.wheel[index]).join('')
     setChosen([])
-    if (validWordList === null) return
     update(submit({ game, word, valid: validWordList }))
   }
 

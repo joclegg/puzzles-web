@@ -1,14 +1,17 @@
 export function SightlinesIcon() {
   return (
-    <span className="grid grid-cols-3 gap-0.5" aria-hidden>
-      <span className="size-3.5 rounded-full bg-sl-blue" />
-      <span className="size-3.5 rounded-full bg-sl-blue" />
-      <span className="size-3.5 rounded-full bg-sl-red" />
-      <span className="flex size-3.5 items-center justify-center rounded-full bg-sl-blue text-[0.55rem] font-bold text-white">
-        3
+    <span
+      className="grid size-11 grid-cols-2 gap-[3px] text-[0.7rem] leading-none font-bold text-sl-number"
+      aria-hidden
+    >
+      <span className="flex items-center justify-center rounded-sm bg-sl-blue">
+        2
       </span>
-      <span className="size-3.5 rounded-full bg-sl-red" />
-      <span className="size-3.5 rounded-full bg-sl-blue" />
+      <span className="rounded-sm bg-sl-red" />
+      <span className="rounded-sm bg-sl-blue" />
+      <span className="flex items-center justify-center rounded-sm bg-sl-blue">
+        1
+      </span>
     </span>
   )
 }

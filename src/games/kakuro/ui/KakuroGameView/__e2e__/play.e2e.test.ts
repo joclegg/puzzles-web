@@ -1,11 +1,14 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const BANK_6 = '6;000000001200098700015623000512000130;13'
+
 const DAILY_6 = {
   solution: '000000001200098700015623000512000130',
   givens: [13],
 }
 
 test('solves the daily 6 x 6 puzzle', async ({ kakuroPage }) => {
+  await kakuroPage.useBank({ path: 'kakuro/6.txt', lines: [BANK_6] })
   await kakuroPage.openDaily(6)
 
   await kakuroPage.solve(DAILY_6)
@@ -14,6 +17,7 @@ test('solves the daily 6 x 6 puzzle', async ({ kakuroPage }) => {
 })
 
 test('places a digit, undoes and redoes it', async ({ kakuroPage }) => {
+  await kakuroPage.useBank({ path: 'kakuro/6.txt', lines: [BANK_6] })
   await kakuroPage.openDaily(6)
 
   await kakuroPage.enter({ row: 2, column: 3, digit: 1 })
@@ -25,6 +29,7 @@ test('places a digit, undoes and redoes it', async ({ kakuroPage }) => {
 })
 
 test('shows a wrong digit', async ({ kakuroPage }) => {
+  await kakuroPage.useBank({ path: 'kakuro/6.txt', lines: [BANK_6] })
   await kakuroPage.openDaily(6)
 
   await kakuroPage.enter({ row: 2, column: 3, digit: 9 })
@@ -34,6 +39,7 @@ test('shows a wrong digit', async ({ kakuroPage }) => {
 })
 
 test('pencils in notes', async ({ kakuroPage }) => {
+  await kakuroPage.useBank({ path: 'kakuro/6.txt', lines: [BANK_6] })
   await kakuroPage.openDaily(6)
   await kakuroPage.tapCell({ row: 2, column: 3 })
 
@@ -47,6 +53,7 @@ test('pencils in notes', async ({ kakuroPage }) => {
 test('lists the sums that fit with the sum helper on', async ({
   kakuroPage,
 }) => {
+  await kakuroPage.useBank({ path: 'kakuro/6.txt', lines: [BANK_6] })
   await kakuroPage.openSettings()
   await kakuroPage.toggleSetting('Sum helper')
   await kakuroPage.back()
@@ -58,6 +65,7 @@ test('lists the sums that fit with the sum helper on', async ({
 })
 
 test('fills cells number first', async ({ kakuroPage }) => {
+  await kakuroPage.useBank({ path: 'kakuro/6.txt', lines: [BANK_6] })
   await kakuroPage.openSettings()
   await kakuroPage.chooseOption('Number first')
   await kakuroPage.back()
@@ -70,6 +78,7 @@ test('fills cells number first', async ({ kakuroPage }) => {
 })
 
 test('keeps progress after a reload', async ({ kakuroPage }) => {
+  await kakuroPage.useBank({ path: 'kakuro/6.txt', lines: [BANK_6] })
   await kakuroPage.openDaily(6)
   await kakuroPage.enter({ row: 2, column: 3, digit: 1 })
 

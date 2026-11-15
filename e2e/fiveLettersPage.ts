@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test'
+import { serveBank } from '@e2e/banks'
 
 export class FiveLettersPage {
   readonly page: Page
@@ -17,6 +18,10 @@ export class FiveLettersPage {
     this.dialog = page.getByRole('dialog')
     this.guesses = page.getByRole('grid', { name: 'Guesses' })
     this.hardModeLabel = page.getByText('Hard mode', { exact: true })
+  }
+
+  async useBank({ path, lines }: { path: string; lines: string[] }) {
+    await serveBank({ page: this.page, path, lines })
   }
 
   async open() {

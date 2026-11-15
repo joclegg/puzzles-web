@@ -1,5 +1,12 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const CLASSIC_FAST =
+  '001205025600000461164000002140406500|641235325614253461164352532146416523|'
+const CLASSIC_MEDIUM =
+  '009031057000600042050000000560970400090000020001064039000000090910006000730850100|629431857178695342354728916563972481497183625281564739846217593915346278732859164|'
+const CLASSIC_EASY =
+  '960080017000702306100603004009000050540178039010000800600307008801906000270050063|963485217458712396127693584389264751542178639716539842695347128831926475274851963|'
+
 test('shows the levels and today’s puzzle', async ({ sudokuPage }) => {
   await expect(
     sudokuPage.page.getByRole('button', { name: 'Daily Medium' }),
@@ -7,6 +14,10 @@ test('shows the levels and today’s puzzle', async ({ sudokuPage }) => {
 })
 
 test('starts a game of a level', async ({ sudokuPage }) => {
+  await sudokuPage.useBank({
+    path: 'sudoku/classic_fast.txt',
+    puzzle: CLASSIC_FAST,
+  })
   await sudokuPage.startLevel('Fast')
 
   await expect(sudokuPage.cell({ row: 6, column: 6 })).toBeVisible()
@@ -15,6 +26,10 @@ test('starts a game of a level', async ({ sudokuPage }) => {
 test('gives a bronze medal for one daily on the day', async ({
   sudokuPage,
 }) => {
+  await sudokuPage.useBank({
+    path: 'sudoku/classic_medium.txt',
+    puzzle: CLASSIC_MEDIUM,
+  })
   await sudokuPage.openDaily()
   await sudokuPage.solve({
     givens:
@@ -46,6 +61,10 @@ test('plays an entered puzzle', async ({ sudokuPage }) => {
 test('offers to resume a game of a level in progress', async ({
   sudokuPage,
 }) => {
+  await sudokuPage.useBank({
+    path: 'sudoku/classic_easy.txt',
+    puzzle: CLASSIC_EASY,
+  })
   await sudokuPage.startLevel('Easy')
   await sudokuPage.back()
   await expect(sudokuPage.levelTile('Easy')).toContainText('In progress')

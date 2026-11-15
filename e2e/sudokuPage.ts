@@ -1,4 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test'
+import { serveBank } from '@e2e/banks'
+import { BANK_SIZE } from '@/games/sudoku/engine/sudoku.constants'
 
 export class SudokuPage {
   readonly page: Page
@@ -13,6 +15,14 @@ export class SudokuPage {
     this.dialog = page.getByRole('dialog')
     this.title = page.getByRole('heading', { level: 1 })
     this.subtitle = page.getByRole('heading', { level: 1 }).locator('+ p')
+  }
+
+  async useBank({ path, puzzle }: { path: string; puzzle: string }) {
+    await serveBank({
+      page: this.page,
+      path,
+      lines: Array.from({ length: BANK_SIZE }, () => puzzle),
+    })
   }
 
   async open() {

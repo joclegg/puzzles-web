@@ -1,5 +1,7 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const BEGINNER = '4;212H,313H,142H,022H,402V,103H,242V,132V,542H,513H'
+
 const DAILY_BEGINNER = [
   { block: 1, steps: -1 },
   { block: 6, steps: 1 },
@@ -10,6 +12,10 @@ const DAILY_BEGINNER = [
 test('frees the red block in the daily beginner puzzle at par', async ({
   slideOutPage,
 }) => {
+  await slideOutPage.useBank({
+    path: 'slideout/beginner.txt',
+    lines: [BEGINNER],
+  })
   await slideOutPage.openDaily('Beginner')
 
   for (const move of DAILY_BEGINNER) {
@@ -22,6 +28,10 @@ test('frees the red block in the daily beginner puzzle at par', async ({
 test('goes back to Slide Out home, not the solved puzzle', async ({
   slideOutPage,
 }) => {
+  await slideOutPage.useBank({
+    path: 'slideout/beginner.txt',
+    lines: [BEGINNER],
+  })
   await slideOutPage.openDaily('Beginner')
   for (const move of DAILY_BEGINNER) {
     await slideOutPage.slideBy(move)
@@ -37,6 +47,10 @@ test(
   'slides a block by dragging it',
   { tag: '@desktop' },
   async ({ slideOutPage }) => {
+    await slideOutPage.useBank({
+      path: 'slideout/beginner.txt',
+      lines: [BEGINNER],
+    })
     await slideOutPage.openDaily('Beginner')
 
     await slideOutPage.dragBy({ block: 0, cells: -1 })
@@ -46,6 +60,10 @@ test(
 )
 
 test('undoes a slide', async ({ slideOutPage }) => {
+  await slideOutPage.useBank({
+    path: 'slideout/beginner.txt',
+    lines: [BEGINNER],
+  })
   await slideOutPage.openDaily('Beginner')
   await slideOutPage.slideBy({ block: 0, steps: -1 })
 
@@ -55,6 +73,10 @@ test('undoes a slide', async ({ slideOutPage }) => {
 })
 
 test('highlights the block to move as a hint', async ({ slideOutPage }) => {
+  await slideOutPage.useBank({
+    path: 'slideout/beginner.txt',
+    lines: [BEGINNER],
+  })
   await slideOutPage.openDaily('Beginner')
 
   await slideOutPage.hint()
@@ -64,6 +86,10 @@ test('highlights the block to move as a hint', async ({ slideOutPage }) => {
 })
 
 test('keeps progress after a reload', async ({ slideOutPage }) => {
+  await slideOutPage.useBank({
+    path: 'slideout/beginner.txt',
+    lines: [BEGINNER],
+  })
   await slideOutPage.openDaily('Beginner')
   await slideOutPage.slideBy({ block: 0, steps: -1 })
 

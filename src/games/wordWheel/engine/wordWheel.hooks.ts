@@ -29,7 +29,10 @@ export function useWordWheelGames() {
   })
 
   async function startRandom(level: Level) {
-    const lines = await fetchBankLines(`wordwheel/${level}.txt`)
+    const [lines] = await Promise.all([
+      fetchBankLines(`wordwheel/${level}.txt`),
+      fetchBankLines(VALID_WORDS_PATH),
+    ])
     const index = randomIndex({ count: lines.length, seed: newSeed() })
     saves.startAndOpen({
       id: `bank_${level}_${index}`,
@@ -43,7 +46,10 @@ export function useWordWheelGames() {
     if (saves.openExisting(id)) {
       return
     }
-    const lines = await fetchBankLines(`wordwheel/${level}.txt`)
+    const [lines] = await Promise.all([
+      fetchBankLines(`wordwheel/${level}.txt`),
+      fetchBankLines(VALID_WORDS_PATH),
+    ])
     const index = dailyIndex({
       count: lines.length,
       orderSeed: LEVELS.indexOf(level),

@@ -1,8 +1,13 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
+const ANSWERS = ['tempo']
+const GUESSES = ['crane', 'topic']
+
 test('solves the daily word with the on-screen keys', async ({
   fiveLettersPage,
 }) => {
+  await fiveLettersPage.useBank({ path: 'words/answers.txt', lines: ANSWERS })
+  await fiveLettersPage.useBank({ path: 'words/guesses.txt', lines: GUESSES })
   await fiveLettersPage.openDaily()
 
   await fiveLettersPage.tapWord('CRANE')
@@ -12,6 +17,8 @@ test('solves the daily word with the on-screen keys', async ({
 })
 
 test('marks the tiles of a guess', async ({ fiveLettersPage }) => {
+  await fiveLettersPage.useBank({ path: 'words/answers.txt', lines: ANSWERS })
+  await fiveLettersPage.useBank({ path: 'words/guesses.txt', lines: GUESSES })
   await fiveLettersPage.openDaily()
 
   await fiveLettersPage.typeWord('TOPIC')
@@ -29,6 +36,8 @@ test('marks the tiles of a guess', async ({ fiveLettersPage }) => {
 })
 
 test('rejects a word that is not in the list', async ({ fiveLettersPage }) => {
+  await fiveLettersPage.useBank({ path: 'words/answers.txt', lines: ANSWERS })
+  await fiveLettersPage.useBank({ path: 'words/guesses.txt', lines: GUESSES })
   await fiveLettersPage.openDaily()
 
   await fiveLettersPage.typeWord('ZZZZZ')
@@ -37,6 +46,8 @@ test('rejects a word that is not in the list', async ({ fiveLettersPage }) => {
 })
 
 test('keeps the daily progress after a reload', async ({ fiveLettersPage }) => {
+  await fiveLettersPage.useBank({ path: 'words/answers.txt', lines: ANSWERS })
+  await fiveLettersPage.useBank({ path: 'words/guesses.txt', lines: GUESSES })
   await fiveLettersPage.openDaily()
   await fiveLettersPage.typeWord('CRANE')
 
@@ -48,6 +59,8 @@ test('keeps the daily progress after a reload', async ({ fiveLettersPage }) => {
 })
 
 test('counts a win in the stats', async ({ fiveLettersPage }) => {
+  await fiveLettersPage.useBank({ path: 'words/answers.txt', lines: ANSWERS })
+  await fiveLettersPage.useBank({ path: 'words/guesses.txt', lines: GUESSES })
   await fiveLettersPage.openDaily()
   await fiveLettersPage.typeWord('TEMPO')
   await fiveLettersPage.closeDialog()
