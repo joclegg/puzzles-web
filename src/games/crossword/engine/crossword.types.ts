@@ -18,6 +18,12 @@ export interface CrosswordGame {
   jumpedFrom: Cursor | null
 }
 
+export interface CrosswordHint {
+  cell: number
+  letter: string
+  message: string
+}
+
 export interface Puzzle {
   size: number
   solution: string[]

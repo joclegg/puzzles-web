@@ -5,6 +5,7 @@ import {
 import type { CrosswordSettings } from '@/games/crossword/engine/crosswordSaves.types'
 import { GAME_ROUTE } from '@/shared/lib/route.constants'
 import { useStoredState } from '@/shared/storage/storage.hooks'
+import { AssistSettings } from '@/shared/screens/AssistSettings/AssistSettings'
 import { SettingsScreen } from '@/shared/screens/SettingsScreen/SettingsScreen'
 import { SettingRow } from '@/shared/screens/SettingRow/SettingRow'
 
@@ -34,8 +35,13 @@ export function CrosswordSettingsView() {
         checked={settings.showTimer}
         onChange={(showTimer) => set({ showTimer })}
       />
-      <section aria-label="Help">
-        <h2 className="pt-4 font-semibold text-game">Help</h2>
+      <AssistSettings
+        assists={settings}
+        hintStyles
+        reveal={false}
+        tutorial={false}
+        onChange={set}
+      >
         <SettingRow
           label="Show mistakes"
           testId="setting_show_mistakes"
@@ -50,7 +56,7 @@ export function CrosswordSettingsView() {
           checked={settings.allowReveal}
           onChange={(allowReveal) => set({ allowReveal })}
         />
-      </section>
+      </AssistSettings>
     </SettingsScreen>
   )
 }

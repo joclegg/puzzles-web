@@ -1,5 +1,5 @@
-import { Redo2, Undo2 } from 'lucide-react'
-import { useRef } from 'react'
+import { Lightbulb, Redo2, Undo2 } from 'lucide-react'
+import { useRef, useState } from 'react'
 
 import { useBank } from '@/shared/bank/bank.hooks'
 import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
@@ -7,6 +7,7 @@ import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
 import { WinDialog } from '@/shared/game/WinDialog/WinDialog'
 import { usePuzzleGame } from '@/shared/game/puzzleGame.hooks'
+import { HINT_STYLE } from '@/shared/game/assists.constants'
 import { CLUES_PATH } from '@/games/crossword/engine/crossword.constants'
 import {
   applyInput,
@@ -16,6 +17,8 @@ import {
   isSolved,
   loadGame,
   nextClue,
+  placeHint,
+  pointHint,
   pressKey,
   redo,
   restart,
@@ -30,8 +33,10 @@ import {
 import { useCrosswordGames } from '@/games/crossword/engine/crossword.hooks'
 import type {
   CrosswordGame,
+  CrosswordHint,
   Word,
 } from '@/games/crossword/engine/crossword.types'
+import { findHint } from '@/games/crossword/engine/crosswordHint.functions'
 import {
   clueLabel,
   decodePuzzle,
@@ -99,6 +104,7 @@ export function CrosswordGameView({ id }: { id: string }) {
     isSolved,
     entriesOf: encodeEntries,
   })
+  const [hint, setHint] = useState<CrosswordHint | null>(null)
 
   if (!saved || !game) {
     return (
@@ -120,6 +126,7 @@ export function CrosswordGameView({ id }: { id: string }) {
 
   function commit(next: CrosswordGame) {
     setGame(next)
+    setHint(null)
     if (
       next.changes === current.changes &&
       next.hints === current.hints &&
@@ -133,6 +140,19 @@ export function CrosswordGameView({ id }: { id: string }) {
       hints: next.hints,
       mistakes: next.mistakes,
     })
+  }
+
+  function onHint() {
+    const found = findHint(current)
+    if (found === null || solved) {
+      return
+    }
+    if (settings.hintStyle === HINT_STYLE.FILL) {
+      commit(placeHint({ game: current, hint: found }))
+      return
+    }
+    commit(pointHint({ game: current, hint: found }))
+    setHint(found)
   }
 
   function focusInput() {
@@ -167,6 +187,16 @@ export function CrosswordGameView({ id }: { id: string }) {
           >
             <Redo2 className="size-5" />
           </Button>
+          {settings.showHints && (
+            <Button
+              size={BUTTON_SIZE.ICON}
+              aria-label="Show a hint"
+              disabled={solved}
+              onClick={onHint}
+            >
+              <Lightbulb className="size-5" />
+            </Button>
+          )}
           <MoreMenu
             items={[
               {
@@ -239,6 +269,9 @@ export function CrosswordGameView({ id }: { id: string }) {
               focusInput()
             }}
           />
+          <p className="h-6 text-sm font-semibold" role="status">
+            {hint?.message ?? ''}
+          </p>
         </div>
         <div className="flex w-full max-w-xl flex-col gap-4 sm:flex-row lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto">
           {[true, false].map((isAcross) => (

@@ -7,6 +7,7 @@ import {
 import type {
   Change,
   CrosswordGame,
+  CrosswordHint,
   Puzzle,
   Word,
 } from '@/games/crossword/engine/crossword.types'
@@ -231,6 +232,42 @@ export function nextClue({
     game,
     word: words[(index + step + words.length) % words.length],
   })
+}
+
+export function placeHint({
+  game,
+  hint,
+}: {
+  game: CrosswordGame
+  hint: CrosswordHint
+}): CrosswordGame {
+  if (isSolved(game)) {
+    return game
+  }
+  return {
+    ...setEntry({
+      game: select({ game, cell: hint.cell, isAcross: game.isAcross }),
+      cell: hint.cell,
+      letter: hint.letter,
+    }),
+    hints: game.hints + 1,
+  }
+}
+
+export function pointHint({
+  game,
+  hint,
+}: {
+  game: CrosswordGame
+  hint: CrosswordHint
+}): CrosswordGame {
+  if (isSolved(game)) {
+    return game
+  }
+  return {
+    ...select({ game, cell: hint.cell, isAcross: game.isAcross }),
+    hints: game.hints + 1,
+  }
 }
 
 export function pressKey({
