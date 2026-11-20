@@ -1,7 +1,3 @@
-import { daily2Date } from '@/games/fiveLetters/engine/fiveLettersSaves.functions'
-import { DEFINITION } from '@/games/fiveLetters/definition'
-import { fiveLettersDailiesShare } from '@/games/fiveLetters/engine/fiveLettersShare.functions'
-import { todayIso } from '@/shared/lib/date.functions'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
 import { HowToPlay } from '@/shared/game/HowToPlay/HowToPlay'
@@ -302,16 +298,6 @@ export function FiveLettersGameView({ id }: { id: string }) {
         }
         accent={MENU_ACCENT.FIVE_LETTERS}
         route={GAME_ROUTE.FIVE_LETTERS}
-        share={
-          daily
-            ? fiveLettersDailiesShare({
-                name: DEFINITION.name,
-                games,
-                date: daily2Date(saved.wordId),
-                dayOf: (ms) => todayIso(new Date(ms)),
-              })
-            : undefined
-        }
         newLabel="Word"
         onNew={daily ? undefined : startPractice}
         newBest={false}
@@ -324,11 +310,11 @@ export function FiveLettersGameView({ id }: { id: string }) {
         }
         onClose={() => setResultClosed(true)}
         actions={
-          !daily && (
+          <>
             <Button variant={BUTTON_VARIANT.OUTLINE} onClick={onShare}>
               {copied ? 'Copied' : 'Share'}
             </Button>
-          )
+          </>
         }
       />
       <CustomiseHelpers route={GAME_ROUTE.FIVE_LETTERS} />
