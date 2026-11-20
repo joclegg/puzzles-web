@@ -10,6 +10,15 @@ test('solves the daily 4 x 4 puzzle', async ({ twoTonePage }) => {
   await expect(twoTonePage.dialog).toContainText('Solved!')
 })
 
+test('shares the dailies after solving a daily', async ({ twoTonePage }) => {
+  await twoTonePage.openDaily(4)
+  await twoTonePage.fillTiles(DAILY_4)
+
+  await twoTonePage.share("Share today's dailies")
+
+  await twoTonePage.expectShareCopied("Share today's dailies")
+})
+
 test('cycles a tile through red, blue and empty and undoes it', async ({
   twoTonePage,
 }) => {

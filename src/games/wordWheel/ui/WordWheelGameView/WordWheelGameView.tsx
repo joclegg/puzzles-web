@@ -1,3 +1,7 @@
+import { DEFINITION } from '@/games/wordWheel/definition'
+import { OPTIONS } from '@/games/wordWheel/ui/WordWheelView/WordWheelView.constants'
+import { puzzleWinShare } from '@/shared/game/share.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
@@ -316,6 +320,13 @@ export function WordWheelGameView({ id }: { id: string }) {
         title="Solved!"
         accent={MENU_ACCENT.WORD_WHEEL}
         route={GAME_ROUTE.WORD_WHEEL}
+        share={puzzleWinShare({
+          name: DEFINITION.name,
+          games: saves.games,
+          options: OPTIONS,
+          puzzleId: saved.puzzleId,
+          dayOf: (ms) => todayIso(new Date(ms)),
+        })}
         newLabel={`${levelOf(saved)} letters`}
         onNew={() => saves.startRandom(levelOf(saved))}
         newBest={result?.newBest ?? false}

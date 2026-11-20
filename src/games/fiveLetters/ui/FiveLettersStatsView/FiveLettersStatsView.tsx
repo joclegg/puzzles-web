@@ -1,3 +1,4 @@
+import { fiveLettersRecordsShare } from '@/games/fiveLetters/engine/fiveLettersShare.functions'
 import { DEFINITION } from '@/games/fiveLetters/definition'
 import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 import { GAMES_KEY } from '@/games/fiveLetters/engine/fiveLettersSaves.constants'
@@ -17,7 +18,10 @@ export function FiveLettersStatsView() {
     stats.played === 0 ? 0 : Math.floor((stats.won * 100) / stats.played)
 
   return (
-    <PuzzleStatsView definition={DEFINITION}>
+    <PuzzleStatsView
+      definition={DEFINITION}
+      share={fiveLettersRecordsShare({ name: DEFINITION.name, games })}
+    >
       <Panel>
         <div className="flex py-2">
           <StatFigure value={stats.played} label="Played" />

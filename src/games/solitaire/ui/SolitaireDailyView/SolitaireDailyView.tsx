@@ -1,3 +1,6 @@
+import { DEFINITION } from '@/games/solitaire/definition'
+import { solitaireDailiesShare } from '@/games/solitaire/engine/solitaireShare.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { GAME_ROUTE } from '@/shared/lib/route.constants'
 import { useSolitaireGames } from '@/games/solitaire/engine/solitaire.hooks'
 import {
@@ -17,6 +20,12 @@ export function SolitaireDailyView() {
       route={GAME_ROUTE.SOLITAIRE}
       results={results}
       total={1}
+      share={solitaireDailiesShare({
+        name: DEFINITION.name,
+        games,
+        date: todayIso(),
+        dayOf: (ms) => todayIso(new Date(ms)),
+      })}
       choices={(date) => [
         {
           label: 'Daily deal',

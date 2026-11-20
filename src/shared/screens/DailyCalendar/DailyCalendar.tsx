@@ -22,6 +22,7 @@ import { MedalBadge } from '@/shared/screens/MedalBadge/MedalBadge'
 import { MenuScreen } from '@/shared/screens/MenuScreen/MenuScreen'
 import type { MenuAccent } from '@/shared/screens/MenuScreen/MenuScreen.types'
 import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
+import { ShareButton } from '@/shared/ui/ShareButton/ShareButton'
 
 export function DailyCalendar({
   accent,
@@ -30,6 +31,7 @@ export function DailyCalendar({
   total,
   firstMedal = MEDAL.BRONZE,
   choices,
+  share,
 }: {
   accent: MenuAccent
   route: (typeof GAME_ROUTE)[keyof typeof GAME_ROUTE]
@@ -41,6 +43,7 @@ export function DailyCalendar({
     done: boolean
     onPlay: () => void
   }[]
+  share: string
 }) {
   const today = todayIso()
   const [month, setMonth] = useState(today.slice(0, 7))
@@ -53,7 +56,9 @@ export function DailyCalendar({
   })
   return (
     <MenuScreen accent={accent}>
-      <ScreenHeader title="Daily calendar" back={[route]} />
+      <ScreenHeader title="Daily calendar" back={[route]}>
+        <ShareButton label="Share today's dailies" text={share} />
+      </ScreenHeader>
       <div className="flex items-center">
         <Button
           size={BUTTON_SIZE.ICON}

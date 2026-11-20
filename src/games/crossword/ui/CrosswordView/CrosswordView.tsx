@@ -1,15 +1,12 @@
+import { puzzleRecordsShare } from '@/shared/game/share.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { gameDefinition } from '@/shared/game/game.functions'
-import type { PuzzleOptions } from '@/shared/game/game.types'
 import { SIZES } from '@/games/crossword/engine/crossword.constants'
 import { useCrosswordGames } from '@/games/crossword/engine/crossword.hooks'
-import {
-  crosswordSizeLabel,
-  crosswordTitle,
-} from '@/games/crossword/engine/crosswordSaves.functions'
+import { crosswordSizeLabel } from '@/games/crossword/engine/crosswordSaves.functions'
 import { GAME_ROUTE, SCREEN } from '@/shared/lib/route.constants'
 import { SizeStatsTable } from '@/shared/screens/SizeStatsTable/SizeStatsTable'
 import {
-  dailyPuzzleId,
   puzzleHistoryDetail,
   sizeStats,
 } from '@/shared/game/puzzleSaves.functions'
@@ -20,19 +17,10 @@ import { CrosswordIcon } from '@/games/crossword/ui/CrosswordIcon/CrosswordIcon'
 import { CrosswordSettingsView } from '@/games/crossword/ui/CrosswordSettingsView/CrosswordSettingsView'
 import { PuzzleDailyView } from '@/shared/screens/PuzzleDailyView/PuzzleDailyView'
 import { PuzzleHistoryView } from '@/shared/screens/PuzzleHistoryView/PuzzleHistoryView'
+import { OPTIONS } from '@/games/crossword/ui/CrosswordView/CrosswordView.constants'
 import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 
 const DEFINITION = gameDefinition(GAME_ROUTE.CROSSWORD)
-
-const OPTIONS: PuzzleOptions<number> = {
-  filterName: 'Size',
-  values: SIZES,
-  label: crosswordSizeLabel,
-  filterLabel: crosswordSizeLabel,
-  of: (game) => game.size,
-  dailyId: ({ date, value }) => dailyPuzzleId({ date, size: value }),
-  title: crosswordTitle,
-}
 
 export function CrosswordView({ screen, id }: { screen: string; id: string }) {
   const { games, openGame, startRandom, openDaily } = useCrosswordGames()
@@ -41,7 +29,15 @@ export function CrosswordView({ screen, id }: { screen: string; id: string }) {
   }
   if (screen === SCREEN.STATS) {
     return (
-      <PuzzleStatsView definition={DEFINITION}>
+      <PuzzleStatsView
+        definition={DEFINITION}
+        share={puzzleRecordsShare({
+          name: DEFINITION.name,
+          games,
+          options: OPTIONS,
+          today: todayIso(),
+        })}
+      >
         <SizeStatsTable
           stats={sizeStats({ games, sizes: SIZES })}
           label={crosswordSizeLabel}
