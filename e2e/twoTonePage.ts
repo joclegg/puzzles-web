@@ -152,6 +152,25 @@ export class TwoTonePage {
     ).toHaveText(text)
   }
 
+  shareButton(name: string) {
+    return this.page.getByRole('button', { name })
+  }
+
+  async share(name: string) {
+    await this.page
+      .context()
+      .grantPermissions(['clipboard-read', 'clipboard-write'])
+    await this.shareButton(name).click()
+  }
+
+  async expectShareCopied(name: string) {
+    await expect(this.shareButton(name)).toHaveText('Copied')
+  }
+
+  async openScreen(screen: 'stats' | 'daily') {
+    await this.page.goto(`./#/two-tone/${screen}`)
+  }
+
   async expectScreenshot(name: string) {
     await expect(this.page).toHaveScreenshot(`${name}.png`, {
       fullPage: true,

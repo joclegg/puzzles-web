@@ -1,3 +1,5 @@
+import { solitaireRecordsShare } from '@/games/solitaire/engine/solitaireShare.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { DEFINITION } from '@/games/solitaire/definition'
 import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 import { formatDuration } from '@/shared/lib/format.functions'
@@ -14,7 +16,14 @@ export function SolitaireStatsView() {
   const stats = drawStats({ games, modes: Object.values(DRAW_MODE) })
 
   return (
-    <PuzzleStatsView definition={DEFINITION}>
+    <PuzzleStatsView
+      definition={DEFINITION}
+      share={solitaireRecordsShare({
+        name: DEFINITION.name,
+        games,
+        today: todayIso(),
+      })}
+    >
       {stats.map((mode) => (
         <Panel key={mode.drawMode} title={DRAW_MODE_LABEL[mode.drawMode]}>
           <dl className="grid grid-cols-2 gap-y-1 text-sm">

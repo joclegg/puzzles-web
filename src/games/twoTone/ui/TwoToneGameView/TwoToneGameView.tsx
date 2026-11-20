@@ -1,3 +1,7 @@
+import { DEFINITION } from '@/games/twoTone/definition'
+import { OPTIONS } from '@/games/twoTone/ui/TwoToneView/TwoToneView.constants'
+import { puzzleWinShare } from '@/shared/game/share.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
@@ -299,6 +303,13 @@ export function TwoToneGameView({ id }: { id: string }) {
         title="Solved!"
         accent={MENU_ACCENT.TWO_TONE}
         route={GAME_ROUTE.TWO_TONE}
+        share={puzzleWinShare({
+          name: DEFINITION.name,
+          games: saves.games,
+          options: OPTIONS,
+          puzzleId: saved.puzzleId,
+          dayOf: (ms) => todayIso(new Date(ms)),
+        })}
         newLabel={`${saved.size}×${saved.size}`}
         onNew={() => saves.startRandom(saved.size)}
         newBest={result?.newBest ?? false}

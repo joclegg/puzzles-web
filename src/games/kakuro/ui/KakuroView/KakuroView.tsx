@@ -1,7 +1,8 @@
+import { puzzleRecordsShare } from '@/shared/game/share.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { gameDefinition } from '@/shared/game/game.functions'
 import { SIZES } from '@/games/kakuro/engine/kakuro.constants'
 import { useKakuroGames } from '@/games/kakuro/engine/kakuro.hooks'
-import { sizeOptions } from '@/shared/game/puzzleOptions.functions'
 import { GAME_ROUTE, SCREEN } from '@/shared/lib/route.constants'
 import { SizeStatsTable } from '@/shared/screens/SizeStatsTable/SizeStatsTable'
 import {
@@ -16,11 +17,10 @@ import { KakuroIcon } from '@/games/kakuro/ui/KakuroIcon/KakuroIcon'
 import { KakuroSettingsView } from '@/games/kakuro/ui/KakuroSettingsView/KakuroSettingsView'
 import { PuzzleDailyView } from '@/shared/screens/PuzzleDailyView/PuzzleDailyView'
 import { PuzzleHistoryView } from '@/shared/screens/PuzzleHistoryView/PuzzleHistoryView'
+import { OPTIONS } from '@/games/kakuro/ui/KakuroView/KakuroView.constants'
 import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 
 const DEFINITION = gameDefinition(GAME_ROUTE.KAKURO)
-
-const OPTIONS = sizeOptions(SIZES)
 
 export function KakuroView({ screen, id }: { screen: string; id: string }) {
   const { games, openGame, startRandom, openDaily } = useKakuroGames()
@@ -29,7 +29,15 @@ export function KakuroView({ screen, id }: { screen: string; id: string }) {
   }
   if (screen === SCREEN.STATS) {
     return (
-      <PuzzleStatsView definition={DEFINITION}>
+      <PuzzleStatsView
+        definition={DEFINITION}
+        share={puzzleRecordsShare({
+          name: DEFINITION.name,
+          games,
+          options: OPTIONS,
+          today: todayIso(),
+        })}
+      >
         <SizeStatsTable
           stats={sizeStats({ games, sizes: SIZES })}
           label={sizeLabel}

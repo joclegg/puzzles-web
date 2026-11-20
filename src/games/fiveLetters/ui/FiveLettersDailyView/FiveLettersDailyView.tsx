@@ -1,3 +1,6 @@
+import { DEFINITION } from '@/games/fiveLetters/definition'
+import { fiveLettersDailiesShare } from '@/games/fiveLetters/engine/fiveLettersShare.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { dailyWord } from '@/games/fiveLetters/engine/fiveLetters.functions'
 import { MEDAL } from '@/shared/game/dailyMedal.constants'
 import {
@@ -45,6 +48,12 @@ export function FiveLettersDailyView() {
       route={GAME_ROUTE.FIVE_LETTERS}
       results={results}
       total={2}
+      share={fiveLettersDailiesShare({
+        name: DEFINITION.name,
+        games,
+        date: todayIso(),
+        dayOf: (ms) => todayIso(new Date(ms)),
+      })}
       firstMedal={MEDAL.SILVER}
       choices={(date) => [
         {

@@ -1,3 +1,7 @@
+import { DEFINITION } from '@/games/crossword/definition'
+import { OPTIONS } from '@/games/crossword/ui/CrosswordView/CrosswordView.constants'
+import { puzzleWinShare } from '@/shared/game/share.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { Lightbulb, Redo2, Undo2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 
@@ -301,6 +305,13 @@ export function CrosswordGameView({ id }: { id: string }) {
         title="Solved!"
         accent={MENU_ACCENT.CROSSWORD}
         route={GAME_ROUTE.CROSSWORD}
+        share={puzzleWinShare({
+          name: DEFINITION.name,
+          games: saves.games,
+          options: OPTIONS,
+          puzzleId: saved.puzzleId,
+          dayOf: (ms) => todayIso(new Date(ms)),
+        })}
         newLabel={crosswordSizeLabel(saved.size)}
         onNew={() => saves.startRandom(saved.size)}
         newBest={result?.newBest ?? false}

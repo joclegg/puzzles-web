@@ -1,3 +1,7 @@
+import { DEFINITION } from '@/games/sightlines/definition'
+import { OPTIONS } from '@/games/sightlines/ui/SightlinesView/SightlinesView.constants'
+import { puzzleWinShare } from '@/shared/game/share.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
@@ -307,6 +311,13 @@ export function SightlinesGameView({ id }: { id: string }) {
         title="Solved!"
         accent={MENU_ACCENT.SIGHTLINES}
         route={GAME_ROUTE.SIGHTLINES}
+        share={puzzleWinShare({
+          name: DEFINITION.name,
+          games: saves.games,
+          options: OPTIONS,
+          puzzleId: saved.puzzleId,
+          dayOf: (ms) => todayIso(new Date(ms)),
+        })}
         newLabel={`${saved.size}×${saved.size}`}
         onNew={() => saves.startRandom(saved.size)}
         newBest={result?.newBest ?? false}

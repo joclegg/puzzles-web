@@ -1,3 +1,6 @@
+import { DEFINITION } from '@/games/sudoku/definition'
+import { sudokuDailiesShare } from '@/games/sudoku/engine/sudokuShare.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
@@ -170,6 +173,7 @@ export function SudokuGameView({ id }: { id: string }) {
     )
   }
 
+  const dailyOf = parseDailyId(saved.puzzleId)
   const modeSettings = fromStoredSettings(settings)[saved.mode]
   const current: SudokuGame = {
     ...game,
@@ -430,6 +434,17 @@ export function SudokuGameView({ id }: { id: string }) {
         accent={MENU_ACCENT.SUDOKU}
         route={GAME_ROUTE.SUDOKU}
         mode={saved.mode}
+        share={
+          dailyOf === null
+            ? undefined
+            : sudokuDailiesShare({
+                name: DEFINITION.name,
+                games,
+                pastBests: settings.pastBests,
+                date: dailyOf.date,
+                dayOf: (ms) => todayIso(new Date(ms)),
+              })
+        }
         newLabel={
           saved.difficulty === null || saved.custom
             ? undefined

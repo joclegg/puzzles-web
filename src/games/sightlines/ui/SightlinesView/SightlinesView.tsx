@@ -1,7 +1,8 @@
+import { puzzleRecordsShare } from '@/shared/game/share.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { gameDefinition } from '@/shared/game/game.functions'
 import { SIZES } from '@/games/sightlines/engine/sightlines.constants'
 import { useSightlinesGames } from '@/games/sightlines/engine/sightlines.hooks'
-import { sizeOptions } from '@/shared/game/puzzleOptions.functions'
 import { GAME_ROUTE, SCREEN } from '@/shared/lib/route.constants'
 import { SizeStatsTable } from '@/shared/screens/SizeStatsTable/SizeStatsTable'
 import {
@@ -16,11 +17,10 @@ import { SightlinesIcon } from '@/games/sightlines/ui/SightlinesIcon/SightlinesI
 import { SightlinesSettingsView } from '@/games/sightlines/ui/SightlinesSettingsView/SightlinesSettingsView'
 import { PuzzleDailyView } from '@/shared/screens/PuzzleDailyView/PuzzleDailyView'
 import { PuzzleHistoryView } from '@/shared/screens/PuzzleHistoryView/PuzzleHistoryView'
+import { OPTIONS } from '@/games/sightlines/ui/SightlinesView/SightlinesView.constants'
 import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 
 const DEFINITION = gameDefinition(GAME_ROUTE.SIGHTLINES)
-
-const OPTIONS = sizeOptions(SIZES)
 
 export function SightlinesView({ screen, id }: { screen: string; id: string }) {
   const { games, openGame, startRandom, openDaily } = useSightlinesGames()
@@ -29,7 +29,15 @@ export function SightlinesView({ screen, id }: { screen: string; id: string }) {
   }
   if (screen === SCREEN.STATS) {
     return (
-      <PuzzleStatsView definition={DEFINITION}>
+      <PuzzleStatsView
+        definition={DEFINITION}
+        share={puzzleRecordsShare({
+          name: DEFINITION.name,
+          games,
+          options: OPTIONS,
+          today: todayIso(),
+        })}
+      >
         <SizeStatsTable
           stats={sizeStats({ games, sizes: SIZES })}
           label={sizeLabel}

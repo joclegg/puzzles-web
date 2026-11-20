@@ -1,3 +1,5 @@
+import { sudokuRecordsShare } from '@/games/sudoku/engine/sudokuShare.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { DEFINITION } from '@/games/sudoku/definition'
 import { PuzzleStatsView } from '@/shared/screens/PuzzleStatsView/PuzzleStatsView'
 import { formatDuration } from '@/shared/lib/format.functions'
@@ -25,7 +27,16 @@ export function SudokuStatsView() {
   const times = bestTimes({ games, pastBests: settings.pastBests })
 
   return (
-    <PuzzleStatsView definition={DEFINITION} title="Best times">
+    <PuzzleStatsView
+      definition={DEFINITION}
+      title="Best times"
+      share={sudokuRecordsShare({
+        name: DEFINITION.name,
+        games,
+        pastBests: settings.pastBests,
+        today: todayIso(),
+      })}
+    >
       {GAME_MODES.map((mode) => (
         <Panel key={mode} title={GAME_MODE_LABEL[mode]}>
           <table className="w-full text-sm">

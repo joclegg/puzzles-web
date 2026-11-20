@@ -1,3 +1,8 @@
+import { DEFINITION } from '@/games/solitaire/definition'
+import { solitaireDailiesShare } from '@/games/solitaire/engine/solitaireShare.functions'
+import { isDailyDeal } from '@/games/solitaire/engine/solitaireSaves.functions'
+import { DAILY_PREFIX } from '@/games/solitaire/engine/solitaireSaves.constants'
+import { todayIso } from '@/shared/lib/date.functions'
 import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { CustomiseHelpers } from '@/shared/screens/CustomiseHelpers/CustomiseHelpers'
@@ -399,6 +404,16 @@ export function SolitaireGameView({ id }: { id: string }) {
         title="You won!"
         accent={MENU_ACCENT.SOLITAIRE}
         route={GAME_ROUTE.SOLITAIRE}
+        share={
+          isDailyDeal(saved.dealId)
+            ? solitaireDailiesShare({
+                name: DEFINITION.name,
+                games,
+                date: saved.dealId.slice(DAILY_PREFIX.length),
+                dayOf: (ms) => todayIso(new Date(ms)),
+              })
+            : undefined
+        }
         newLabel="Deal"
         onNew={() => void startRandom()}
         newBest={result?.newBest ?? false}

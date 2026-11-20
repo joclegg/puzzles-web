@@ -18,6 +18,7 @@ import { GAMES_KEY as TWO_TONE_KEY } from '@/games/twoTone/engine/twoToneSaves.c
 import { cn } from '@/shared/lib/utils.functions'
 import { GAMES_KEY as WORD_WHEEL_KEY } from '@/games/wordWheel/engine/wordWheelSaves.constants'
 import { Button } from '@/shared/ui/Button/Button'
+import { ShareButton } from '@/shared/ui/ShareButton/ShareButton'
 import { AllGoldsBanner } from '@/shared/screens/AllGoldsBanner/AllGoldsBanner'
 import { dailiesLeft } from '@/shared/screens/DailiesLeft/DailiesLeft.functions'
 import type { DailyLeft } from '@/shared/screens/DailiesLeft/DailiesLeft.types'
@@ -42,6 +43,7 @@ export function WinDialog({
   lost = false,
   onClose,
   actions,
+  share,
 }: {
   open: boolean
   title: string
@@ -56,6 +58,7 @@ export function WinDialog({
   lost?: boolean
   onClose: () => void
   actions: ReactNode
+  share?: string
 }) {
   const left = open
     ? dailiesLeft({ today: todayIso(), saves: readSaves(), route, mode })
@@ -158,6 +161,9 @@ export function WinDialog({
             <Button onClick={onClose} data-testid="win_view_board">
               View board
             </Button>
+            {share !== undefined && (
+              <ShareButton label="Share today's dailies" text={share} />
+            )}
             {actions}
           </div>
         </Dialog.Popup>

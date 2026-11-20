@@ -1,3 +1,7 @@
+import { DEFINITION } from '@/games/slideOut/definition'
+import { OPTIONS } from '@/games/slideOut/ui/SlideOutView/SlideOutView.constants'
+import { puzzleWinShare } from '@/shared/game/share.functions'
+import { todayIso } from '@/shared/lib/date.functions'
 import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
@@ -233,6 +237,14 @@ export function SlideOutGameView({ id }: { id: string }) {
         title="Solved!"
         accent={MENU_ACCENT.SLIDE_OUT}
         route={GAME_ROUTE.SLIDE_OUT}
+        share={puzzleWinShare({
+          name: DEFINITION.name,
+          games: saves.games,
+          options: OPTIONS,
+          puzzleId: saved.puzzleId,
+          moves: true,
+          dayOf: (ms) => todayIso(new Date(ms)),
+        })}
         newLabel={
           levelOf(saved).charAt(0).toUpperCase() + levelOf(saved).slice(1)
         }
