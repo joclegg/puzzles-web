@@ -5,12 +5,16 @@ export class LauncherPage {
   readonly heading: Locator
   readonly appStoreLink: Locator
   readonly appPrompt: Locator
+  readonly playStoreLink: Locator
 
   constructor(page: Page) {
     this.page = page
     this.heading = page.getByRole('heading', { name: 'Puzzles' })
     this.appStoreLink = page.getByRole('link', {
       name: 'Download on the App Store',
+    })
+    this.playStoreLink = page.getByRole('link', {
+      name: 'Get it on Google Play',
     })
     this.appPrompt = page.getByRole('dialog', { name: 'Get the Puzzles app' })
   }

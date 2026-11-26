@@ -1,11 +1,13 @@
 import { expect, test } from '@e2e/playwrightExtensions'
 
-test('links to the App Store', async ({ launcherPage }) => {
+test('links to the App Store and Google Play', async ({ launcherPage }) => {
   await expect(launcherPage.appStoreLink).toBeVisible()
+  await expect(launcherPage.playStoreLink).toBeVisible()
 })
 
 test.describe('on an iPhone', () => {
   test.use({
+    appPrompt: true,
     userAgent:
       'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1',
   })

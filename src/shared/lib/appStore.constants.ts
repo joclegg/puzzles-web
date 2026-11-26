@@ -13,5 +13,5 @@ export const APP_PROMPT_CHOICE = {
 
 export const STORE_URL: Record<'ios' | 'android', string | null> = {
   ios: 'https://apps.apple.com/app/id0000000000',
-  android: null,
+  android: 'https://play.google.com/store/apps/details?id=com.joclegg.puzzles',
 }
