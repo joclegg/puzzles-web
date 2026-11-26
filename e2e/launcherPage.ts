@@ -3,10 +3,16 @@ import { expect, type Locator, type Page } from '@playwright/test'
 export class LauncherPage {
   readonly page: Page
   readonly heading: Locator
+  readonly appStoreLink: Locator
+  readonly appPrompt: Locator
 
   constructor(page: Page) {
     this.page = page
     this.heading = page.getByRole('heading', { name: 'Puzzles' })
+    this.appStoreLink = page.getByRole('link', {
+      name: 'Download on the App Store',
+    })
+    this.appPrompt = page.getByRole('dialog', { name: 'Get the Puzzles app' })
   }
 
   async open() {
@@ -36,6 +42,13 @@ export class LauncherPage {
       JSON.stringify([game]),
     )
     await this.open()
+  }
+
+  async keepPlayingHere() {
+    await this.appPrompt
+      .getByRole('button', { name: 'Keep playing here' })
+      .click()
+    await expect(this.appPrompt).toBeHidden()
   }
 
   async openSettings() {
