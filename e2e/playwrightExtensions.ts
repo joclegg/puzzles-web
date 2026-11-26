@@ -1,3 +1,4 @@
+import { APP_PROMPT_KEY } from '@/shared/lib/appStore.constants'
 import { test as base } from '@playwright/test'
 
 import { LEGACY_SETTINGS } from '@/shared/storage/legacySettings.constants'
@@ -33,10 +34,19 @@ export const test = base.extend<{
   solitairePage: SolitairePage
   sudokuPage: SudokuPage
   helpers: boolean
+  appPrompt: boolean
 }>({
   helpers: [true, { option: true }],
-  page: async ({ page, helpers }, use) => {
+  appPrompt: [false, { option: true }],
+  page: async ({ page, helpers, appPrompt }, use) => {
     await page.clock.setFixedTime(FIXED_NOW)
+    if (!appPrompt) {
+      await page.addInitScript((key) => {
+        if (localStorage.getItem(key) === null) {
+          localStorage.setItem(key, JSON.stringify('web'))
+        }
+      }, APP_PROMPT_KEY)
+    }
     if (helpers) {
       await page.addInitScript((settings) => {
         for (const [key, value] of Object.entries(settings)) {

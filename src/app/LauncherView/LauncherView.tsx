@@ -25,7 +25,9 @@ import { CrosswordIcon } from '@/games/crossword/ui/CrosswordIcon/CrosswordIcon'
 import { WordWheelIcon } from '@/games/wordWheel/ui/WordWheelIcon/WordWheelIcon'
 import { SolitaireIcon } from '@/games/solitaire/ui/SolitaireIcon/SolitaireIcon'
 import { SudokuIcon } from '@/games/sudoku/ui/SudokuIcon/SudokuIcon'
+import { AppPromptDialog } from '@/app/AppPromptDialog/AppPromptDialog'
 import { GameCard } from '@/app/GameCard/GameCard'
+import { StoreBadges } from '@/app/StoreBadges/StoreBadges'
 import { MENU_ACCENT } from '@/shared/screens/MenuScreen/MenuScreen.constants'
 import { SightlinesIcon } from '@/games/sightlines/ui/SightlinesIcon/SightlinesIcon'
 import { ThemeToggle } from '@/shared/ui/ThemeToggle/ThemeToggle'
@@ -168,6 +170,8 @@ export function LauncherView({
         medal={medals[GAME_ROUTE.CROSSWORD]}
         icon={<CrosswordIcon />}
       />
+      <StoreBadges />
+      <AppPromptDialog />
     </main>
   )
 }
