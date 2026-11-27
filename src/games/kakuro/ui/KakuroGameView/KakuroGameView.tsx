@@ -74,7 +74,7 @@ const TUTORIAL = [
   },
   {
     target: '[aria-label="Number pad"]',
-    text: 'Tap a cell, then a number to place it. The pencil puts numbers in as notes, the eraser clears a cell.',
+    text: 'Tap a cell, then a number to place it. The pencil puts numbers in as notes, the eraser clears a cell and Mark boxes it in red.',
   },
   {
     target: '[aria-label="Show a hint"]',
@@ -89,7 +89,7 @@ const TUTORIAL_DIGIT_FIRST = [
   TUTORIAL[0],
   {
     ...TUTORIAL[1],
-    text: 'Pick a number, then tap cells to place it. The pencil puts numbers in as notes, the eraser clears a cell.',
+    text: 'Pick a number, then tap cells to place it. The pencil puts numbers in as notes. The eraser and Mark are modes: tap cells to clear them or box them in red, tap the tool again to stop.',
   },
   ...TUTORIAL.slice(2),
 ]
