@@ -258,36 +258,44 @@ export function SolitaireBoard({
             )
           })}
         </div>
-        {board.foundations.map((pile, index) => {
-          const target: Pile = { kind: PILE_KIND.FOUNDATION, index }
-          const top = pile.at(-1)
-          return (
-            <div key={index} data-pile={pileKey(target)}>
-              {top === undefined ? (
-                <button
-                  type="button"
-                  aria-label={`Foundation ${SUITS[index].name}, empty`}
-                  onClick={() => onEmpty(target)}
-                  className="flex aspect-[5/7] w-full items-center justify-center rounded-md bg-sol-empty-pile text-xl text-sol-on-felt"
-                >
-                  {SUITS[index].symbol}
-                </button>
-              ) : (
-                <PlayingCard
-                  card={top}
-                  faceUp
-                  selected={isSelected({
-                    pile: target,
-                    index: pile.length - 1,
-                  })}
-                  label={`Foundation ${SUITS[index].name}, ${cardName(top)}`}
-                  dragId={dragKey({ pile: target, index: pile.length - 1 })}
-                  onTap={() => onCard({ pile: target, index: pile.length - 1 })}
-                />
-              )}
-            </div>
-          )
-        })}
+        <div
+          role="group"
+          aria-label="Foundations"
+          className="col-span-4 grid grid-cols-4 gap-1 sm:gap-2"
+        >
+          {board.foundations.map((pile, index) => {
+            const target: Pile = { kind: PILE_KIND.FOUNDATION, index }
+            const top = pile.at(-1)
+            return (
+              <div key={index} data-pile={pileKey(target)}>
+                {top === undefined ? (
+                  <button
+                    type="button"
+                    aria-label={`Foundation ${SUITS[index].name}, empty`}
+                    onClick={() => onEmpty(target)}
+                    className="flex aspect-[5/7] w-full items-center justify-center rounded-md bg-sol-empty-pile text-xl text-sol-on-felt"
+                  >
+                    {SUITS[index].symbol}
+                  </button>
+                ) : (
+                  <PlayingCard
+                    card={top}
+                    faceUp
+                    selected={isSelected({
+                      pile: target,
+                      index: pile.length - 1,
+                    })}
+                    label={`Foundation ${SUITS[index].name}, ${cardName(top)}`}
+                    dragId={dragKey({ pile: target, index: pile.length - 1 })}
+                    onTap={() =>
+                      onCard({ pile: target, index: pile.length - 1 })
+                    }
+                  />
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
       <div className="grid min-h-[112cqw] grid-cols-7 items-start gap-1 sm:gap-2">
         {board.tableau.map((column, columnIndex) => {

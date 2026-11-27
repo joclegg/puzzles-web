@@ -8,6 +8,7 @@ import { useRef, useState } from 'react'
 import { useBank } from '@/shared/bank/bank.hooks'
 import { ElapsedTime } from '@/shared/game/ElapsedTime/ElapsedTime'
 import { GameNotFound } from '@/shared/game/GameNotFound/GameNotFound'
+import { HowToPlay } from '@/shared/game/HowToPlay/HowToPlay'
 import { RevealDialog } from '@/shared/game/RevealDialog/RevealDialog'
 import { WinDialog } from '@/shared/game/WinDialog/WinDialog'
 import { usePuzzleGame } from '@/shared/game/puzzleGame.hooks'
@@ -71,6 +72,25 @@ import { Button } from '@/shared/ui/Button/Button'
 import { BUTTON_SIZE } from '@/shared/ui/Button/Button.constants'
 import { MoreMenu } from '@/shared/ui/MoreMenu/MoreMenu'
 import { ScreenHeader } from '@/shared/ui/ScreenHeader/ScreenHeader'
+
+const TUTORIAL = [
+  {
+    target: '[aria-label="Board"]',
+    text: 'Tap a cell to pick it, then type the answer. Tap it again to switch between across and down.',
+  },
+  {
+    target: '[data-testid="clue_bar"]',
+    text: "This is the clue for the word you're on. The arrows move to the previous or next clue.",
+  },
+  {
+    target: '[aria-label="Show a hint"]',
+    text: 'Stuck? The bulb tells you one letter and where it goes.',
+  },
+  {
+    target: '[aria-label="More"]',
+    text: 'Restart, new puzzle, reveal a letter, word or the puzzle, and settings live in this menu.',
+  },
+]
 
 export function CrosswordGameView({ id }: { id: string }) {
   const saves = useCrosswordGames()
@@ -201,6 +221,14 @@ export function CrosswordGameView({ id }: { id: string }) {
               <Lightbulb className="size-5" />
             </Button>
           )}
+          <HowToPlay steps={TUTORIAL}>
+            <p>Fill the grid with the answers to the clues.</p>
+            <p>
+              Tap a cell to pick it. Tap it again to switch between across and
+              down.
+            </p>
+            <p>Type the answer with the keyboard.</p>
+          </HowToPlay>
           <MoreMenu
             items={[
               {

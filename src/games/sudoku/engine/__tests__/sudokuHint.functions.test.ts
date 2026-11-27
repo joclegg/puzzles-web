@@ -9,6 +9,10 @@ const SOLUTION =
 
 const PUZZLE = decodePuzzle(`0${SOLUTION.slice(1, 79)}00|${SOLUTION}|`)
 
+const EMPTY = decodePuzzle(`${'0'.repeat(81)}|${SOLUTION}|`)
+
+const ALL_NOTES = 0b1111111110
+
 describe('findHint', () => {
   it('points at a cell where only one digit fits', () => {
     expect(findHint(newGame({ puzzle: PUZZLE }))).toEqual({
@@ -49,5 +53,38 @@ describe('findHint', () => {
     const placed = placeHint({ game, hint: findHint(game)! })
 
     expect(placed.values[0]).toBe(5)
+  })
+
+  it('skips a cell whose notes already match its candidates', () => {
+    const game = newGame({ puzzle: EMPTY })
+    const notes = game.notes.map((_, cell) => (cell === 0 ? ALL_NOTES : 0))
+
+    expect(findHint({ ...game, notes })?.cell).toBe(1)
+  })
+
+  it('skips a cell whose notes are tighter than its candidates', () => {
+    const game = newGame({ puzzle: EMPTY })
+    const notes = game.notes.map((_, cell) => (cell === 0 ? 1 << 5 : 0))
+
+    expect(findHint({ ...game, notes })?.cell).toBe(1)
+  })
+
+  it('reveals the answer when every empty cell is already noted', () => {
+    const game = newGame({ puzzle: EMPTY })
+
+    expect(
+      findHint({ ...game, notes: game.notes.map(() => ALL_NOTES) }),
+    ).toEqual({ cell: 0, digit: 5, message: 'This one is the 5.' })
+  })
+
+  it('still hints a cell whose notes are wider than its candidates', () => {
+    const game = newGame({ puzzle: EMPTY })
+    const values = game.values.map((_, cell) => (cell === 1 ? 3 : 0))
+    const notes = game.notes.map((_, cell) => (cell === 0 ? ALL_NOTES : 0))
+
+    const hint = findHint({ ...game, values, notes })
+
+    expect(hint?.cell).toBe(0)
+    expect(hint?.message).toContain('This cell can only be')
   })
 })

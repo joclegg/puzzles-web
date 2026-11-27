@@ -55,7 +55,7 @@ import { TwoToneColourPicker } from '@/games/twoTone/ui/TwoToneColourPicker/TwoT
 const TUTORIAL = [
   {
     target: '[aria-label="Board"]',
-    text: 'Tap a tile to cycle it red, blue, empty. No three of a colour in a line, and every row and column is half red, half blue.',
+    text: 'Tap a tile to cycle it: red, blue, empty. No three of a colour in a line, and every row and column is half red, half blue.',
   },
   {
     target: '[aria-label="Show a hint"]',
@@ -65,6 +65,13 @@ const TUTORIAL = [
     target: '[aria-label="More"]',
     text: 'Restart, show the solution and settings live in this menu.',
   },
+]
+const TUTORIAL_PICK_COLOUR = [
+  {
+    ...TUTORIAL[0],
+    text: 'Choose a colour under the board, then tap tiles to paint them. No three of a colour in a line, and every row and column is half red, half blue.',
+  },
+  ...TUTORIAL.slice(1),
 ]
 
 export function TwoToneGameView({ id }: { id: string }) {
@@ -232,10 +239,18 @@ export function TwoToneGameView({ id }: { id: string }) {
             </Button>
           )}
           {settings.showTutorial && (
-            <HowToPlay steps={TUTORIAL}>
+            <HowToPlay
+              steps={
+                settings.inputMode === INPUT_MODE.PICK_COLOUR
+                  ? TUTORIAL_PICK_COLOUR
+                  : TUTORIAL
+              }
+            >
               <p>
-                Fill every tile red or blue. Tap a tile to cycle it: red, blue,
-                empty.
+                Fill every tile red or blue.{' '}
+                {settings.inputMode === INPUT_MODE.PICK_COLOUR
+                  ? 'Choose a colour under the board, then tap tiles to paint them.'
+                  : 'Tap a tile to cycle it: red, blue, empty.'}
               </p>
               <p>
                 No three tiles of the same colour next to each other in a row or

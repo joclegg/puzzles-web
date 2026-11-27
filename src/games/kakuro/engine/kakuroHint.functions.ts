@@ -58,12 +58,23 @@ export function findHint(game: KakuroGame): KakuroHint | null {
   const allowed = new Map(
     empty.map((cell) => [cell, runAllowed({ game, cell })]),
   )
-  const cell = empty.reduce((best, each) =>
+  const useful = empty.filter((each) => {
+    const notes = game.notes[each]
+    return notes === 0 || (notes & ~(allowed.get(each) ?? 0)) !== 0
+  })
+  const cell = (useful.length > 0 ? useful : empty).reduce((best, each) =>
     digitsOf(allowed.get(each) ?? 0).length <
     digitsOf(allowed.get(best) ?? 0).length
       ? each
       : best,
   )
+  if (useful.length === 0) {
+    return {
+      cell,
+      digit: puzzle.solution[cell],
+      message: `This one is the ${puzzle.solution[cell]}.`,
+    }
+  }
   const runs = (puzzle.runsOf.get(cell) ?? [])
     .map(
       (run) =>

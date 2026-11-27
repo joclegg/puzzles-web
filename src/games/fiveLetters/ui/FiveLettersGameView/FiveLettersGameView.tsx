@@ -62,11 +62,15 @@ const TUTORIAL = [
   },
   {
     target: '[aria-label="Keyboard"]',
-    text: 'Type with these keys, then Enter. Delete is on the left.',
+    text: 'Type with these keys, then press Enter. Delete is on the left.',
   },
   {
     target: '[aria-label="Show a hint"]',
     text: 'Stuck? The bulb tells you one letter and where it goes.',
+  },
+  {
+    target: '[aria-label="More"]',
+    text: 'Show the word and settings live in this menu.',
   },
 ]
 

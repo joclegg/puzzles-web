@@ -15,7 +15,11 @@ import { formatDuration } from '@/shared/lib/format.functions'
 import { useGameTimer } from '@/shared/game/gameTimer.hooks'
 import { GAME_ROUTE, SCREEN } from '@/shared/lib/route.constants'
 import { navigate } from '@/shared/lib/route.hooks'
-import { DECK, VERDICT } from '@/games/solitaire/engine/solitaire.constants'
+import {
+  BUILD_ORDER,
+  DECK,
+  VERDICT,
+} from '@/games/solitaire/engine/solitaire.constants'
 import {
   autoFinishMoves,
   boardOf,
@@ -79,12 +83,16 @@ const TUTORIAL = [
     text: 'Tap the stock to turn cards onto the waste. When it runs out, tap again to turn the waste over.',
   },
   {
-    target: '[aria-label^="Foundation"]',
+    target: '[aria-label="Foundations"]',
     text: 'Build each suit up from Ace to King here. Fill all four to win.',
   },
   {
     target: '[aria-label="Show a hint"]',
-    text: 'Tap a card to send it to the best place, or drag it. Stuck? The bulb suggests a move.',
+    text: 'Stuck? The bulb suggests a move.',
+  },
+  {
+    target: '[aria-label="More"]',
+    text: 'Restart this deal, a new deal and settings live in this menu.',
   },
 ]
 
@@ -306,8 +314,16 @@ export function SolitaireGameView({ id }: { id: string }) {
                 In the columns, build down in alternating colours. Any face-up
                 run can move together.
               </p>
-              <p>Only a King can fill an empty column.</p>
-              <p>Tap a card to send it to the best place, or drag it.</p>
+              <p>
+                {current.order === BUILD_ORDER.UP
+                  ? 'Only an Ace can fill an empty column.'
+                  : 'Only a King can fill an empty column.'}
+              </p>
+              <p>
+                {current.oneTapMove
+                  ? 'Tap a card to send it to the best place, or drag it.'
+                  : 'Tap a card, then where it should go, or drag it.'}
+              </p>
             </HowToPlay>
           )}
           <MoreMenu
