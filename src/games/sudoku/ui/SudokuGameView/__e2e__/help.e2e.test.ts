@@ -29,6 +29,6 @@ test('walks through the controls', async ({ sudokuPage, assistsPage }) => {
   await assistsPage.expectStep('Tap a cell')
   await assistsPage.nextStep()
 
-  await assistsPage.expectStep('tap a number')
+  await assistsPage.expectStep('then a number to place it')
   await expect(assistsPage.walkthrough).toContainText('Step 2 of 4')
 })

@@ -60,7 +60,7 @@ import { SightlinesColourPicker } from '@/games/sightlines/ui/SightlinesColourPi
 const TUTORIAL = [
   {
     target: '[aria-label="Board"]',
-    text: 'Tap a dot to cycle it blue, red, empty. A number says how many blue dots it can see along its row and column; red dots block the view.',
+    text: 'Tap a dot to cycle it: blue, red, empty. A number says how many blue dots it can see along its row and column; red dots block the view.',
   },
   {
     target: '[aria-label="Show a hint"]',
@@ -70,6 +70,13 @@ const TUTORIAL = [
     target: '[aria-label="More"]',
     text: 'Restart, show the solution and settings live in this menu.',
   },
+]
+const TUTORIAL_PICK_COLOUR = [
+  {
+    ...TUTORIAL[0],
+    text: 'Choose a colour under the board, then tap dots to paint them. A number says how many blue dots it can see along its row and column; red dots block the view.',
+  },
+  ...TUTORIAL.slice(1),
 ]
 
 export function SightlinesGameView({ id }: { id: string }) {
@@ -226,10 +233,18 @@ export function SightlinesGameView({ id }: { id: string }) {
             </Button>
           )}
           {settings.showTutorial && (
-            <HowToPlay steps={TUTORIAL}>
+            <HowToPlay
+              steps={
+                settings.inputMode === INPUT_MODE.PICK_COLOUR
+                  ? TUTORIAL_PICK_COLOUR
+                  : TUTORIAL
+              }
+            >
               <p>
-                Fill every dot blue or red. Tap a dot to cycle it: blue, red,
-                empty.
+                Fill every dot blue or red.{' '}
+                {settings.inputMode === INPUT_MODE.PICK_COLOUR
+                  ? 'Choose a colour under the board, then tap dots to paint them.'
+                  : 'Tap a dot to cycle it: blue, red, empty.'}
               </p>
               <p>
                 Blue dots can see other blue dots in their own row and column.

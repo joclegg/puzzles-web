@@ -81,11 +81,11 @@ import { CombinationList } from '@/shared/game/CombinationList/CombinationList'
 const TUTORIAL = [
   {
     target: '[aria-label="Board"]',
-    text: 'Tap a cell to select it. Givens are shaded and cannot change.',
+    text: "Tap a cell to select it. Shaded cells are givens and can't change.",
   },
   {
     target: '[aria-label="Number pad"]',
-    text: 'Then tap a number to place it. The pencil puts numbers in as notes, the eraser clears a cell.',
+    text: 'Tap a cell, then a number to place it. The pencil puts numbers in as notes, the eraser clears a cell and Mark boxes it in red.',
   },
   {
     target: '[aria-label="Show a hint"]',
@@ -95,6 +95,14 @@ const TUTORIAL = [
     target: '[aria-label="More"]',
     text: 'Restart, show the solution and settings live in this menu.',
   },
+]
+const TUTORIAL_DIGIT_FIRST = [
+  { ...TUTORIAL[0], text: "Shaded cells are givens and can't change." },
+  {
+    ...TUTORIAL[1],
+    text: 'Pick a number, then tap cells to place it. The pencil puts numbers in as notes. The eraser and Mark are modes: tap cells to clear them or box them in red, tap the tool again to stop.',
+  },
+  ...TUTORIAL.slice(2),
 ]
 
 export function SudokuGameView({ id }: { id: string }) {
@@ -329,7 +337,7 @@ export function SudokuGameView({ id }: { id: string }) {
             </Button>
           )}
           {modeSettings.showTutorial && (
-            <HowToPlay steps={TUTORIAL}>
+            <HowToPlay steps={digitFirst ? TUTORIAL_DIGIT_FIRST : TUTORIAL}>
               <p>
                 Fill the grid so every row, column and box has each number once.
               </p>

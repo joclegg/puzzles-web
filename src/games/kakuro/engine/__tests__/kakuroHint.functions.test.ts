@@ -16,6 +16,10 @@ const BANK_8 =
 
 const SMALL = createPuzzle({ size: 3, solution: [0, 0, 0, 0, 1, 2, 0, 3, 4] })
 
+const OPEN = createPuzzle({ size: 3, solution: [0, 0, 0, 0, 1, 3, 0, 3, 1] })
+
+const ONE_OR_THREE = 0b101
+
 describe('findHint', () => {
   it('points at a cell where only one digit fits', () => {
     const hint = findHint(newGame({ puzzle: SMALL }))
@@ -74,5 +78,39 @@ describe('revealSolution', () => {
     expect(revealSolution(newGame({ puzzle: SMALL })).values).toEqual(
       SMALL.solution,
     )
+  })
+
+  it('skips a cell whose notes already match its candidates', () => {
+    const game = newGame({ puzzle: OPEN })
+    const notes = game.notes.map((_, cell) => (cell === 4 ? ONE_OR_THREE : 0))
+
+    expect(findHint({ ...game, notes })?.cell).toBe(5)
+  })
+
+  it('skips a cell whose notes are tighter than its candidates', () => {
+    const game = newGame({ puzzle: OPEN })
+    const notes = game.notes.map((_, cell) => (cell === 4 ? 0b1 : 0))
+
+    expect(findHint({ ...game, notes })?.cell).toBe(5)
+  })
+
+  it('reveals the answer when every empty cell is already noted', () => {
+    const game = newGame({ puzzle: OPEN })
+
+    expect(
+      findHint({ ...game, notes: game.notes.map(() => ONE_OR_THREE) }),
+    ).toEqual({ cell: 4, digit: 1, message: 'This one is the 1.' })
+  })
+
+  it('still hints a cell whose notes are wider than its candidates', () => {
+    const game = newGame({ puzzle: OPEN })
+    const notes = game.notes.map((_, cell) => (cell === 4 ? 0b111 : 0))
+
+    expect(findHint({ ...game, notes })).toEqual({
+      cell: 4,
+      digit: 1,
+      message:
+        "This cell's across run (4 in 2) and down run (4 in 2) only allow 1 or 3.",
+    })
   })
 })

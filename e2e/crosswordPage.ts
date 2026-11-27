@@ -32,6 +32,10 @@ export class CrosswordPage {
     await expect(this.board).toBeVisible()
   }
 
+  async showRules() {
+    await this.page.getByRole('button', { name: 'Show the rules' }).click()
+  }
+
   cell({ row, column }: { row: number; column: number }) {
     return this.board.getByRole('gridcell', {
       name: new RegExp(`^Row ${row} column ${column},`),

@@ -74,6 +74,10 @@ const TUTORIAL = [
     target: '[aria-label="Show a letter"]',
     text: 'Stuck? The bulb fills in one letter of the crossword.',
   },
+  {
+    target: '[aria-label="More"]',
+    text: 'New puzzle, show the solution and settings live in this menu.',
+  },
 ]
 
 export function WordWheelGameView({ id }: { id: string }) {

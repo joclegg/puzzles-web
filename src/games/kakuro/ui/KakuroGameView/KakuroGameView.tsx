@@ -74,7 +74,7 @@ const TUTORIAL = [
   },
   {
     target: '[aria-label="Number pad"]',
-    text: 'Tap a cell, then a number. The pencil adds notes, the eraser clears a cell.',
+    text: 'Tap a cell, then a number to place it. The pencil puts numbers in as notes, the eraser clears a cell and Mark boxes it in red.',
   },
   {
     target: '[aria-label="Show a hint"]',
@@ -84,6 +84,14 @@ const TUTORIAL = [
     target: '[aria-label="More"]',
     text: 'Restart, show the solution and settings live in this menu.',
   },
+]
+const TUTORIAL_DIGIT_FIRST = [
+  TUTORIAL[0],
+  {
+    ...TUTORIAL[1],
+    text: 'Pick a number, then tap cells to place it. The pencil puts numbers in as notes. The eraser and Mark are modes: tap cells to clear them or box them in red, tap the tool again to stop.',
+  },
+  ...TUTORIAL.slice(2),
 ]
 
 export function KakuroGameView({ id }: { id: string }) {
@@ -227,7 +235,7 @@ export function KakuroGameView({ id }: { id: string }) {
             </Button>
           )}
           {settings.showTutorial && (
-            <HowToPlay steps={TUTORIAL}>
+            <HowToPlay steps={digitFirst ? TUTORIAL_DIGIT_FIRST : TUTORIAL}>
               <p>Fill each white cell with a digit from 1 to 9.</p>
               <p>
                 The number above a diagonal is the sum of the run to its right;

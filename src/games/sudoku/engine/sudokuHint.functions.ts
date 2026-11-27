@@ -59,9 +59,21 @@ export function findHint(game: SudokuGame): SudokuHint | null {
   if (empty.length === 0) {
     return null
   }
-  const cell = empty.reduce((best, each) =>
-    bitCount(candidates[each]) < bitCount(candidates[best]) ? each : best,
-  )
+  const useful = empty.filter((each) => {
+    const notes = game.notes[each]
+    return notes === 0 || (notes & ~candidates[each]) !== 0
+  })
+  const cell = fewestCandidates({
+    cells: useful.length > 0 ? useful : empty,
+    candidates,
+  })
+  if (useful.length === 0) {
+    return {
+      cell,
+      digit: solution[cell],
+      message: `This one is the ${solution[cell]}.`,
+    }
+  }
   return {
     cell,
     digit: solution[cell],
@@ -76,6 +88,18 @@ function bitCount(mask: number) {
 function digitsOf(mask: number) {
   return Array.from({ length: 31 }, (_, digit) => digit).filter(
     (digit) => digit > 0 && (mask & digitBit(digit)) !== 0,
+  )
+}
+
+function fewestCandidates({
+  cells,
+  candidates,
+}: {
+  cells: number[]
+  candidates: number[]
+}) {
+  return cells.reduce((best, each) =>
+    bitCount(candidates[each]) < bitCount(candidates[best]) ? each : best,
   )
 }
 
