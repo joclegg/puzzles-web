@@ -73,29 +73,6 @@ import { SolitaireBoard } from '@/games/solitaire/ui/SolitaireBoard/SolitaireBoa
 
 const FINISH_STEP_MS = 110
 
-const TUTORIAL = [
-  {
-    target: '[aria-label="Column 1"]',
-    text: 'Build down the seven columns in alternating colours. Only a King, or a run starting with one, can go in an empty column.',
-  },
-  {
-    target: '[aria-label^="Stock"]',
-    text: 'Tap the stock to turn cards onto the waste. When it runs out, tap again to turn the waste over.',
-  },
-  {
-    target: '[aria-label="Foundations"]',
-    text: 'Build each suit up from Ace to King here. Fill all four to win.',
-  },
-  {
-    target: '[aria-label="Show a hint"]',
-    text: 'Stuck? The bulb suggests a move.',
-  },
-  {
-    target: '[aria-label="More"]',
-    text: 'Restart this deal, a new deal and settings live in this menu.',
-  },
-]
-
 export function SolitaireGameView({ id }: { id: string }) {
   const { games, startRandom, saveProgress, finish, checkWinnable } =
     useSolitaireGames()
@@ -308,11 +285,16 @@ export function SolitaireGameView({ id }: { id: string }) {
             </Button>
           )}
           {settings.showTutorial && (
-            <HowToPlay steps={TUTORIAL}>
-              <p>Move every card up to the four foundations, Ace to King.</p>
+            <HowToPlay steps={tutorial(current.order === BUILD_ORDER.UP)}>
               <p>
-                In the columns, build down in alternating colours. Any face-up
-                run can move together.
+                {current.order === BUILD_ORDER.UP
+                  ? 'Move every card to the four foundations, King to Ace.'
+                  : 'Move every card up to the four foundations, Ace to King.'}
+              </p>
+              <p>
+                {current.order === BUILD_ORDER.UP
+                  ? 'In the columns, build up in alternating colours. Any face-up run can move together.'
+                  : 'In the columns, build down in alternating colours. Any face-up run can move together.'}
               </p>
               <p>
                 {current.order === BUILD_ORDER.UP
@@ -445,4 +427,33 @@ export function SolitaireGameView({ id }: { id: string }) {
       <CustomiseHelpers route={GAME_ROUTE.SOLITAIRE} />
     </main>
   )
+}
+
+function tutorial(up: boolean) {
+  return [
+    {
+      target: '[aria-label="Column 1"]',
+      text: up
+        ? 'Build up the seven columns in alternating colours. Only an Ace, or a run starting with one, can go in an empty column.'
+        : 'Build down the seven columns in alternating colours. Only a King, or a run starting with one, can go in an empty column.',
+    },
+    {
+      target: '[aria-label^="Stock"]',
+      text: 'Tap the stock to turn cards onto the waste. When it runs out, tap again to turn the waste over.',
+    },
+    {
+      target: '[aria-label="Foundations"]',
+      text: up
+        ? 'Build each suit down from King to Ace here. Fill all four to win.'
+        : 'Build each suit up from Ace to King here. Fill all four to win.',
+    },
+    {
+      target: '[aria-label="Show a hint"]',
+      text: 'Stuck? The bulb suggests a move.',
+    },
+    {
+      target: '[aria-label="More"]',
+      text: 'Restart this deal, a new deal and settings live in this menu.',
+    },
+  ]
 }
